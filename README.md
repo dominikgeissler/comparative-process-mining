@@ -1,1 +1,1 @@
-# process-discovery
+# Softwareprojektpraktikum Process Discovery using Python
