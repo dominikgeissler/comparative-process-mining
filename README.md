@@ -1,3 +1,3 @@
 # Softwareprojektpraktikum Process Discovery using Python
-
-## Team 7
+## Comparative Process Mining
+### Short summary to get overview here (WIP)
