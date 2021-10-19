@@ -32,3 +32,25 @@ Da das viele und wiederholte Ausführen des Commands auf Dauer nervig wird, kann
 3. `Tasks: Run Task` auswählen
 4. `Configure a Task` auswählen, dann bei der Templateabfrage `Other` wählen
 5. Tada, ihr könnt nun eure Tasks definieren 
+
+
+Tasks für Build und Run sehen bspw. so aus:
+
+```
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Docker Build",
+            "type": "shell",
+            "command": "docker build . -t cpm"
+        },
+        {
+            "label": "Docker Run",
+            "type": "shell",
+            "command": "docker run -d cpm "
+        }
+    ]
+}
