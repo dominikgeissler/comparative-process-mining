@@ -1,1 +1,9 @@
+# local vs code compile
 .vscode/
+
+# js
+node_modules
+
+# other
+.idea/
+	
