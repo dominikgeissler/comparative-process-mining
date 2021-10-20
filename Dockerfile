@@ -30,9 +30,5 @@ RUN pip install -r dependencies.txt
 # open django port
 EXPOSE 8000
 
-# endless loop to maintain container -> Remove when django is up
-# CMD ["/bin/bash", "-c", "--", "while true; do sleep 30; done;"]
-
 # start django server
-
 CMD ["python3", "manage.py", "runserver", "0.0.0.0:8000"]

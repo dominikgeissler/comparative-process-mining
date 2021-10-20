@@ -1,6 +1,3 @@
-from django.http.response import HttpResponse, JsonResponse
-
-
 import json
 from django.http import HttpResponse
 
