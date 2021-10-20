@@ -17,7 +17,7 @@ Damit ihr bei euch auch die App innerhalb des Docker-Containers testen könnt, h
 * Nachdem das Image jetzt gebuildet ist, dürftet ihr mittels `docker images` den oben eingegebenen Namen sehen. Sollte das nicht der Fall sein, ist was schiefgelaufen.
 
 * Nun können wir den Container starten. Den Hauptteil der Konfiguration habe ich bereits in die `Dockerfile` gepackt, also bleibt nur noch:
-    > `docker run -d <name>`
+    > `docker run -d -p 8000:8000 <name>`
 
 * Dieser Befehl sollte nach kurzer Zeit eine lange Zeichenkette ausspucken. Dies ist die ID des Containers (ihr könnt alle laufenden Container auch durch `docker ps` anzeigen lassen, dort steht ebenfalls die ID).
 
@@ -45,12 +45,14 @@ Tasks für Build und Run sehen bspw. so aus:
         {
             "label": "Docker Build",
             "type": "shell",
-            "command": "docker build . -t cpm"
+            "command": "docker build . -t cpm",
+            "problemMatcher": []
         },
         {
             "label": "Docker Run",
             "type": "shell",
-            "command": "docker run -d cpm "
+            "command": "docker run -d -p 8000:8000 cpm",
+            "problemMatcher": []
         }
     ]
 }

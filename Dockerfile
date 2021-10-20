@@ -1,5 +1,5 @@
 # image
-FROM python:3.7.9
+FROM python:3.8
 
 # set enviroment variable
 ENV DockerHOME=/home/app/webapp
@@ -11,7 +11,11 @@ RUN mkdir -p ${DockerHOME}
 WORKDIR ${DockerHOME}
 
 # env variables for python
+
+# https://docs.python.org/3/using/cmdline.html#envvar-PYTHONDONTWRITEBYTECODE
 ENV PYTHONDONTWRITEBYTECODE 1
+
+# https://docs.python.org/3/using/cmdline.html#envvar-PYTHONUNBUFFERED
 ENV PYTHONUNBUFFERED 1
 
 # set up pip and dependencies
@@ -26,9 +30,9 @@ RUN pip install -r dependencies.txt
 # open django port
 EXPOSE 8000
 
+# endless loop to maintain container -> Remove when django is up
+# CMD ["/bin/bash", "-c", "--", "while true; do sleep 30; done;"]
+
 # start django server
 
-# endless loop to maintain container -> Remove when django is up
-CMD ["/bin/bash", "-c", "--", "while true; do sleep 30; done;"]
-
-# CMD ["python3", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["python3", "manage.py", "runserver", "0.0.0.0:8000"]
