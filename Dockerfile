@@ -22,7 +22,7 @@ ENV PYTHONUNBUFFERED 1
 RUN pip install --upgrade pip
 
 # copy current files to created work directory
-COPY . ${DockerHOME}
+# COPY . ${DockerHOME}
 
 # install all dependencies from dependency list
 RUN pip install -r dependencies.txt
@@ -30,5 +30,6 @@ RUN pip install -r dependencies.txt
 # open django port
 EXPOSE 8000
 
+CMD ["/bin/sh", "-c", "--", "while true; do sleep 30; done"]
 # start django server
-CMD ["python3", "manage.py", "runserver", "0.0.0.0:8000"]
+# CMD ["python3", "manage.py", "runserver", "0.0.0.0:8000"]

@@ -4,5 +4,5 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('', views.hello_world, name="test")
+    path('', views.upload_eventlog, name="test")
 ]
