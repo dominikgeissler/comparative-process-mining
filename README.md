@@ -23,6 +23,8 @@ Damit ihr bei euch auch die App innerhalb des Docker-Containers testen könnt, h
 
 * Mittels `docker exec -it <ID> /bin/bash` (*Notiz*:  Ihr müsst nicht die vollständige ID abtippen, die ersten paar Zeichen genügen, andernfalls meckert Docker) könnt ihr innerhalb des Containers Befehle ausführen. Dies ist aktuell noch möglich, da ich den Container z.Zt. im Idlemodus für die Einrichtung stehen habe (später wird das zwar immernoch gehen, da wir dann allerdings mit dem auf Docker laufenden Webserver interagieren ist das eher unwichtig).
 
+* Nachtrag: Zum Coden empfehle ich innerhalb des Dockercontainers zu arbeiten. Der Server aktualisiert bei jeder Speicherung und kann somit in (fast) realtime geändert werden. Um einen Volumeshare zu erstellen, einfach beim `docker run ...` ein `-v {hier der absolute Pfad zum Projekt}/:/home/app/webapp` ergänzen. So könnt ihr dann mit `docker exec ...` oder in der Docker CLI selbst den Server starten und dann sofort Änderungen sehen.
+
 ### **Integration in die Codeumgebung**
 Da das viele und wiederholte Ausführen des Commands auf Dauer nervig wird, kann man sich in VSCode Tasks definieren (falls das noch nicht bekannt sein sollte).
 
