@@ -59,6 +59,23 @@ Tasks für Build und Run sehen bspw. so aus:
     ]
 }
 ```
+Mit Volumeshare sähe die Task dann so aus:
+```
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Docker Run",
+            "type": "shell",
+            "command": "docker run -v C:/Users/geiss/Desktop/WS21-22/SPP/process-discovery/:/home/app/webapp -p 8000:8000 -d cpm ",
+            "problemMatcher": []
+        }
+    ]
+}
+```
+
 
 ## Projektstruktur
 ```
