@@ -56,3 +56,15 @@ Tasks für Build und Run sehen bspw. so aus:
         }
     ]
 }
+```
+
+## Projektstruktur
+```
+├───bootstrapdjango (django)
+├───hello-world (hier kommen unsere pages hin)
+├───media (hier werden Useruploads gespeichert)
+├───static (bootstrap)
+│   ├───css
+│   └───js
+└───static_root (Sammlung aller staticfiles)
+```
