@@ -4,6 +4,17 @@
 {% block content %}
 
 <h1>Hier kömnnten ihre logs compared werden</h1>
+<form action="{% url 'log_list' %}" method="get">
+    {% csrf_token %}
+    <button id="show_log_button">Show logs</button>
+</form>
 
+{% if data %}
+<ul>
+    {% for file in data %}
+    <li>{{file}}</li>
+    {% endfor %}
+</ul>
+{% endif %}
 
 {% endblock %}

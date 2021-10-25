@@ -18,7 +18,8 @@ from django.conf.urls.static import static
 from django.conf import settings
 
 urlpatterns = [
-    path('', include('upload_eventlog.urls')),
+    path('', include('home.urls')),
+    path('upload', include('upload_eventlog.urls')),
     path('logs', include('log_filtering.urls'))
 ]
 
