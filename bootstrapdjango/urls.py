@@ -20,5 +20,7 @@ from django.conf import settings
 urlpatterns = [
     path('', include('upload_eventlog.urls'))
 ]
+
+# if debug mode is enabled, also load media as static page
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
