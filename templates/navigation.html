@@ -1,0 +1,15 @@
+{% with url_name=request.resolver_match.url_name %}
+
+{% url 'upload_page' as upload %}
+{% url 'log_filter' as log %}
+
+<ul id="navigation">
+    <li><a class="{% if url_name == 'upload_page' %}current{% endif %}" href="{{upload}}">Upload</a></li>
+    <li><a class="{% if url_name == 'log_filter' %}current{% endif %}" href="{{log}}">Filter</a></li>
+</ul>
+{% endwith %}
+<style>
+    li .current {
+        color: red;
+    }
+</style>

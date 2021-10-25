@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="device-width, initial-scale=1, shrink-to-fit=no">
@@ -12,13 +11,17 @@
 </head>
 
 <body>
-    <div align="center">
-        {% block content %}
+    {% include "navigation.html" %}
+    <main>
+        <div align="center">
+            {% block content %}
 
-        {% endblock %}
-    </div>
+            {% endblock %}
+        </div>
+    </main>
     <script src="{% static '/js/bootstrap.min.js' %}"></script>
     <script src="{% static '/js/bootstrap.bundle.min.js' %}"></script>
 
 </body>
+
 </html>

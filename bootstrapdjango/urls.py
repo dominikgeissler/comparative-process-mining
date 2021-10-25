@@ -18,8 +18,10 @@ from django.conf.urls.static import static
 from django.conf import settings
 
 urlpatterns = [
-    path('', include('upload_eventlog.urls'))
+    path('', include('upload_eventlog.urls')),
+    path('logs', include('log_filtering.urls'))
 ]
+
 
 # if debug mode is enabled, also load media as static page
 if settings.DEBUG:
