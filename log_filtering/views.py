@@ -11,7 +11,9 @@ from os.path import isfile, join
 
 
 def log_filter(request):
-    return render(request, 'log_filter.html', load_logs())
+    if request.method == "GET":
+        return render(request, 'log_filter.html', load_logs())
+    return render(request, 'log_filter.html')
 
 def load_logs():
     return {'data': [file for file in listdir(settings.MEDIA_ROOT) if isfile(join(settings.MEDIA_ROOT, file))]}

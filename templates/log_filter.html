@@ -1,15 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
-{% url 'upload_page' as upload %}
 
 {% block content %}
 
 <h1>Hier kömnnten ihre logs compared werden</h1>
-<form method="get">
-    {% csrf_token %}
-    <button id="show_log_button">Refresh</button>
-</form>
-
+<a href="{{ request.get_full_path }}">Refresh</a>
 {% if data %}
 <ul>
     {% for file in data %}
@@ -21,3 +16,15 @@
 {% endif %}
 
 {% endblock %}
+<!-- 
+{% block script %}
+<script type="text/javascript">
+$("button").click(function(e) {
+    e.preventDefault();
+    $.ajax({
+        type: "GET",
+        url: {{ path }}
+    });
+});
+</script>
+{% endblock %} -->
