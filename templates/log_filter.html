@@ -12,19 +12,7 @@
     {% endfor %}
 </ul>
 {% else %}
-<p>No logs found. <a href="{{upload}}">Upload</a></p>
+<p>No logs found. <a href="/upload">Upload</a></p>
 {% endif %}
 
 {% endblock %}
-<!-- 
-{% block script %}
-<script type="text/javascript">
-$("button").click(function(e) {
-    e.preventDefault();
-    $.ajax({
-        type: "GET",
-        url: {{ path }}
-    });
-});
-</script>
-{% endblock %} -->
