@@ -1,12 +1,13 @@
 {% extends 'base.html' %}
 {% load static %}
+{% url 'upload_page' as upload %}
 
 {% block content %}
 
 <h1>Hier kömnnten ihre logs compared werden</h1>
-<form action="{% url 'log_list' %}" method="get">
+<form method="get">
     {% csrf_token %}
-    <button id="show_log_button">Show logs</button>
+    <button id="show_log_button">Refresh</button>
 </form>
 
 {% if data %}
@@ -15,6 +16,8 @@
     <li>{{file}}</li>
     {% endfor %}
 </ul>
+{% else %}
+<p>No logs found. <a href="{{upload}}">Upload</a></p>
 {% endif %}
 
 {% endblock %}
