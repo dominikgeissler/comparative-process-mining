@@ -7,8 +7,8 @@
 <a href="{{ request.get_full_path }}">Refresh</a>
 {% if data %}
 <ul>
-    {% for file in data %}
-    <li>{{file}}</li>
+    {% for file, path in data %}
+    <li>{{file}} <a href="{{ path }}">[View] (todo)</a></li>
     {% endfor %}
 </ul>
 {% else %}
