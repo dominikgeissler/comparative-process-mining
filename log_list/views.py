@@ -10,10 +10,10 @@ from os import listdir
 from os.path import isfile, join
 
 
-def log_filter(request):
+def log_list(request):
     if request.method == "GET":
-        return render(request, 'log_filter.html', load_logs())
-    return render(request, 'log_filter.html')
+        return render(request, 'log_list.html', load_logs())
+    return render(request, 'log_list.html')
 
 def load_logs():
     return {'data': [[file, join(settings.MEDIA_ROOT, file)] for file in listdir(settings.MEDIA_ROOT) if isfile(join(settings.MEDIA_ROOT, file))]}

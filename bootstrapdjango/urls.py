@@ -20,7 +20,7 @@ from django.conf import settings
 urlpatterns = [
     path('', include('home.urls')),
     path('upload', include('upload_eventlog.urls')),
-    path('logs', include('log_filtering.urls'))
+    path('logs', include('log_list.urls'))
 ]
 
 
