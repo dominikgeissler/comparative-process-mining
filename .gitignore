@@ -9,3 +9,6 @@ node_modules
 
 # bitte auskommentieren wenn wir dort logs speichern
 media/
+
+# lokale testdaten
+testdata/
