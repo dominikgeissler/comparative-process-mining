@@ -10,7 +10,7 @@ click==7.1.2
 cycler==0.10.0
 decorator==4.4.2
 deprecation==2.1.0
-Django==3.2.4
+Django==3.2.5
 django-cors-headers==3.2.1
 django-multiselectfield==0.1.12
 docutils==0.16
