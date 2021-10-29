@@ -1,14 +1,10 @@
-# local vs code compile
-.vscode/
-
-# js
+node_modules
 node_modules
 
-# other
+
+venv/
+
+.vscode/
+
 .idea/
 
-# bitte auskommentieren wenn wir dort logs speichern
-media/
-
-# lokale testdaten
-testdata/

@@ -1,35 +1,25 @@
-# image
-FROM python:3.8
+# base image  
+FROM python:3.7.9   
+# setup environment variable  
+ENV DockerHOME=/home/app/webapp  
 
-# set enviroment variable
-ENV DockerHOME=/home/app/webapp
+# set work directory  
+RUN mkdir -p $DockerHOME  
 
-# create folder (and path)
-RUN mkdir -p ${DockerHOME}
+# where your code lives  
+WORKDIR $DockerHOME  
 
-# set as workdir
-WORKDIR ${DockerHOME}
-
-# env variables for python
-
-# https://docs.python.org/3/using/cmdline.html#envvar-PYTHONDONTWRITEBYTECODE
+# set environment variables  
 ENV PYTHONDONTWRITEBYTECODE 1
-
-# https://docs.python.org/3/using/cmdline.html#envvar-PYTHONUNBUFFERED
-ENV PYTHONUNBUFFERED 1
-
-# set up pip and dependencies
-RUN pip install --upgrade pip
-
-# copy current files to created work directory
-COPY . ${DockerHOME}
-
-# install all dependencies from dependency list
-RUN pip install -r dependencies.txt
-
-# open django port
-EXPOSE 8000
-
+ENV PYTHONUNBUFFERED 1  
+# install dependencies  
+RUN pip install --upgrade pip  
+# copy whole project to your docker home directory. 
+COPY . $DockerHOME  
+# run this command to install all dependencies  
+RUN pip install -r requirements.txt  
+# port where the Django app runs  
+EXPOSE 8000  
+# start server 
 CMD ["/bin/bash", "-c", "--", "while true; do sleep 30; done;"]
-# start django server
-# CMD ["python3", "manage.py", "runserver", "0.0.0.0:8000"]
+# CMD [ "python3", "manage.py", "runserver", "0.0.0.0:8000" ]
