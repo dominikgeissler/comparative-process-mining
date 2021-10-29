@@ -31,7 +31,7 @@ ldap3==2.7
 lxml==4.6.3
 MarkupSafe==1.1.1
 
-mitmproxy==5.2
+mitmproxy==7.0.3
 networkx==2.4
 numpy==1.19.0
 packaging==20.3
