@@ -14,7 +14,7 @@ venv/
 
 # Test data doesn't need to be versioned
 /eventlogs
-/media
+/media/*/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
