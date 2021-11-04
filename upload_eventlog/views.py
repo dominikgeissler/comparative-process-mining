@@ -1,73 +1,71 @@
+# django imports
 from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.conf import settings
+
+# os import
 import os
 from os import listdir
 from os.path import isfile, join
-from django.http import HttpResponse
-from mimetypes import guess_type
+
+# wsgiref
 from wsgiref.util import FileWrapper
+
+# json
 import json
+
+# pandas
 import pandas as pd
-from pm4py.objects.conversion.log import variants
-from pm4py.objects.log.importer import xes
+
+# pm4py
+import pm4py
 from pm4py.objects.log.importer.xes import importer as xes_importer_factory
 from pm4py.objects.log.util import dataframe_utils
 from pm4py.objects.conversion.log import converter as log_converter
 from pm4py.objects.conversion.log.variants import to_data_frame as log_to_data_frame
-import heapq
-import pm4py
 from pm4py.algo.filtering.dfg import dfg_filtering
 from pm4py.statistics.traces.log import case_statistics
+
+# datetime
 import datetime
 
-# Create your views here.
 
 filtered_logs = {}
 
+def DEBUG_log(text):
+    with open("test.log", "a") as file:
+        file.write(text)
+
 def upload_page(request):
+    DEBUG_log("in upload")
     log_attributes = {}
     event_logs_path = os.path.join(settings.MEDIA_ROOT, "event_logs")
     n_event_logs_path = os.path.join(settings.MEDIA_ROOT, "none_event_logs")
 
     if request.method == 'POST':
-        if request.is_ajax():  # currently is not being used (get commented in html file)
-            filename = request.POST["log_name"]
-            print('filename = ', filename)
-            file_dir = os.path.join(event_logs_path, filename)
-            eventlogs = [f for f in listdir(event_logs_path) if isfile(join(event_logs_path, f))]
+        # if request.is_ajax():  # currently is not being used (get commented in html file)
+        #     DEBUG_log("in is ajax")
+        #     filename = request.POST["log_name"]
+        #     file_dir = os.path.join(event_logs_path, filename)
+        #     eventlogs = [f for f in listdir(event_logs_path) if isfile(join(event_logs_path, f))]
 
-            log = xes_importer_factory.apply(file_dir)
-            no_traces = len(log)
-            no_events = sum([len(trace) for trace in log])
-            log_attributes['no_traces'] = no_traces
-            log_attributes['no_events'] = no_events
-            print(log_attributes)
-            json_respone = {'log_attributes': log_attributes, 'eventlog_list': eventlogs}
-            return HttpResponse(json.dumps(json_respone), content_type='application/json')
-            # return render(request, 'upload.html', {'log_attributes': log_attributes, 'eventlog_list':eventlogs})
-        else:
+        #     log = xes_importer_factory.apply(file_dir)
+        #     no_traces = len(log)
+        #     no_events = sum([len(trace) for trace in log])
+        #     log_attributes['no_traces'] = no_traces
+        #     log_attributes['no_events'] = no_events
+        #     json_respone = {'log_attributes': log_attributes, 'eventlog_list': eventlogs}
+        #     return HttpResponse(json.dumps(json_respone), content_type='application/json')
+        #     # return render(request, 'upload.html', {'log_attributes': log_attributes, 'eventlog_list':eventlogs})
+        # else:
             if "uploadButton" in request.POST:
                 if "event_log" not in request.FILES:
                     return HttpResponseRedirect(request.path_info)
-
                 log = request.FILES["event_log"]
                 fs = FileSystemStorage(event_logs_path)
                 filename = fs.save(log.name, log)
-                uploaded_file_url = fs.url(filename)
-
-                eventlogs = [f for f in listdir(event_logs_path) if isfile(join(event_logs_path, f))]
-                # eventlogs.append(filename)
-
-                file_dir = os.path.join(event_logs_path, filename)
-
-                # xes_log = xes_importer_factory.apply(file_dir)
-                # no_traces = len(xes_log)
-                # no_events = sum([len(trace) for trace in xes_log])
-                # log_attributes['no_traces'] = no_traces
-                # log_attributes['no_events'] = no_events
-
+                eventlogs = [log for log in listdir(event_logs_path) if isfile(join(event_logs_path, log))]
                 return render(request, 'upload.html', {'eventlog_list': eventlogs})
 
             elif "deleteButton" in request.POST:  # for event logs
@@ -78,12 +76,11 @@ def upload_page(request):
                 if settings.EVENT_LOG_NAME == filename:
                     settings.EVENT_LOG_NAME = ":notset:"
 
-                eventlogs = [f for f in listdir(event_logs_path) if isfile(join(event_logs_path, f))]
-                n_eventlogs = [f for f in listdir(n_event_logs_path) if isfile(join(n_event_logs_path, f))]
-
-                eventlogs.remove(filename)
                 file_dir = os.path.join(event_logs_path, filename)
                 os.remove(file_dir)
+                eventlogs = [log for log in listdir(event_logs_path) if isfile(join(event_logs_path, log))]
+                n_eventlogs = [n_log for n_log in listdir(n_event_logs_path) if isfile(join(n_event_logs_path, n_log))]
+
                 return render(request, 'upload.html', {'eventlog_list': eventlogs, 'n_eventlog_list': n_eventlogs})
 
 
@@ -112,16 +109,9 @@ def upload_page(request):
 
                 log = convert_eventfile_to_log(file_dir)
 
-                # Apply Filters on log
-                # filters = {
-                #     'concept:name': ['Test Repair']
-                # }
-                # log = filter_log(log, filters, True)
-
-
                 dfg = log_to_dfg(log, 1, 'Frequency')
 
-                g6, temp_file = dfg_to_g6(dfg)
+                g6, _ = dfg_to_g6(dfg)
                 dfg_g6_json = json.dumps(g6)
 
                 log_attributes['dfg'] = dfg_g6_json
@@ -174,21 +164,10 @@ def upload_page(request):
                     return response
                 except Exception as e:
                     return None
-
     else:
-
-        # file_dir = os.path.join(settings.MEDIA_ROOT, "Privacy_P6uRPEd.xes")
-        # xes_log = xes_importer_factory.apply(file_dir)
-        # no_traces = len(xes_log)
-        # no_events = sum([len(trace) for trace in xes_log])
-        # log_attributes['no_traces'] = no_traces
-        # log_attributes['no_events'] = no_events
         eventlogs = [f for f in listdir(event_logs_path) if isfile(join(event_logs_path, f))]
         n_eventlogs = [f for f in listdir(n_event_logs_path) if isfile(join(n_event_logs_path, f))]
-
         return render(request, 'upload.html', {'eventlog_list': eventlogs, 'n_eventlog_list': n_eventlogs})
-
-        # return render(request, 'upload.html')
 
 
 def log_to_dfg(log, percentage_most_freq_edges, type):
@@ -201,7 +180,7 @@ def log_to_dfg(log, percentage_most_freq_edges, type):
         dfg = dfg_discovery.apply(log, variant=dfg_discovery.Variants.PERFORMANCE)
     
     
-    dfg1, sa, ea = pm4py.discover_directly_follows_graph(log)
+    _, sa, ea = pm4py.discover_directly_follows_graph(log)
     activities_count = pm4py.get_attribute_values(log, "concept:name")
 
     # Filter Frequent Paths
@@ -211,7 +190,6 @@ def log_to_dfg(log, percentage_most_freq_edges, type):
 
 def dfg_to_g6(dfg):
     unique_nodes = []
-    print(dfg)
     for i in dfg:
         unique_nodes.extend(i)
     unique_nodes = list(set(unique_nodes))
@@ -295,7 +273,7 @@ def filter_log(log, filterItemList, isKeepOnlyThese=True):
 
 
 def convert_eventfile_to_log(file_path):
-    file_name, file_extension = os.path.splitext(file_path)
+    _, file_extension = os.path.splitext(file_path)
 
     if file_extension == '.csv':
 
@@ -315,7 +293,6 @@ def convert_eventfile_to_log(file_path):
 
 def FilterDataToLogAttributes(FilterData, div_id):
     event_logs_path = os.path.join(settings.MEDIA_ROOT, "event_logs")
-    print(FilterData)
     ColName = FilterData['ColumnName']
     if (ColName == "Choose Column"):
         ColName = ""
@@ -463,8 +440,6 @@ def get_Log_Statistics(log):
     avg_case_duration = days_hours_minutes(avg_case_duration)
     
     median_case_duration = days_hours_minutes(median_case_duration)
-
-    print(no_cases, no_events, no_variants, total_case_duration, avg_case_duration, median_case_duration)
 
     return no_cases, no_events, no_variants, total_case_duration, avg_case_duration, median_case_duration
 

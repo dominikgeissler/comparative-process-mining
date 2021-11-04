@@ -115,7 +115,3 @@ CONNECTOR_FILE = ''
 
 TLKC_APPLIED = False
 TLKC_FILE = ''
-#for uploading large files > 2.5 Mb
-# FILE_UPLOAD_HANDLERS = [
-#     'django.core.files.uploadhandler.TemporaryFileUploadHandler',
-# ]
