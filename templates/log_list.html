@@ -1,9 +1,5 @@
-{% extends 'base.html' %}
-{% load static %}
-
 {% block content %}
 
-<h1>Hier könnten ihre logs angezeigt werden</h1>
 <a href="{{ request.get_full_path }}">Refresh</a>
 {% if event_logs %}
 <ul>

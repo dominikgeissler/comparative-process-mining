@@ -19,8 +19,7 @@ from django.conf import settings
 
 urlpatterns = [
     path('', include('home.urls')),
-    path('upload', include('upload_eventlog.urls')),
-    path('logs', include('log_list.urls'))
+    path('manage', include('manage_logs.urls'))
 ]
 
 
