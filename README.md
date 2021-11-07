@@ -80,6 +80,7 @@ Mit Volumeshare sähe die Task dann so aus:
 ## Projektstruktur
 ```
 +---bootstrapdjango     (Settings für django)
++---compare             (Comparison-Seite)
 +---home                (Home-Page)
 +---manage_logs         (Seite für Verwaltung der Logs)
 +---media
