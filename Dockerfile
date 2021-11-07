@@ -1,16 +1,10 @@
 # image
-FROM python:3.9-slim
+FROM python:3.9
 
-# set enviroment variable
+# ----
+# set enviroment variables
+# ----
 ENV DockerHOME=/home/app/webapp
-
-# create folder (and path)
-RUN mkdir -p ${DockerHOME}
-
-# set as workdir
-WORKDIR ${DockerHOME}
-
-# env variables for python
 
 # https://docs.python.org/3/using/cmdline.html#envvar-PYTHONDONTWRITEBYTECODE
 ENV PYTHONDONTWRITEBYTECODE 1
@@ -18,15 +12,19 @@ ENV PYTHONDONTWRITEBYTECODE 1
 # https://docs.python.org/3/using/cmdline.html#envvar-PYTHONUNBUFFERED
 ENV PYTHONUNBUFFERED 1
 
-# update pip
-RUN pip install --upgrade pip
-RUN /usr/local/bin/python -m pip install --upgrade pip
+# ----
 
-# copy dependencies to work dir
-COPY dependencies.txt ${DockerHOME}
+# create path
+RUN mkdir -p ${DockerHOME}
 
-# install all dependencies from dependency list
-RUN pip install -r dependencies.txt
+# set as workdir
+WORKDIR ${DockerHOME}
+
+COPY requirements.txt ${DockerHOME}
+
+# update pip and install dependencies
+RUN pip install --upgrade pip \
+&& pip install -r requirements.txt
 
 # copy current files to created work directory
 COPY . ${DockerHOME}

@@ -2,6 +2,11 @@
 {% load static %}
 
 {% block content %}
+
+{% if message %}
+<div class="alert alert-success" role="alert"> {{mesage}} </div>
+{% endif %}
+
 <form method="post" enctype="multipart/form-data" class="form-control">
     <div class="custom-file">
         {% csrf_token %}
@@ -15,14 +20,5 @@
 <div class="mol-md-12" style="margin-top: 75px;">
     {% include "log_list.html" %}
 </div>
-
-
-{% if file_url %}
-    <p>File uploaded at <a href="{{file_url}}">{{file_url}}</a></p>
-{% endif %}
-
-{% if error %}
-    <p>{{error}}</p>
-{% endif %}
 
 {% endblock %}
