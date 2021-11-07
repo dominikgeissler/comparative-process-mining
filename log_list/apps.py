@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class UploadEventlogConfig(AppConfig):
+class LogList(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'upload_eventlog'
+    name = 'log_list'

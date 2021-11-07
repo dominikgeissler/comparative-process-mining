@@ -78,42 +78,12 @@ Mit Volumeshare sähe die Task dann so aus:
 
 
 ## Projektstruktur
-Um der Nachwelt dieses Projekt zugänglich zu machen, versuche ich Ergebnisse aus der Analyse der Codefragmente hier einzuarbeiten. Für den groben Überblick hier schonmal die Struktur.
 ```
-├───.vscode
-├───backend
-│   └───.idea
-│       └───inspectionProfiles
-├───blog_app
-│   ├───migrations
-│   │   └───__pycache__
-│   └───__pycache__
-├───bootstrapdjango
-│   └───__pycache__
-├───eventlogs
-├───log_filtering
-│   └───__pycache__
-├───media
-│   ├───event_logs
-│   ├───none_event_logs
-│   └───temp
-├───static
+├───bootstrapdjango (django)
+├───hello-world (hier kommen unsere pages hin)
+├───media (hier werden Useruploads gespeichert)
+├───static (bootstrap)
 │   ├───css
-│   │   └───vendor
-│   │       ├───bootstrap
-│   │       │   ├───css
-│   │       │   └───js
-│   │       └───jquery
-│   ├───images
-│   ├───js
-│   └───lib
-│       ├───css
-│       ├───fonts
-│       └───js
-├───templates
-├───upload_eventlog
-│   ├───migrations
-│   │   └───__pycache__
-│   └───__pycache__
-└───UserManual
+│   └───js
+└───static_root (Sammlung aller staticfiles)
 ```

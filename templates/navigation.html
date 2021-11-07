@@ -1,0 +1,13 @@
+{% with url_name=request.resolver_match.url_name %}
+{% load static %}
+{% url 'upload_page' as upload %}
+{% url 'log_list' as log %}
+{% url 'home' as home %}
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <ul id="navigation">
+        <li><a class="{% if url_name == 'home' %}active{% endif %}" href="{{home}}">Home</a></li>
+        <li><a class="{% if url_name == 'upload_page' %}active{% endif %}" href="{{upload}}">Upload</a></li>
+        <li><a class="{% if url_name == 'log_list' %}active{% endif %}" href="{{log}}">Logs</a></li>
+    </ul>
+</nav>
+{% endwith %}

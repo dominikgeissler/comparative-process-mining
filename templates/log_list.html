@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<h1>Hier könnten ihre logs angezeigt werden</h1>
+<a href="{{ request.get_full_path }}">Refresh</a>
+{% if data %}
+<ul>
+    {% for file, path in data %}
+    <li>{{file}} <a href="{{ path }}">[View] (todo)</a></li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No logs found. <a href="/upload">Upload</a></p>
+{% endif %}
+
+{% endblock %}
