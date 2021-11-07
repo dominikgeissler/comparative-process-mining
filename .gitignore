@@ -9,6 +9,7 @@ node_modules
 
 # bitte auskommentieren wenn wir dort logs speichern
 media/event_logs/*
+!media/event_logs/.gitkeep
 
 #
 # ---
