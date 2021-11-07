@@ -8,7 +8,8 @@ from pm4py.objects.log.importer.xes import importer as xes_importer_factory
 from pm4py.objects.conversion.log.variants import to_data_frame as log_to_data_frame
 from pm4py.algo.discovery.dfg import algorithm as dfg_discovery
 from pm4py.algo.filtering.dfg import dfg_filtering
-from pm4py import discover_directly_follows_graph, get_event_attribute_value
+from pm4py import discover_directly_follows_graph
+from pm4py.algo.filtering.log.attributes import attributes_filter
 from helpers.dfg_helper import convert_dfg_to_dict
 from helpers.g6_helpers import dfg_dict_to_g6
 from django.forms.models import model_to_dict
@@ -16,7 +17,7 @@ from django.forms.models import model_to_dict
 # Create your models here.
 class Log(models.Model):
     log_file = models.FileField(upload_to=settings.EVENT_LOG_URL)
-    log_name = models.CharField()
+    log_name = models.CharField(max_length=500)
     def filename(self):
         return basename(self.log_file.name)
     def pm4py_log(self):
@@ -58,7 +59,7 @@ class LogObjectHandler():
     def generate_dfg(self, percentage_most_freq_edges=100, type=dfg_discovery.Variants.FREQUENCY):
         log = self.pm4py_log()
         dfg, sa, ea = discover_directly_follows_graph(log)
-        activities_count = get_event_attribute_value(log, "concept:name")
+        activities_count = attributes_filter(log, "concept:name")
         dfg, sa, ea, activities_count = dfg_filtering.filter_dfg_on_paths_percentage(dfg, sa, ea, activities_count, percentage_most_freq_edges)
         return dfg
     
