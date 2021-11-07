@@ -122,6 +122,7 @@ USE_TZ = True
 # link to media folder
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+EVENT_LOG_URL = os.path.join(MEDIA_ROOT, 'event_logs')
 
 
 # link to static folder

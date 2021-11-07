@@ -1,12 +1,12 @@
-from django.core import validators
 from django.shortcuts import render
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator
-from django.utils.deconstruct import deconstructible
-from django.template.defaultfilters import filesizeformat
 
+from os.path import join
+
+event_log_path = settings.EVENT_LOG_URL
 
 def upload_page(request):
     # if user wants to upload a file
@@ -19,7 +19,7 @@ def upload_page(request):
         except ValidationError as error:
             return render(request, 'upload_page.html', {'error': error})
         # create new FileSystemStorage
-        fs = FileSystemStorage()
+        fs = FileSystemStorage(location=event_log_path, base_url=event_log_path)
         # save file and get filename
         filename = fs.save(file.name, file)
         # get file url
