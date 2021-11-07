@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # our own
     'manage_logs',
-    'home'
+    'home',
+    'compare'
 ]
 
 MIDDLEWARE = [
