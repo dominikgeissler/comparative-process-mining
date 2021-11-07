@@ -4,7 +4,7 @@
 {% if event_logs %}
 <ul>
     {% for file, path in event_logs %}
-    <li>{{file}} <a href="{{ path }}">[View] (todo)</a></li>
+    <li>{{file}} <a href="{{ path }}">[View] (todo)</a><a href="">Delete</a></li>
     {% endfor %}
 </ul>
 {% else %}
