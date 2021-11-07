@@ -3,7 +3,7 @@
 {% url 'manage_logs' as manage %}
 {% url 'compare' as compare %}
 {% url 'home' as home %}
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav class="nav nav-pills navbar navbar-expand-lg navbar-light bg-light">
     <a class="navbar-brand" href="/">
         <img src="static/img/RWTH_logo.png" width="102" height="28" alt="">
       </a>
@@ -14,13 +14,13 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
         <li class="nav-item active">
-          <a class="nav-link" href="/">Home<span class="sr-only">(current)</span></a>
+          <a class="nav-link {% if url_name == 'home' %}active{% endif %}" href="/">Home<span class="sr-only">(current)</span></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{{manage}}">Manage Logs</a>
+          <a class="nav-link {% if url_name == 'manage_logs' %}active{% endif %}" href="{{manage}}">Manage</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{{compare}}">Compare</a>
+          <a class="nav-link {% if url_name == 'compare' %}active{% endif %}" href="{{compare}}">Compare</a>
         </li>
       </ul>
     </div>
