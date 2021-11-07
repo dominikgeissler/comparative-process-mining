@@ -1,14 +1,14 @@
 {% block content %}
-
 <a href="{{ request.get_full_path }}">Refresh</a>
+<div class="row">
 {% if event_logs %}
-<ul>
+<ul class="list-group list-group-flush">
     {% for file, path in event_logs %}
-    <li>{{file}} <a href="{{ path }}">[View] (todo)</a><a href="/">Delete</a></li>
+    <li class="list-group-item">{{file}}</li>
     {% endfor %}
 </ul>
 {% else %}
 <p>No logs found. <a href="/upload">Upload</a></p>
 {% endif %}
-
+</div>
 {% endblock %}
