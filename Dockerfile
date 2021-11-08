@@ -1,6 +1,6 @@
 # image
-# FROM python:3.9
 FROM pm4py/pm4py-core:latest
+
 # ----
 # set enviroment variables
 # ----
