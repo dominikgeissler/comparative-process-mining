@@ -1,6 +1,5 @@
 {% with url_name=request.resolver_match.url_name %}
 {% load static %}
-{% url 'logs' as logs %}
 <nav class="nav nav-pills navbar navbar-expand-lg navbar-light bg-light">
     <a class="navbar-brand" href="/">
         <img src="{% static '/img/RWTH_logo.png' %}" width="102" height="28" alt="">
@@ -12,7 +11,13 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
         <li class="nav-item">
-          <a class="nav-link {% if url_name == 'manage_logs' %}active{% endif %}" href="{{manage}}">Manage</a>
+          <a class="nav-link {% if url_name == '' %}active{% endif %}" href="{{home}}">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/comp">Compare</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/manage">Manage</a>
         </li>
       </ul>
     </div>
