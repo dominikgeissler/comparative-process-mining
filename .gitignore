@@ -11,6 +11,9 @@ node_modules
 # ---
 #
 
+# Testdaten bzw Userdaten werden nicht versioniert
+/media/event_logs/*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
