@@ -9,7 +9,7 @@ from pm4py.objects.conversion.log.variants import to_data_frame as log_to_data_f
 from pm4py.algo.discovery.dfg import algorithm as dfg_discovery
 from pm4py.algo.filtering.dfg import dfg_filtering
 from pm4py import discover_directly_follows_graph
-from pm4py.algo.filtering.log.attributes import attributes_filter
+from pm4py import get_event_attribute_values
 from helpers.dfg_helper import convert_dfg_to_dict
 from helpers.g6_helpers import dfg_dict_to_g6
 from django.forms.models import model_to_dict
@@ -28,6 +28,7 @@ class Log(models.Model):
             log = log_converter.apply(log)
         else:
             log = xes_importer_factory.apply(self.log_file.path)
+        return log
 
 
 class LogObjectHandler():
@@ -59,14 +60,14 @@ class LogObjectHandler():
     def generate_dfg(self, percentage_most_freq_edges=100, type=dfg_discovery.Variants.FREQUENCY):
         log = self.pm4py_log()
         dfg, sa, ea = discover_directly_follows_graph(log)
-        activities_count = attributes_filter(log, "concept:name")
+        activities_count = get_event_attribute_values(log, "concept:name")
         dfg, sa, ea, activities_count = dfg_filtering.filter_dfg_on_paths_percentage(dfg, sa, ea, activities_count, percentage_most_freq_edges)
         return dfg
     
     def g6(self):
         return dfg_dict_to_g6(convert_dfg_to_dict(self.generate_dfg()))
 
-    def convert_dfg_to_dict(self):
+    def to_dict(self):
         ret = model_to_dict(self.log_object)
         ret['g6'] = self.g6()
         ret['properties'] = self.get_properties()

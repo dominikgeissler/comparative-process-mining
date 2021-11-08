@@ -22,7 +22,6 @@ class Home(View):
     def get(self, request):
         return render(request, self.template_name)
 
-
 class LogsJsonView(View):
     """
     S
@@ -77,8 +76,6 @@ class ManageLogs(View):
             for log in logs:
                 remove(join(settings.EVENT_LOG_URL, log.log_name))
             logs.delete()
-            
-
         elif request.POST['action'] == 'upload':
             file = request.FILES['log_file']
             validator = FileExtensionValidator(['csv', 'xes'])
@@ -96,7 +93,8 @@ class ManageLogs(View):
         return render(request, self.template_name, context)
 
 def graph_example(request,id):
-    dfg = Log.objects.filter(id=id)[0].generate_dfg()
+    handler = LogObjectHandler(Log.objects.get(id=id))
+    dfg = handler.generate_dfg()
     res =  dfg_dict_to_g6(convert_dfg_to_dict(dfg))
     data = json.dumps(res)
-    return render(request, 'graph.html', {'div_id': 'left', 'data':data})
+    return {'div_id': 'left', 'data':data}

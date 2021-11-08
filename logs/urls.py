@@ -1,6 +1,6 @@
 from django.urls import path
 from django.views.generic.base import TemplateView
-from .views import Home, ManageLogs, LogsJsonView,SelectLogs, CompareLogs, CompareLogsJson
+from .views import Home, ManageLogs, LogsJsonView,SelectLogs, CompareLogs, CompareLogsJson, graph_example
 
 urlpatterns = [ 
     path('', Home.as_view()),
