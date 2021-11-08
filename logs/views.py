@@ -7,6 +7,7 @@ from helpers.g6_helpers import dfg_dict_to_g6
 from helpers.dfg_helper import convert_dfg_to_dict
 import json
 from os import remove
+import errno
 from os.path import join
 from django.conf import settings
 from django.core.exceptions import ValidationError
@@ -70,7 +71,14 @@ class ManageLogs(View):
             pks = request.POST.getlist('pk')
             logs =  Log.objects.filter(pk__in=pks)
             for log in logs:
-                remove(join(settings.EVENT_LOG_URL, log.log_name))
+                try:
+                    # remove local files in media/logs
+                    remove(join(settings.EVENT_LOG_URL, log.log_name))
+                except OSError as e:
+                    # if error is not FileNotFound, raise it
+                    # otherwise ignore
+                    if e.errno != errno.ENOENT:
+                        raise
             logs.delete()
         elif request.POST['action'] == 'upload':
             file = request.FILES['log_file']
