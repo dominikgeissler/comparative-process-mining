@@ -79,15 +79,14 @@ Mit Volumeshare sähe die Task dann so aus:
 
 ## Projektstruktur
 ```
-+---bootstrapdjango     (Settings für django)
-+---compare             (Comparison-Seite)
-+---home                (Home-Page)
-+---manage_logs         (Seite für Verwaltung der Logs)
-+---media
-|  +---event_logs       (Hier werden die Logs gespeichert)
-+---static              
-|  +---css              (Bootstrap)
-|  +---img              (Für statische Bilder)
-|  +---js               (Bootstrap)
-+---templates           (html-templates)
++---cpm         (Django-Settings)
++---helpers     (Hilfsfunktionen)
++---logs        (Log-Controller)
++---media       
+|   +---logs    (Hier werden die Logs gespeichert)
++---static      (Bootstrap & statischer Kram)
+|   +---css
+|   +---img
+|   +---js
++---templates   (Html-Templates)
 ```
