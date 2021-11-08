@@ -1,0 +1,13 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+<script src="https://gw.alipayobjects.com/os/lib/antv/g6/4.3.11/dist/g6.min.js"></script>
+<script type="module">
+    import {drawGraph} from '/static/js/drawGraph.js'
+    drawGraph('{{div_id}}',{{data|safe}})
+</script>
+<div id="{{div_id}}">
+
+</div>
+{% endblock %}

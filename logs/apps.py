@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class ManageLogsConfig(AppConfig):
+class LogsConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'manage_logs'
+    name = 'logs'

@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <form method="get" action="compare">
+        <input type="hidden" name="nr_of_comparisons"value="{{request.GET.nr_of_comparisons}}">
+        <div class="form-group">
+            {# this is equivalent to: for i in range(1,request.GET.nr_of_comparsions) #}
+            {% with ''|center:request.GET.nr_of_comparisons as range %}
+                {% for _ in range %}
+                    <select class="form-select" name="log{{forloop.counter}}" id="log{{forloop.counter}}">
+                        {% for log in logs %}
+                        <option value="{{log.pk}}">{{log.log_name}}</option>
+                        {% endfor %}
+                    </select>
+                {% endfor %}
+            {% endwith %}
+            <button class="btn btn-primary" type="submit">Continue</button>
+        </div>
+
+    </form>
+{% endblock %}

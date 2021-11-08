@@ -1,24 +1,33 @@
 {% extends 'base.html' %}
 {% load static %}
-
 {% block content %}
-
 {% if message %}
-<div class="alert alert-success" role="alert"> {{mesage}} </div>
+<div class="alert alert-success" role="alert">
+    {{message}}
+</div>
 {% endif %}
 
-<form method="post" enctype="multipart/form-data" class="form-control">
-    <div class="custom-file">
-        {% csrf_token %}
-        <input type="file" class="custom-file-input" id="validatedCustomFile" required>
-        <label class="custom-file-label" for="validatedCustomFile">Choose file...</label>
-        <div class="invalid-feedback">Example invalid custom file feedback</div>
-
-      </div>
-      <button class="btn btn-primary" type="submit">Upload</button>
+<form method="post">
+    <input type="hidden" name="action" value="delete"> 
+    <div class="form-group">
+        <h4>Uploaded Logs:</h1>
+        <select class="form-select form-select-lg" id="fileSelect" multiple name='pk' aria-label="multipe form-select-lg example ">
+            {% for log in logs %}
+            <option value="{{log.pk}}">{{log.log_name}}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <button class="btn btn-danger" type="submit">Delete</button>
 </form>
-<div class="mol-md-12" style="margin-top: 75px;">
-    {% include "log_list.html" %}
-</div>
 
+
+<form method="post" enctype="multipart/form-data">
+    <input type="hidden" name="action" value="upload"> 
+    <div class="form-group">
+        <h4>Upload Log:</h4>
+        <label for="formFileDisabled" class="form-label">Select a file to upload/label>
+        <input class="form-control" type="file" name="log_file" id="formFileDisabled" accept=".xes, .csv"/>
+        <button class="btn btn-success my-4" type="submit" >Upload new log</button>
+    </div>
+</form>
 {% endblock %}

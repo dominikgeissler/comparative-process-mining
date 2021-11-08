@@ -1,6 +1,21 @@
 {% extends 'base.html' %}
-{% load static %}
-{% block content %}
-<h1>hallo</h1>
 
+
+
+{% block content %}
+
+    <script src="https://gw.alipayobjects.com/os/lib/antv/g6/4.3.11/dist/g6.min.js"></script>
+    <script type="module">
+        import {drawGraph} from '/static/js/drawGraph.js'
+        $(()=> js_data['graphs'].forEach((graph, counter)=>drawGraph(`log_graph${counter+1}`,graph)))
+       
+    </script>
+
+    {% for log in logs %}
+    <div id="log_div{{forloop.counter}}">
+        {{log.log_name}}
+        {{log.properties}}
+        <div id="log_graph{{forloop.counter}}"></div>
+    </div>
+    {% endfor %}
 {% endblock %}
