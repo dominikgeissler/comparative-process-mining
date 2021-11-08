@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.views.generic.base import TemplateView, View
 from helpers.upload_file import handle_uploaded_file
-from logs.models import Log, LogObjectHandler
+from .models import Log, LogObjectHandler
 from django.core import serializers
 from helpers.g6_helpers import dfg_dict_to_g6
 from helpers.dfg_helper import convert_dfg_to_dict

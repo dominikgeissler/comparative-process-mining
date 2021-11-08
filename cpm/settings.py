@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # ------ #
     'logs',
+    'home'
 ]
 
 MIDDLEWARE = [
@@ -45,7 +46,7 @@ ROOT_URLCONF = 'cpm.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -117,7 +118,7 @@ MEDIA_URL = '/media/'
 
 MEDIA_ROOT = join(BASE_DIR, 'media')
 
-EVENT_LOG_ROOT = join(MEDIA_ROOT, 'logs')
+EVENT_LOG_URL = join(MEDIA_ROOT, 'logs')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
