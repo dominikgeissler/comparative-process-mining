@@ -7,10 +7,6 @@ node_modules
 # other
 .idea/
 
-# bitte auskommentieren wenn wir dort logs speichern
-media/event_logs/*
-!media/event_logs/.gitkeep
-
 #
 # ---
 #
