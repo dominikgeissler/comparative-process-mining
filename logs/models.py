@@ -16,7 +16,7 @@ from django.forms.models import model_to_dict
 
 # Create your models here.
 class Log(models.Model):
-    log_file = models.FileField(upload_to=settings.EVENT_LOG_URL)
+    log_file = models.FileField(upload_to='logs')
     log_name = models.CharField(max_length=500)
     def filename(self):
         return basename(self.log_file.name)

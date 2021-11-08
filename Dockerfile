@@ -1,6 +1,6 @@
 # image
-FROM python:3.9
-
+# FROM python:3.9
+FROM pm4py/pm4py-core:latest
 # ----
 # set enviroment variables
 # ----
@@ -11,7 +11,6 @@ ENV PYTHONDONTWRITEBYTECODE 1
 
 # https://docs.python.org/3/using/cmdline.html#envvar-PYTHONUNBUFFERED
 ENV PYTHONUNBUFFERED 1
-
 # ----
 
 # create path
