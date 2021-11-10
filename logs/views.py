@@ -96,6 +96,7 @@ class ManageLogs(View):
         context['message'] = 'Upload successful' if request.POST['action'] == 'upload' else 'Successfuly deleted'
         return render(request, self.template_name, context)
 
+# graph.html
 def graph_example(request,id):
     handler = LogObjectHandler(Log.objects.get(id=id))
     dfg = handler.generate_dfg()
