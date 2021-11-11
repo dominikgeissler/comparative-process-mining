@@ -1,6 +1,4 @@
-def dfg_dict_to_g6(dfg_dict):
-
-    
+def dfg_dict_to_g6(dfg_dict):    
     edges = []
     nodes = []
     dfg_graph_dict = dfg_dict['dfg_graph']
