@@ -9,10 +9,12 @@ from pm4py.objects.conversion.log.variants import (
     as log_to_data_frame)
 from pm4py.algo.discovery.dfg import algorithm as dfg_discovery
 from pm4py.algo.filtering.dfg import dfg_filtering
+from pm4py.statistics.traces.generic.log import case_statistics
 from pm4py import discover_directly_follows_graph
 from pm4py import get_event_attribute_values
 from helpers.dfg_helper import convert_dfg_to_dict
 from helpers.g6_helpers import dfg_dict_to_g6
+from helpers.metrics_helper import days_hours_minutes, get_total_pct
 from django.forms.models import model_to_dict
 
 
@@ -128,3 +130,116 @@ class LogObjectHandler():
         ret['g6'] = self.g6()
         ret['properties'] = self.get_properties()
         return ret
+
+
+class LogMetrics(models.Model):
+    """Metrics for a single log"""
+    def __init__(self, log):
+        self.log = log
+        self.no_cases = len(self.log)
+
+        self.no_events = sum([len(trace) for trace in self.log])
+        
+        variants_count = case_statistics.get_variant_statistics(log)
+        self.no_variants = len(variants_count)
+
+        all_case_durations = case_statistics.get_all_casedurations(self.log, parameters={
+        case_statistics.Parameters.TIMESTAMP_KEY: "time:timestamp"})
+        self.total_case_duration = (sum(all_case_durations))
+
+        if self.no_cases <= 0:
+            avg_case_duration = 0
+        else:
+            avg_case_duration = self.total_case_duration/self.no_cases
+
+        median_case_duration = (case_statistics.get_median_caseduration(self.log, parameters={
+            case_statistics.Parameters.TIMESTAMP_KEY: "time:timestamp"
+        }))
+
+        self.avg_case_duration = avg_case_duration
+        self.median_case_duration = median_case_duration
+        
+        #self.total_case_duration = days_hours_minutes(self.total_case_duration)
+
+        #self.avg_case_duration = days_hours_minutes(avg_case_duration)
+
+        #self.median_case_duration = days_hours_minutes(median_case_duration)
+
+    def get_metrics(self):
+        return {
+            'no_cases': self.no_cases,
+            'no_events': self.no_events,
+            'no_variants': self.no_variants,
+            'avg_case_duration': self.avg_case_duration,
+            'median_case_duration': self.median_case_duration,
+            'total_case_duration': self.total_case_duration
+        }
+
+class ComparisonMetrics(models.Model):
+
+    def __init__(self, log1, log2):
+        self.metrics1 = LogMetrics(log1)
+        self.metrics2 = LogMetrics(log2)
+        self.no_cases1_total, self.no_cases1_pct = get_total_pct(self.metrics1.no_cases, self.metrics2.no_cases)
+        self.no_cases2_total, self.no_cases2_pct = get_total_pct(self.metrics2.no_cases, self.metrics1.no_cases) 
+
+        # Total and Percentage Difference concerning Number of Events: 
+        self.no_events1_total, self.no_events1_pct = get_total_pct(self.metrics1.no_events, self.metrics2.no_events)
+        self.no_events2_total, self.no_events2_pct = get_total_pct(self.metrics2.no_events, self.metrics1.no_events)
+
+        # Total and Percentage Difference regarding Number of Variants:
+        self.no_variants1_total, self.no_variants1_pct = get_total_pct(self.metrics1.no_variants, self.metrics2.no_variants)
+        self.no_variants2_total, self.no_variants2_pct = get_total_pct(self.metrics2.no_variants, self.metrics1.no_variants)
+
+        # Total and Percentage Difference of Total Case Duration:
+        tcd1_t, tcd1_p = get_total_pct(self.metrics1.total_case_duration, self.metrics2.total_case_duration)
+        tcd2_t, tcd2_p = get_total_pct(self.metrics2.total_case_duration, self.metrics1.total_case_duration)
+        self.total_case_duration1_total = tcd1_t
+        self.total_case_duration1_pct = tcd1_p
+        self.total_case_duration2_total = tcd2_t
+        self.total_case_duration2_pct = tcd2_p
+
+        # Total and Percentage Difference of Average Case Duration:
+        acd1_t, acd1_p = get_total_pct(self.metrics1.avg_case_duration, self.metrics2.avg_case_duration)
+        acd2_t, acd2_p = get_total_pct(self.metrics2.avg_case_duration, self.metrics1.avg_case_duration)
+        self.avg_case_duration1_total = acd1_t
+        self.avg_case_duration1_pct = acd1_p
+        self.avg_case_duration2_total = acd2_t
+        self.avg_case_duration2_pct = acd2_p
+
+        # Total and Percentage Difference of Median Case Duration:
+        mcd1_t, mcd1_p = get_total_pct(self.metrics1.median_case_duration, self.metrics2.median_case_duration)
+        mcd2_t, mcd2_p = get_total_pct(self.metrics2.median_case_duration, self.metrics1.median_case_duration)
+        self.median_case_duration1_total = mcd1_t
+        self.median_case_duration1_pct = mcd1_p
+        self.median_case_duration2_total = mcd2_t
+        self.median_case_duration2_pct = mcd2_p
+        
+    def get_comparison(self):
+        return {
+        'no_cases1_total': self.no_cases1_total, 
+        'no_cases2_total': self.no_cases2_total,
+        'no_cases1_pct': self.no_cases1_pct, 
+        'no_cases2_pct': self.no_cases2_pct,
+        'no_events1_total': self.no_events1_total, 
+        'no_events2_total': self.no_events2_total,
+        'no_events1_pct': self.no_events1_pct, 
+        'no_events2_pct': self.no_events2_pct,
+        'no_variants1_total': self.no_variants1_total, 
+        'no_variants2_total': self.no_variants2_total,
+        'no_variants1_pct': self.no_variants1_pct, 
+        'no_variants2_pct': self.no_variants2_pct,
+        'total_case_duration1_total': self.total_case_duration1_total, 
+        'total_case_duration2_total': self.total_case_duration2_total,
+        'total_case_duration1_pct': self.total_case_duration1_pct, 
+        'total_case_duration2_pct': self.total_case_duration2_pct,
+        'avg_case_duration1_total': self.avg_case_duration1_total, 
+        'avg_case_duration2_total': self.avg_case_duration2_total,
+        'avg_case_duration1_pct': self.avg_case_duration1_pct, 
+        'avg_case_duration2_pct': self.avg_case_duration2_pct,
+        'median_case_duration1_total': self.median_case_duration1_total, 
+        'median_case_duration2_total': self.median_case_duration2_total,
+        'median_case_duration1_pct': self.median_case_duration1_pct, 
+        'median_case_duration2_pct': self.median_case_duration2_pct 
+        
+        }

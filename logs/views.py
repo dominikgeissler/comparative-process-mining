@@ -2,7 +2,7 @@
 from django.http.response import JsonResponse
 from django.shortcuts import render
 from django.views.generic.base import TemplateView, View
-from .models import Log, LogObjectHandler
+from .models import Log, LogObjectHandler, ComparisonMetrics
 from helpers.g6_helpers import dfg_dict_to_g6
 from helpers.dfg_helper import convert_dfg_to_dict
 import json
@@ -128,11 +128,14 @@ class ManageLogs(View):
         context['message'] = 'Upload successful' if request.POST['action'] == 'upload' else 'Successfuly deleted'
         return render(request, self.template_name, context)
 
+class Metrics(View):
+    template_name = "metrics.html"
+    first_id = 15
+    second_id = 14
 
-def graph_example(request,id):
-    """Dummy method to show graph vis for a uploaded log by id"""
-    handler = LogObjectHandler(Log.objects.get(id=id))
-    dfg = handler.generate_dfg()
-    res =  dfg_dict_to_g6(convert_dfg_to_dict(dfg))
-    data = json.dumps(res)
-    return {'div_id': 'left', 'data':data}
+    def get(self, request):
+        log = Log.objects.get(id=self.first_id)
+        log2 = Log.objects.get(id=self.second_id)
+        metrics = ComparisonMetrics(log.pm4py_log(), log2.pm4py_log())
+        return render(request, self.template_name, {'data': metrics.get_comparison()})
+
