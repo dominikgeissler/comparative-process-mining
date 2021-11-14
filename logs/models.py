@@ -112,7 +112,9 @@ class LogObjectHandler():
         log = self.pm4py_log()
         dfg, sa, ea = discover_directly_follows_graph(log)
         activities_count = get_event_attribute_values(log, "concept:name")
-        dfg, sa, ea, activities_count = dfg_filtering.filter_dfg_on_paths_percentage(
+
+        dfg, sa, ea,
+        activities_count = dfg_filtering.filter_dfg_on_paths_percentage(
             dfg, sa, ea, activities_count, percentage_most_freq_edges)
         return dfg
 
