@@ -14,41 +14,52 @@ from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator
 
 # default
+
+
 class Home(View):
     """
     Home page
     First page the user will visit after starting the server
     """
     template_name = 'home.html'
+
     def get(self, request):
         """returns the home page template"""
         return render(request, self.template_name)
+
 
 class LogsJsonView(View):
     """
     Help view for getting the json response
     """
+
     def get(self, request, *args, **kwars):
         """returns results based on the id"""
         if 'id' in request.GET:
             id = int(request.GET['id'])
-            return JsonResponse({"result":[Log.objects.filter(id=id)[0].to_dict()]})
-        else: 
-            return JsonResponse({"result":[ log.to_dict() for log in Log.objects.all() ]})
+            return JsonResponse(
+                {"result": [Log.objects.filter(id=id)[0].to_dict()]})
+        else:
+            return JsonResponse(
+                {"result": [log.to_dict() for log in Log.objects.all()]})
+
 
 class CompareLogsJson(View):
     """
     Comparison page
     similar to CompareLogs, but returns a JsonResponse instead of the graphs
     """
+
     def get(self, request, *args, **kwars):
         """returns the logs selected by the user in Json format"""
-        #extract the pks/ids from the query url
+        # extract the pks/ids from the query url
         nr_of_comparisons = int(request.GET['nr_of_comparisons'])
-        pks = [ request.GET[f'log{i}'] for i in range(1, nr_of_comparisons+1)]
-        logs = [ LogObjectHandler(Log.objects.get(pk=pk)).to_dict() for pk in pks ]
+        pks = [request.GET[f'log{i}'] for i in range(1, nr_of_comparisons + 1)]
+        logs = [LogObjectHandler(Log.objects.get(pk=pk)).to_dict()
+                for pk in pks]
 
         return JsonResponse({'logs': logs})
+
 
 class CompareLogs(TemplateView):
     """
@@ -59,14 +70,18 @@ class CompareLogs(TemplateView):
 
     def get(self, request, *args, **kwars):
         """returns the logs selected by the user and the rendered graph"""
-        #extract the pks/ids from the query url
+        # extract the pks/ids from the query url
         nr_of_comparisons = int(request.GET['nr_of_comparisons'])
-        pks = [ request.GET[f'log{i}'] for i in range(1, nr_of_comparisons+1)]
-        logs = [ LogObjectHandler(Log.objects.get(pk=pk)).to_dict() for pk in pks ]
+        pks = [request.GET[f'log{i}'] for i in range(1, nr_of_comparisons + 1)]
+        logs = [LogObjectHandler(Log.objects.get(pk=pk)).to_dict()
+                for pk in pks]
 
         js_data = {'graphs': [log['g6'] for log in logs]}
         js_data = json.dumps(js_data)
-        return render(request, self.template_name, {'logs': logs, 'js_data': js_data})
+        return render(
+            request, self.template_name, {
+                'logs': logs, 'js_data': js_data})
+
 
 class SelectLogs(TemplateView):
     """
@@ -74,10 +89,12 @@ class SelectLogs(TemplateView):
     used to select the logs for comparison
     """
     template_name = 'select_logs.html'
+
     def get(self, request, *args, **kwars):
         """returns all uploaded logs"""
         logs = Log.objects.all()
         return render(request, self.template_name, {'logs': logs})
+
 
 class ManageLogs(View):
     """
@@ -85,6 +102,7 @@ class ManageLogs(View):
     used for uploading and deleting logs
     """
     template_name = 'manage_logs.html'
+
     def get(self, request, *args, **kwars):
         """returns all uploaded log files"""
         logs = Log.objects.all()
@@ -93,10 +111,11 @@ class ManageLogs(View):
     def post(self, request, *args, **kwars):
         """either uploads or delete a already uploaded log"""
         context = {}
-        # we use a hidden field 'action' to determine if the post is used to delete a log or upload a new one
+        # we use a hidden field 'action' to determine if the post is used to
+        # delete a log or upload a new one
         if request.POST['action'] == 'delete':
             pks = request.POST.getlist('pk')
-            logs =  Log.objects.filter(pk__in=pks)
+            logs = Log.objects.filter(pk__in=pks)
             for log in logs:
                 try:
                     # remove local files in media/logs
@@ -116,7 +135,9 @@ class ManageLogs(View):
             try:
                 validator(file)
             except ValidationError:
-                return render(request, self.template_name, {'logs': Log.objects.all(), 'error': 'file extension not supported'})
+                return render(
+                    request, self.template_name, {
+                        'logs': Log.objects.all(), 'error': 'file extension not supported'})
             # create a new Log object
             log = Log(
                 log_file=file,
@@ -128,6 +149,7 @@ class ManageLogs(View):
         context['message'] = 'Upload successful' if request.POST['action'] == 'upload' else 'Successfuly deleted'
         return render(request, self.template_name, context)
 
+
 class Metrics(View):
     template_name = "metrics.html"
     first_id = 15
@@ -137,5 +159,6 @@ class Metrics(View):
         log = Log.objects.get(id=self.first_id)
         log2 = Log.objects.get(id=self.second_id)
         metrics = ComparisonMetrics(log.pm4py_log(), log2.pm4py_log())
-        return render(request, self.template_name, {'data': metrics.get_comparison()})
-
+        return render(
+            request, self.template_name, {
+                'data': metrics.get_comparison()})
