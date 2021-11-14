@@ -14,9 +14,18 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Log',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('log_file', models.FileField(upload_to='C:\\Users\\geiss\\Desktop\\WS21-22\\SPP\\process-discovery\\media\\logs')),
-                ('log_name', models.CharField(max_length=500)),
+                ('id',
+                 models.BigAutoField(
+                     auto_created=True,
+                     primary_key=True,
+                     serialize=False,
+                     verbose_name='ID')),
+                ('log_file',
+                 models.FileField(
+                     upload_to='C:\\Users\\geiss\\Desktop\\WS21-22\\SPP\\process-discovery\\media\\logs')),
+                ('log_name',
+                 models.CharField(
+                     max_length=500)),
             ],
         ),
     ]

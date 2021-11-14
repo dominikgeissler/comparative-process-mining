@@ -9,5 +9,6 @@ urlpatterns = [
 
 # if in debug mode, add static files and admin page
 if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.MEDIA_URL,
+                          document_root=settings.MEDIA_ROOT)
     urlpatterns.append(path('admin/', admin.site.urls))

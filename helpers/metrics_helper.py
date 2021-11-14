@@ -7,7 +7,7 @@ def days_hours_minutes(total_seconds):
     days = td.days
     hours = td.seconds // 3600
     minutes = (td.seconds // 60) % 60
-    seconds = td.seconds - hours*3600 - minutes*60
+    seconds = td.seconds - hours * 3600 - minutes * 60
     return str(days) + "d "\
         + str(hours) + "h "\
         + str(minutes) + "m "\
@@ -16,5 +16,5 @@ def days_hours_minutes(total_seconds):
 
 def get_total_pct(result_case1, result_case2):
     total = result_case1 - result_case2
-    pct = total/(result_case1 + result_case2)
+    pct = total / (result_case1 + result_case2)
     return total, pct

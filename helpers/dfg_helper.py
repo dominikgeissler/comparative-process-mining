@@ -6,7 +6,7 @@ def convert_dfg_to_dict(dfg):
         if startnode not in dfg_graph_dict:
             dfg_graph_dict[startnode] = {}
         dfg_graph_dict[startnode][endnote] = frequency
-        min_frequency = min(min_frequency,frequency)
+        min_frequency = min(min_frequency, frequency)
         max_frequency = max(max_frequency, frequency)
 
     dfg_properties = {
@@ -17,5 +17,3 @@ def convert_dfg_to_dict(dfg):
         'properties': dfg_properties,
         'dfg_graph': dfg_graph_dict
     }
-
-

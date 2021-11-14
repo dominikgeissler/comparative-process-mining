@@ -1,4 +1,4 @@
-def dfg_dict_to_g6(dfg_dict):    
+def dfg_dict_to_g6(dfg_dict):
     edges = []
     nodes = []
     dfg_graph_dict = dfg_dict['dfg_graph']
@@ -17,19 +17,19 @@ def dfg_dict_to_g6(dfg_dict):
                     'target': endnode,
                     'label': frequency,
                     'style': {
-                        'lineWidth': ((frequency-min_frequency) /(max_frequency - min_frequency)) * (18) + 2 ,
+                        'lineWidth': ((frequency - min_frequency) / (max_frequency - min_frequency)) * (18) + 2,
                         'endArrow': True
                     }
                 }
             )
         edges.extend(edges_from_startnode)
-    
+
     nodes = [
         {
             'id': node,
             'name': node,
             'isUnique': False,
-            'conf':{
+            'conf': {
                 'label': 'Name',
                 'value': node,
             }
@@ -42,4 +42,3 @@ def dfg_dict_to_g6(dfg_dict):
         'edges': edges,
         'nodes': nodes,
     }
-    
