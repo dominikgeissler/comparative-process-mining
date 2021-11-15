@@ -21,3 +21,9 @@ def get_total_pct(result_case1, result_case2):
     total = result_case1 - result_case2
     pct = total / (result_case1 + result_case2)
     return total, pct
+
+# Calculates and returns the percentage value of a handed over metric:
+
+
+def get_pct(metric):
+    return str(round(metric*100, 3)) + "%"
