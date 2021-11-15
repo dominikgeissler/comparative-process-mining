@@ -189,8 +189,8 @@ class LogMetrics(models.Model):
         """Median Case Duration"""
 
 
+"""
 def get_metrics(self):
-    """return of values for rendering for one log"""
     return {
         'no_cases': self.no_cases,
         'no_events': self.no_events,
@@ -199,6 +199,7 @@ def get_metrics(self):
         'median_case_duration': self.median_case_duration,
         'total_case_duration': self.total_case_duration
     }
+"""
 
 
 class ComparisonMetrics(models.Model):
