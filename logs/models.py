@@ -200,6 +200,7 @@ def get_metrics(self):
         'total_case_duration': self.total_case_duration
     }
 """
+"""get_metrics(self) -> return values for rendering (only for test purposes)"""
 
 
 class ComparisonMetrics(models.Model):
