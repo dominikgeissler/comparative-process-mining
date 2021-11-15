@@ -31,7 +31,5 @@ COPY . ${DockerHOME}
 # open django port
 EXPOSE 8000
 
-# idle
-CMD ["/bin/bash", "-c", "--", "while true; do sleep 30; done;"]
 # start django server
-# CMD ["python3", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["python3", "manage.py", "runserver", "0.0.0.0:8000"]
