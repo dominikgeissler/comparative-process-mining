@@ -218,22 +218,28 @@ class ComparisonMetrics(models.Model):
         self.metrics2 = LogMetrics(log2)
         """Initailize self.metrics2, self.metrics2 to compare metrcis of both event logs"""
         
-        self.no_cases1_total, self.no_cases1_pct = get_total_pct(
+        self.no_cases1_total, no_cases1_pct = get_total_pct(
             self.metrics1.no_cases, self.metrics2.no_cases)
-        self.no_cases2_total, self.no_cases2_pct = get_total_pct(
+        self.no_cases1_pct = get_pct(no_cases1_pct)
+        self.no_cases2_total, no_cases2_pct = get_total_pct(
             self.metrics2.no_cases, self.metrics1.no_cases)
+        self.no_cases2_pct = get_pct(no_cases2_pct)
         """Total and Percentage Difference Number of Cases"""
 
-        self.no_events1_total, self.no_events1_pct = get_total_pct(
+        self.no_events1_total, no_events1_pct = get_total_pct(
             self.metrics1.no_events, self.metrics2.no_events)
-        self.no_events2_total, self.no_events2_pct = get_total_pct(
+        self.no_events1_pct = get_pct(no_events1_pct)
+        self.no_events2_total, no_events2_pct = get_total_pct(
             self.metrics2.no_events, self.metrics1.no_events)
+        self.no_events2_pct = get_pct(no_events2_pct)
         """Total and Percentage Difference Number of Events"""
 
-        self.no_variants1_total, self.no_variants1_pct = get_total_pct(
+        self.no_variants1_total, no_variants1_pct = get_total_pct(
             self.metrics1.no_variants, self.metrics2.no_variants)
-        self.no_variants2_total, self.no_variants2_pct = get_total_pct(
+        self.no_variants1_pct = get_pct(no_variants1_pct)
+        self.no_variants2_total, no_variants2_pct = get_total_pct(
             self.metrics2.no_variants, self.metrics1.no_variants)
+        self.no_variants2_pct = get_pct(no_variants2_pct)
         """Total and Percentage Difference Number of Variants"""
 
         tcd1_t, tcd1_p = get_total_pct(
