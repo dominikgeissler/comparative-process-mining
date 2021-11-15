@@ -36,14 +36,14 @@
 │   ├── css
 │   ├── img
 │   └── js
-├── templates
-│   ├── base.html
-│   ├── compare.html
-│   ├── graph.html
-│   ├── home.html
-│   ├── manage_logs.html
-│   ├── metrics.html
-│   ├── navigation.html
-│   ├── select_comparisons.html
-│   └── select_logs.html
+└── templates
+    ├── base.html
+    ├── compare.html
+    ├── graph.html
+    ├── home.html
+    ├── manage_logs.html
+    ├── metrics.html
+    ├── navigation.html
+    ├── select_comparisons.html
+    └── select_logs.html
 ````
