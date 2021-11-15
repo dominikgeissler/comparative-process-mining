@@ -1,5 +1,5 @@
 from datetime import timedelta
-# Transfer seconds format in days-hours-minutes format:
+# Transfer seconds format in days-hours-minutes-seconds format:
 
 
 def days_hours_minutes(total_seconds):
