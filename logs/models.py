@@ -154,18 +154,14 @@ class LogMetrics(models.Model):
         """
 
         variants_count = case_statistics.get_variant_statistics(log)
-        """
-        PM4Py library function
-        """
+        """PM4Py library function"""
         self.no_variants = len(variants_count)
         """Number of Variants"""
 
         all_case_durations = case_statistics.get_all_casedurations(
             self.log, parameters={
                 case_statistics.Parameters.TIMESTAMP_KEY: "time:timestamp"})
-        """
-        PM4Py library function
-        """
+        """PM4Py library function"""
         self.total_case_duration = (sum(all_case_durations))
         """Total Case Duration"""
 
@@ -173,18 +169,14 @@ class LogMetrics(models.Model):
             avg_case_duration = 0
         else:
             avg_case_duration = self.total_case_duration / self.no_cases
-
+        self.avg_case_duration = avg_case_duration
+        """Average Case Duration"""
+        
         median_case_duration = (
             case_statistics.get_median_caseduration(
                 self.log, parameters={
                     case_statistics.Parameters.TIMESTAMP_KEY: "time:timestamp"}))
-        """
-        PM4Py library function
-        """
-
-        self.avg_case_duration = avg_case_duration
-        """Average Case Duration"""
-        
+        """PM4Py library function"""
         self.median_case_duration = median_case_duration
         """Median Case Duration"""
 
