@@ -202,9 +202,9 @@ class ComparisonMetrics(models.Model):
         tcd2_t, tcd2_p = get_total_pct(
             self.metrics2.total_case_duration, self.metrics1.total_case_duration)
         self.total_case_duration1_total = days_hours_minutes(tcd1_t)
-        self.total_case_duration1_pct = tcd1_p
+        self.total_case_duration1_pct = get_pct(tcd1_p)
         self.total_case_duration2_total = days_hours_minutes(tcd2_t)
-        self.total_case_duration2_pct = tcd2_p
+        self.total_case_duration2_pct = get_pct(tcd2_p)
 
         # Total and Percentage Difference of Average Case Duration:
         acd1_t, acd1_p = get_total_pct(
@@ -212,9 +212,9 @@ class ComparisonMetrics(models.Model):
         acd2_t, acd2_p = get_total_pct(
             self.metrics2.avg_case_duration, self.metrics1.avg_case_duration)
         self.avg_case_duration1_total = days_hours_minutes(acd1_t)
-        self.avg_case_duration1_pct = acd1_p
+        self.avg_case_duration1_pct = get_pct(acd1_p)
         self.avg_case_duration2_total = days_hours_minutes(acd2_t)
-        self.avg_case_duration2_pct = acd2_p
+        self.avg_case_duration2_pct = get_pct(acd2_p)
 
         # Total and Percentage Difference of Median Case Duration:
         mcd1_t, mcd1_p = get_total_pct(
@@ -222,9 +222,9 @@ class ComparisonMetrics(models.Model):
         mcd2_t, mcd2_p = get_total_pct(
             self.metrics2.median_case_duration, self.metrics1.median_case_duration)
         self.median_case_duration1_total = days_hours_minutes(mcd1_t)
-        self.median_case_duration1_pct = mcd1_p
+        self.median_case_duration1_pct = get_pct(mcd1_p)
         self.median_case_duration2_total = days_hours_minutes(mcd2_t)
-        self.median_case_duration2_pct = mcd2_p
+        self.median_case_duration2_pct = get_pct(mcd2_p)
 
     def get_comparison(self):
         return {
