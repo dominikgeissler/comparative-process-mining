@@ -156,6 +156,12 @@ class Metrics(View):
     second_id = 14
 
     def get(self, request):
+        """
+        log, log2: two selected event logs to be compared
+        Metrics calculation for comparative process mining via
+        ComparisonMetrics(log.pm4py_log(), log2.pm4py_log())
+        rendering of analyzed metrics for presentation in metrics.html
+        """
         log = Log.objects.get(id=self.first_id)
         log2 = Log.objects.get(id=self.second_id)
         metrics = ComparisonMetrics(log.pm4py_log(), log2.pm4py_log())
