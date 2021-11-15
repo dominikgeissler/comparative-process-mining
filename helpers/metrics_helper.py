@@ -13,6 +13,9 @@ def days_hours_minutes(total_seconds):
         + str(minutes) + "m "\
         + str(seconds) + "s"
 
+# Calculates and returns the comparative metrics regarding the
+# difference between two event logs in total and percentage(pct):
+
 
 def get_total_pct(result_case1, result_case2):
     total = result_case1 - result_case2
