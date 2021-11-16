@@ -48,4 +48,4 @@
     └── select_logs.html
 ````
 # Further information
-*We use the [PEP-8](https://www.python.org/dev/peps/pep-0008/) coding convention.
+* We use the [PEP-8](https://www.python.org/dev/peps/pep-0008/) coding convention.
