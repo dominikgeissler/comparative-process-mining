@@ -152,8 +152,6 @@ class ManageLogs(View):
 
 class Metrics(View):
     template_name = "metrics.html"
-    first_id = 15
-    second_id = 14
 
     def get(self, request):
         """
@@ -162,8 +160,21 @@ class Metrics(View):
         ComparisonMetrics(log.pm4py_log(), log2.pm4py_log())
         rendering of analyzed metrics for presentation in metrics.html
         """
-        log = Log.objects.get(id=self.first_id)
-        log2 = Log.objects.get(id=self.second_id)
+
+        first_id = request.GET['id1']
+        second_id = request.GET['id2']
+        try:
+            first_id = int(first_id)
+            second_id = int(second_id)
+        except ValueError:
+            return render(request, self.template_name, {'data': 'gib ids'})
+            
+        try:
+            log = Log.objects.get(id=first_id)
+            log2 = Log.objects.get(id=second_id)
+        except Log.DoesNotExist:
+            return render(request, self.template_name, {'data': 'Log with given ids do not exist'})
+
         metrics = ComparisonMetrics(log.pm4py_log(), log2.pm4py_log())
         return render(
             request, self.template_name, {

@@ -14,7 +14,7 @@ from pm4py import discover_directly_follows_graph
 from pm4py import get_event_attribute_values
 from helpers.dfg_helper import convert_dfg_to_dict
 from helpers.g6_helpers import dfg_dict_to_g6
-from helpers.metrics_helper import days_hours_minutes, get_total_pct
+from helpers.metrics_helper import days_hours_minutes, get_total_pct, get_pct
 from django.forms.models import model_to_dict
 
 
@@ -148,7 +148,7 @@ class LogMetrics(models.Model):
         """
         Explanation of the calculation:
         First, with "for trace in self.log" get the different traces in the event log.
-        Second, with "len(trace)" calculated the number of events 
+        Second, with "len(trace)" calculated the number of events
         (via the length of the trace) in every trace.
         Third, with "sum(...)" sum up all the number of events of all traces.
         """
@@ -171,7 +171,7 @@ class LogMetrics(models.Model):
             avg_case_duration = self.total_case_duration / self.no_cases
         self.avg_case_duration = avg_case_duration
         """Average Case Duration"""
-        
+
         median_case_duration = (
             case_statistics.get_median_caseduration(
                 self.log, parameters={
@@ -209,7 +209,7 @@ class ComparisonMetrics(models.Model):
         self.metrics1 = LogMetrics(log1)
         self.metrics2 = LogMetrics(log2)
         """Initailize self.metrics2, self.metrics2 to compare metrcis of both event logs"""
-        
+
         self.no_cases1_total, no_cases1_pct = get_total_pct(
             self.metrics1.no_cases, self.metrics2.no_cases)
         self.no_cases1_pct = get_pct(no_cases1_pct)

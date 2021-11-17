@@ -29,4 +29,4 @@ def get_pct(metric):
     Calculates and returns the percentage value of a handed over metric
     Accuracy: 2 decimal places
     """
-    return str(round(metric*100, 2)) + "%"
+    return str(round(metric * 100, 2)) + "%"
