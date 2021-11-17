@@ -160,21 +160,27 @@ class Metrics(View):
         ComparisonMetrics(log.pm4py_log(), log2.pm4py_log())
         rendering of analyzed metrics for presentation in metrics.html
         """
-
+        # get ids from query params
         first_id = request.GET['id1']
         second_id = request.GET['id2']
+        
+        # try parse to int
         try:
             first_id = int(first_id)
             second_id = int(second_id)
         except ValueError:
+            # ids are no ints -> return
             return render(request, self.template_name, {'data': 'gib ids'})
-            
+        
+        # try accessing the logs with given ids
         try:
             log = Log.objects.get(id=first_id)
             log2 = Log.objects.get(id=second_id)
         except Log.DoesNotExist:
+            # log(s) with id does not exist
             return render(request, self.template_name, {'data': 'Log with given ids do not exist'})
 
+        # compare the two logs
         metrics = ComparisonMetrics(log.pm4py_log(), log2.pm4py_log())
         return render(
             request, self.template_name, {
