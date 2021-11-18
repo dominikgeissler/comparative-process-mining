@@ -136,11 +136,26 @@ class ManageLogs(View):
         context = {}
         # we use a hidden field 'action' to determine if the post is used to
         # delete a log or upload a new one
-        if request.POST['action'] == 'delete':
+        if request.POST['action'] == 'handle_log':
             if not request.POST.getlist('pk'):
                 return render(
                     request, self.template_name, {
                         'logs': Log.objects.all(), 'error': 'Please select a log'})
+            if 'view_log' in request.POST:
+                pk = request.POST.getlist('pk')
+                if len(pk) > 1:
+                    return render(request, self.template_name, {'logs': Log.objects.all(), 'error': "Please select only one log"})    
+                pk = int(pk[0])
+                handler = LogObjectHandler(Log.objects.get(id=pk))
+                dfg = handler.generate_dfg()
+                res = dfg_dict_to_g6(convert_dfg_to_dict(dfg))
+                data = json.dumps(res)
+                return render(request, 'graph.html', {'div_id': 'left', 'data': data})
+
+                
+
+                
+            
             pks = request.POST.getlist('pk')
             logs = Log.objects.filter(pk__in=pks)
             for log in logs:

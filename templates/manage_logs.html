@@ -9,7 +9,7 @@
 
 {% if logs %}
 <form method="post">
-    <input type="hidden" name="action" value="delete"> 
+    <input type="hidden" name="action" value="handle_log"> 
     <div class="form-group">
         {% csrf_token %}
         <h4>Uploaded Logs:</h1>
@@ -19,7 +19,8 @@
             {% endfor %}
         </select>
     </div>
-    <button class="btn btn-danger" type="submit">Delete</button>
+    <button name ="delete" class="btn btn-danger" type="submit">Delete</button>
+    <button name="view_log" class="btn btn-success" >View Log</button>
 </form>
 {% else %}
         <p>No logs uploaded</p>

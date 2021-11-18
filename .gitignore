@@ -11,8 +11,9 @@ node_modules
 # ---
 #
 
-# Testdaten bzw Userdaten werden nicht versioniert
+# test / user data doesn't need to be versioned
 /media/logs/*
+# keep for folder structure
 !/media/logs/.gitkeep
 
 # Byte-compiled / optimized / DLL files
