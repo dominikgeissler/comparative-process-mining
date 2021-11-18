@@ -128,6 +128,8 @@ class ManageLogs(View):
         # we use a hidden field 'action' to determine if the post is used to
         # delete a log or upload a new one
         if request.POST['action'] == 'delete':
+            if not request.POST.getlist('pk'):
+                return render(request, self.template_name, {'logs': Log.objects.all(), 'error': 'Something went wrong'})
             pks = request.POST.getlist('pk')
             logs = Log.objects.filter(pk__in=pks)
             for log in logs:
@@ -142,6 +144,8 @@ class ManageLogs(View):
             # remove the log out of the database
             logs.delete()
         elif request.POST['action'] == 'upload':
+            if not request.FILES:
+                return render(request, self.template_name, {'logs': Log.objects.all(), 'error': 'Please add a log'})
             # get the log file from file form
             file = request.FILES['log_file']
             # validate the extension
