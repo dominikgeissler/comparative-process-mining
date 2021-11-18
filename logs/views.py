@@ -106,21 +106,30 @@ class ManageLogs(View):
 
     def get(self, request, *args, **kwars):
         """returns all uploaded log files"""
-        error=""
+        error = ""
         # get logs from database
         logs = Log.objects.all()
 
         # get logs from local storage
-        local_logs = [basename(log) for log in listdir(settings.EVENT_LOG_URL) if isfile(join(settings.EVENT_LOG_URL, log))]
+        local_logs = [
+            basename(log) for log in listdir(
+                settings.EVENT_LOG_URL) if isfile(
+                join(
+                    settings.EVENT_LOG_URL,
+                    log))]
 
         # get all logs from database which are not locally represented
-        discrepancy_logs = [log.filename() for log in logs if log.filename() not in local_logs]
+        discrepancy_logs = [log.filename()
+                            for log in logs if log.filename() not in local_logs]
 
         # give error message (later -> delete)
         if discrepancy_logs:
-            error = "These logs were not found in the local storage: " + "\n".join(discrepancy_logs)
+            error = "These logs were not found in the local storage: " + \
+                "\n".join(discrepancy_logs)
 
-        return render(request, self.template_name, {'logs': logs, 'error': error})
+        return render(
+            request, self.template_name, {
+                'logs': logs, 'error': error})
 
     def post(self, request, *args, **kwars):
         """either uploads or delete a already uploaded log"""
@@ -129,7 +138,9 @@ class ManageLogs(View):
         # delete a log or upload a new one
         if request.POST['action'] == 'delete':
             if not request.POST.getlist('pk'):
-                return render(request, self.template_name, {'logs': Log.objects.all(), 'error': 'Something went wrong'})
+                return render(
+                    request, self.template_name, {
+                        'logs': Log.objects.all(), 'error': 'Please select a log'})
             pks = request.POST.getlist('pk')
             logs = Log.objects.filter(pk__in=pks)
             for log in logs:
@@ -145,7 +156,9 @@ class ManageLogs(View):
             logs.delete()
         elif request.POST['action'] == 'upload':
             if not request.FILES:
-                return render(request, self.template_name, {'logs': Log.objects.all(), 'error': 'Please add a log'})
+                return render(
+                    request, self.template_name, {
+                        'logs': Log.objects.all(), 'error': 'Please add a log'})
             # get the log file from file form
             file = request.FILES['log_file']
             # validate the extension
@@ -181,7 +194,7 @@ class Metrics(View):
         # get ids from query params
         first_id = request.GET['id1']
         second_id = request.GET['id2']
-        
+
         # try parse to int
         try:
             first_id = int(first_id)
@@ -189,14 +202,16 @@ class Metrics(View):
         except ValueError:
             # ids are no ints -> return
             return render(request, self.template_name, {'data': 'gib ids'})
-        
+
         # try accessing the logs with given ids
         try:
             log = Log.objects.get(id=first_id)
             log2 = Log.objects.get(id=second_id)
         except Log.DoesNotExist:
             # log(s) with id does not exist
-            return render(request, self.template_name, {'data': 'Log with given ids do not exist'})
+            return render(
+                request, self.template_name, {
+                    'data': 'Log with given ids do not exist'})
 
         # compare the two logs
         metrics = ComparisonMetrics(log.pm4py_log(), log2.pm4py_log())
