@@ -1,4 +1,5 @@
 # URLconf
+from genericpath import isfile
 from django.http.response import JsonResponse
 from django.shortcuts import render
 from django.views.generic.base import TemplateView, View
@@ -6,9 +7,9 @@ from .models import Log, LogObjectHandler, ComparisonMetrics
 from helpers.g6_helpers import dfg_dict_to_g6
 from helpers.dfg_helper import convert_dfg_to_dict
 import json
-from os import remove
+from os import remove, listdir
 import errno
-from os.path import join
+from os.path import join, basename
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator
@@ -105,8 +106,21 @@ class ManageLogs(View):
 
     def get(self, request, *args, **kwars):
         """returns all uploaded log files"""
+        error=""
+        # get logs from database
         logs = Log.objects.all()
-        return render(request, self.template_name, {'logs': logs})
+
+        # get logs from local storage
+        local_logs = [basename(log) for log in listdir(settings.EVENT_LOG_URL) if isfile(join(settings.EVENT_LOG_URL, log))]
+
+        # get all logs from database which are not locally represented
+        discrepancy_logs = [log.filename() for log in logs if log.filename() not in local_logs]
+
+        # give error message (later -> delete)
+        if discrepancy_logs:
+            error = "These logs were not found in the local storage: " + "\n".join(discrepancy_logs)
+
+        return render(request, self.template_name, {'logs': logs, 'error': error})
 
     def post(self, request, *args, **kwars):
         """either uploads or delete a already uploaded log"""
