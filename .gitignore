@@ -13,6 +13,7 @@ node_modules
 
 # Testdaten bzw Userdaten werden nicht versioniert
 /media/logs/*
+!/media/logs/.gitkeep
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
