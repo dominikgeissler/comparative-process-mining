@@ -10,42 +10,12 @@
 
 ## Project structure
 ````
-├── Dockerfile
-├── README.md
-├── cpm
-│   ├── asgi.py
-│   ├── settings.py
-│   ├── urls.py
-│   └── wsgi.py
-│
-├── helpers
-│   ├── dfg_helper.py
-│   ├── g6_helpers.py
-│   └── metrics_helper.py
-├── logs
-│   ├── admin.py
-│   ├── apps.py
-│   ├── models.py
-│   ├── tests.py
-│   ├── urls.py
-│   └── views.py
-├── manage.py
-├── media
-├── requirements.txt
-├── static
-│   ├── css
-│   ├── img
-│   └── js
-└── templates
-    ├── base.html
-    ├── compare.html
-    ├── graph.html
-    ├── home.html
-    ├── manage_logs.html
-    ├── metrics.html
-    ├── navigation.html
-    ├── select_comparisons.html
-    └── select_logs.html
+├── cpm         Django settings
+├── helpers     Help functions
+├── logs        Main project
+├── media       saved logs
+├── static      css / js / img
+└── templates   HTML templates
 ````
 # Further information
 * We use the [PEP-8](https://www.python.org/dev/peps/pep-0008/) coding convention.
