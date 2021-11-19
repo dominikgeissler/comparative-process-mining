@@ -151,10 +151,6 @@ class ManageLogs(View):
                 res = dfg_dict_to_g6(convert_dfg_to_dict(dfg))
                 data = json.dumps(res)
                 return render(request, 'graph.html', {'div_id': 'left', 'data': data})
-
-                
-
-                
             
             pks = request.POST.getlist('pk')
             logs = Log.objects.filter(pk__in=pks)

@@ -6,7 +6,7 @@ from .views import Metrics, Home, ManageLogs, SelectLogs, CompareLogs
 urlpatterns = [
     path('', Home.as_view()),
     path('manage', ManageLogs.as_view()),
-    path('select_comparisons', TemplateView.as_view(
+    path('comp', TemplateView.as_view(
         template_name='select_comparisons.html')),
     path('select_logs', SelectLogs.as_view()),
     path('compare', CompareLogs.as_view()),
