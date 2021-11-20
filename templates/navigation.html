@@ -1,23 +1,25 @@
-{% with url_name=request.resolver_match.url_name %}
+{% with request.path as url %}
 {% load static %}
+{% url 'home_view' as home %}
+{% url 'manage_view' as manage %}
+{% url 'select_comp_view' as compare %}
 <nav class="nav nav-pills navbar navbar-expand-lg navbar-light bg-light">
     <a class="navbar-brand" href="/">
         <img src="{% static '/img/RWTH_logo.png' %}" width="102" height="28" alt="">
       </a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
-    </button>
-  
+    </button>    
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
         <li class="nav-item">
-          <a class="nav-link" href="/">Home</a>
+          <a class="nav-link {% if url == home %}active{% endif %}" href="/">Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="/comp">Compare</a>
+          <a class="nav-link {% if url == compare %}active{% endif %}" href="/comp">Compare</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="/manage">Manage</a>
+          <a class="nav-link {% if url == manage %}active{% endif %}" href="/manage">Manage</a>
         </li>
       </ul>
     </div>
