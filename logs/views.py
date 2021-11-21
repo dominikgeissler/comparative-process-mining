@@ -73,7 +73,8 @@ class CompareLogs(TemplateView):
     def get(self, request, *args, **kwars):
         """returns the logs selected by the user and the rendered graph"""
         # extract the pks/ids from the query url
-        ids = [51, 52, 53]
+        nr_of_comparisons = int(request.GET['nr_of_comparisons'])
+        ids = [request.GET[f'log{i}'] for i in range(1, nr_of_comparisons + 1)]
         logs = [Log.objects.get(pk=id) for id in ids]
         return render(request, self.template_name, {"logs": logs})
 
