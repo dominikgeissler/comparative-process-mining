@@ -181,18 +181,17 @@ class LogMetrics(models.Model):
         """Median Case Duration"""
 
 
-"""
-def get_metrics(self):
-    return {
-        'no_cases': self.no_cases,
-        'no_events': self.no_events,
-        'no_variants': self.no_variants,
-        'avg_case_duration': self.avg_case_duration,
-        'median_case_duration': self.median_case_duration,
-        'total_case_duration': self.total_case_duration
-    }
-"""
-"""get_metrics(self) -> return values for rendering (only for test purposes)"""
+
+    def get_metrics(self):
+        return {
+            'no_cases': self.no_cases,
+            'no_events': self.no_events,
+            'no_variants': self.no_variants,
+            'avg_case_duration': self.avg_case_duration,
+            'median_case_duration': self.median_case_duration,
+            'total_case_duration': self.total_case_duration
+        }
+#get_metrics(self) -> return values for rendering (only for test purposes)"""
 
 
 class ComparisonMetrics(models.Model):
@@ -267,28 +266,16 @@ class ComparisonMetrics(models.Model):
     def get_comparison(self):
         """return of values for rendering"""
         return {
-            'no_cases1_total': self.no_cases1_total,
-            'no_cases2_total': self.no_cases2_total,
-            'no_cases1_pct': self.no_cases1_pct,
-            'no_cases2_pct': self.no_cases2_pct,
-            'no_events1_total': self.no_events1_total,
-            'no_events2_total': self.no_events2_total,
-            'no_events1_pct': self.no_events1_pct,
-            'no_events2_pct': self.no_events2_pct,
-            'no_variants1_total': self.no_variants1_total,
-            'no_variants2_total': self.no_variants2_total,
-            'no_variants1_pct': self.no_variants1_pct,
-            'no_variants2_pct': self.no_variants2_pct,
-            'total_case_duration1_total': self.total_case_duration1_total,
-            'total_case_duration2_total': self.total_case_duration2_total,
-            'total_case_duration1_pct': self.total_case_duration1_pct,
-            'total_case_duration2_pct': self.total_case_duration2_pct,
-            'avg_case_duration1_total': self.avg_case_duration1_total,
-            'avg_case_duration2_total': self.avg_case_duration2_total,
-            'avg_case_duration1_pct': self.avg_case_duration1_pct,
-            'avg_case_duration2_pct': self.avg_case_duration2_pct,
-            'median_case_duration1_total': self.median_case_duration1_total,
-            'median_case_duration2_total': self.median_case_duration2_total,
-            'median_case_duration1_pct': self.median_case_duration1_pct,
-            'median_case_duration2_pct': self.median_case_duration2_pct
+            'no_cases_total': [self.no_cases1_total, self.no_cases2_total],
+            'no_cases_pct': [self.no_cases1_pct, self.no_cases2_pct ],
+            'no_events_total': [self.no_events1_total, self.no_events2_total],
+            'no_events_pct': [self.no_events1_pct, self.no_events2_pct],
+            'no_variants_total': [self.no_variants1_total, self.no_variants2_total],
+            'no_variants_pct': [self.no_variants1_pct, self.no_variants2_pct],
+            'total_case_duration_total': [self.total_case_duration1_total, self.total_case_duration2_total],
+            'total_case_duration_pct': [self.total_case_duration1_pct, self.total_case_duration2_pct],
+            'avg_case_duration_total': [self.avg_case_duration1_total, self.avg_case_duration2_total],
+            'avg_case_duration_pct': [self.avg_case_duration1_pct, self.avg_case_duration2_pct],
+            'median_case_duration_total': [self.median_case_duration1_total, self.median_case_duration2_total],
+            'median_case_duration_pct': [self.median_case_duration1_pct, self.median_case_duration2_pct] 
         }

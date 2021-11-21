@@ -1,21 +1,36 @@
 {% extends 'base.html' %}
+
 {% load static %}
-
+{% load extra_tags %}
 {% block content %}
-
-    <script src="https://gw.alipayobjects.com/os/lib/antv/g6/4.3.11/dist/g6.min.js"></script>
-    <script type="module">
-        import {drawGraph} from 'static/js/drawGraph.js'
-        $(()=> js_data['graphs'].forEach((graph, counter)=>drawGraph(`log_graph${counter+1}`,graph)))  
-    </script>
-
+ <table>
+    <thead>
+        <tr>
+        {% for log in logs %}
+            <th>
+                {{log.log_name}}
+            </th>
+        {% endfor %}
+        </tr>
+    </thead>
+    <tr>
     {% for log in logs %}
-    <div id="log_div{{forloop.counter}}">
-        {{log.log_name}}
-        {{log.properties}}
-        <div id="log_graph{{forloop.counter}}">
-            {# hier wird der graph später gerendert #}
-        </div>
-    </div>
+        <td>
+            {% block graph{{forloop.counter0}} %}
+            {% include 'graph.html' with div_id=forloop.counter0 data=log|get_graph %}
+            {% endblock %}
+        </td>
     {% endfor %}
+    </tr>
+    <tr>
+        {% for log in logs %}
+            <td>
+            {% block metrics{{forloop.counter0}} %}
+            {% include 'metrics.html' with name=log.log_name data=log|get_metrics %}
+            {% endblock %}
+            </td>
+        {% endfor %}
+        </tr>
+</table>
+
 {% endblock %}

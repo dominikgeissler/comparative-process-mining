@@ -1,8 +1,16 @@
-{% extends 'base.html' %}
 {% load static %}
 {% block content %}
 
-{% if data %}
-<p>{{data}}</p>
-{% endif %}
+<table class="table table-striped">
+    <thead class="thead-dark">
+        {{name}}
+    </thead>
+    {% for key,value in data.items %}
+    <tr>
+        <td>
+            {{key}}: {{value}}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
 {% endblock %}

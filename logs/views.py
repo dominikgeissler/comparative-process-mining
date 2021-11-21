@@ -3,7 +3,7 @@ from genericpath import isfile
 from django.http.response import JsonResponse
 from django.shortcuts import render
 from django.views.generic.base import TemplateView, View
-from .models import Log, LogObjectHandler, ComparisonMetrics
+from .models import Log, LogObjectHandler, ComparisonMetrics, LogMetrics
 from helpers.g6_helpers import dfg_dict_to_g6
 from helpers.dfg_helper import convert_dfg_to_dict
 import json
@@ -67,21 +67,15 @@ class CompareLogs(TemplateView):
     Comparison page
     used to compare different event logs
     """
+    # template_name = 'compare.html'
     template_name = 'compare.html'
 
     def get(self, request, *args, **kwars):
         """returns the logs selected by the user and the rendered graph"""
         # extract the pks/ids from the query url
-        nr_of_comparisons = int(request.GET['nr_of_comparisons'])
-        pks = [request.GET[f'log{i}'] for i in range(1, nr_of_comparisons + 1)]
-        logs = [LogObjectHandler(Log.objects.get(pk=pk)).to_dict()
-                for pk in pks]
-
-        js_data = {'graphs': [log['g6'] for log in logs]}
-        js_data = json.dumps(js_data)
-        return render(
-            request, self.template_name, {
-                'logs': logs, 'js_data': js_data})
+        ids = [51,52,53]
+        logs = [Log.objects.get(pk=id) for id in ids]
+        return render(request, self.template_name, {"logs": logs})
 
 
 class SelectLogs(TemplateView):
