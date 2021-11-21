@@ -180,8 +180,6 @@ class LogMetrics(models.Model):
         self.median_case_duration = median_case_duration
         """Median Case Duration"""
 
-
-
     def get_metrics(self):
         return {
             'no_cases': self.no_cases,
@@ -191,7 +189,7 @@ class LogMetrics(models.Model):
             'median_case_duration': self.median_case_duration,
             'total_case_duration': self.total_case_duration
         }
-#get_metrics(self) -> return values for rendering (only for test purposes)"""
+# get_metrics(self) -> return values for rendering (only for test purposes)"""
 
 
 class ComparisonMetrics(models.Model):
@@ -267,7 +265,7 @@ class ComparisonMetrics(models.Model):
         """return of values for rendering"""
         return {
             'no_cases_total': [self.no_cases1_total, self.no_cases2_total],
-            'no_cases_pct': [self.no_cases1_pct, self.no_cases2_pct ],
+            'no_cases_pct': [self.no_cases1_pct, self.no_cases2_pct],
             'no_events_total': [self.no_events1_total, self.no_events2_total],
             'no_events_pct': [self.no_events1_pct, self.no_events2_pct],
             'no_variants_total': [self.no_variants1_total, self.no_variants2_total],
@@ -277,5 +275,5 @@ class ComparisonMetrics(models.Model):
             'avg_case_duration_total': [self.avg_case_duration1_total, self.avg_case_duration2_total],
             'avg_case_duration_pct': [self.avg_case_duration1_pct, self.avg_case_duration2_pct],
             'median_case_duration_total': [self.median_case_duration1_total, self.median_case_duration2_total],
-            'median_case_duration_pct': [self.median_case_duration1_pct, self.median_case_duration2_pct] 
+            'median_case_duration_pct': [self.median_case_duration1_pct, self.median_case_duration2_pct]
         }
