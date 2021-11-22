@@ -54,9 +54,9 @@ export const drawGraph =  (containerID, data)=>{
                     formatText(model) {
                         const cfg = model.conf;
                         const text = [];
-                        cfg.forEach((row) => {
-                            text.push(row.label + ':' + row.value + '<br>');
-                        });
+                        Array.prototype.forEach.call(cfg, (row) => {
+                            text.push(row.label + ':' + row.value + '<br>')
+                        })
                         return text.join('\n');
                     },
                     offset: 30,
