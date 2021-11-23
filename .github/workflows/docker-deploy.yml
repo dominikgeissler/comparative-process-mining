@@ -6,32 +6,26 @@ on:
   workflow_dispatch:
   
 jobs:
-  build-docker:
+  login:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      
-      - name: Log in
-        env:
-          username: |
-            ${{ secrets.AZURE_USERNAME }}
-          password: |
-            ${{ secrets.AZURE_PASSWORD }}
-        run: |
-          docker login -u "${username}" -p "${password}"
+      -
+        name: Login to ACR
+        uses: docker/login-action@v1
+        with:
+          registry: ${{ secrets.AZURE_URL }}
+          username: ${{ secrets.AZURE_USERNAME }}
+          password: ${{ secrets.AZURE_PASSWORD }}
 
       - name: Build docker image
-        env:
-          url: |
-            ${{ secrets.AZURE_URL }}
+        env: 
+          url: ${{ secrets.AZURE_URL }}
         run: | 
           docker build . --file Dockerfile --tag "${url}/cpm"
       
       - name: Upload image
         env:
-          url: |
-            ${{ secrets.AZURE_URL }}
-        run: | 
-          docker push "${url}/cpm"
+          url: ${{ secrets.AZURE_URL }}
+        run: docker push "${url}/cpm"
         
     
