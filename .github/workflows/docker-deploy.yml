@@ -8,23 +8,25 @@ on:
 jobs:
   build-docker:
     runs-on: ubuntu-latest
-    environment: azurecr
-    env:
-      AZURE_USERNAME:${{ secrets.AZURE_USERNAME }}
-      AZURE_PASSWORD:${{ secrets.AZURE_PASSWORD }}
-      AZURE_URL:${{ secrets.AZURE_URL }}
     steps:
       - uses: actions/checkout@v2
       
       - name: Log in
+        with:
+          username: ${{ secrets.AZURE_USERNAME }}
+          password: ${{ secrets.AZURE_PASSWORD }}
         run: |
-          docker login -u "%AZURE_USERNAME%" -p "%AZURE_PASSWORD%"
+          docker login -u "${username}" -p "${password}"
 
       - name: Build docker image
+        with:
+          url: ${{ secrets.AZURE_URL }}
         run: | 
-          docker build . --file Dockerfile --tag "%AZURE_URL%/cpm"
+          docker build . --file Dockerfile --tag "${url}/cpm"
       
       - name: Upload image
-        run: docker push "%AZURE_URL%/cpm"
+        with:
+          url: ${{ secrets.AZURE_URL }}
+        run: docker push "${url}/cpm"
         
     
