@@ -13,10 +13,10 @@ jobs:
       
       - uses: azure/docker-login@v1
         with:
-          login-server: ${{ secrets.AZURE_URL }}
+          login-server: dominik.azurecr.io
           username: ${{ secrets.AZURE_USERNAME }}
           password: ${{ secrets.AZURE_PASSWORD }}
 
       - run: |
-          docker build . -t ${login-server}/cpm:${{ github.sha }}
-          docker push ${login-server}/cpm:${{ github.sha }}
+          docker build . -t dominik.azurecr.io/cpm:${{ github.sha }}
+          docker push dominik.azurecr.io/cpm:${{ github.sha }}
