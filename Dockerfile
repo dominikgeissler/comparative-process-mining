@@ -32,5 +32,4 @@ COPY . ${DockerHOME}
 EXPOSE 8000
 
 # start django server
-# CMD ["python3", "manage.py", "runserver", "0.0.0.0:8000"]
-CMD ["/bin/bash", "-c", "--", "while true; do sleep 30; done"]
+CMD ["python3", "manage.py", "runserver", "0.0.0.0:8000"]
