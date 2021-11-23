@@ -1,0 +1,24 @@
+name: deploy-docker
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+  
+jobs:
+  build-docker:
+    runs-on: ubuntu-latest
+    environment: azurecr
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Log in
+        run: docker login -u ${{ secrets.AZURE_USERNAME }} -p ${{ secrets.AZURE_PASSWORD }}
+
+      - name: Build docker image
+        run: docker build . --file Dockerfile --tag ${{ secrets.AZURE_URL }}/cpm
+      
+      - name: Upload image
+        run: docker push ${{ secrets.AZURE_URL }}/cpm
+        
+    
