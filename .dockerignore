@@ -1,10 +1,9 @@
 env
 .vscode
-.github
+.git
 cpm.yaml
 Dockerfile
 README.md
 __pycache__
 *.pyc
 *.css.map
-.gitkeep
