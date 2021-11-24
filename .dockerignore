@@ -1,9 +1,19 @@
+# git
+**/.git
+.github
+.gitignore
+
+# python
+__pycache__
+*.pyc
+
+# bootstrap
+*.css.map
+
+# project related
 env
 .vscode
-.git
 cpm.yaml
 Dockerfile
 README.md
-__pycache__
-*.pyc
-*.css.map
+.dockerignore
