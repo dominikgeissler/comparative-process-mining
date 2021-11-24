@@ -24,3 +24,4 @@ def get_graph(log):
             dfg_dict_to_g6(
                 convert_dfg_to_dict(
                     LogObjectHandler(log).generate_dfg()))))
+
