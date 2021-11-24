@@ -6,12 +6,6 @@ from helpers.dfg_helper import convert_dfg_to_dict
 
 register = template.Library()
 
-
-@register.filter
-def index(indexable, i):
-    return indexable[i]
-
-
 @register.filter
 def get_metrics(log):
     return LogMetrics(log.pm4py_log()).get_metrics()
@@ -20,8 +14,6 @@ def get_metrics(log):
 @register.filter
 def get_graph(log):
     return json.dumps(
-        highlight_nonstandard_activities(
-            dfg_dict_to_g6(
-                convert_dfg_to_dict(
-                    LogObjectHandler(log).generate_dfg()))))
-
+        dfg_dict_to_g6(
+            convert_dfg_to_dict(
+                LogObjectHandler(log).generate_dfg())))
