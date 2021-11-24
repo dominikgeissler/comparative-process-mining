@@ -42,3 +42,36 @@ def dfg_dict_to_g6(dfg_dict):
         'edges': edges,
         'nodes': nodes,
     }
+
+
+def highlight_nonstandard_activities(g6_graph):
+    """
+    Highlight non-standard activities in dfg/g6-graph
+    """
+    from logs.models import Log, LogObjectHandler
+    import json
+    from helpers.dfg_helper import convert_dfg_to_dict
+
+    # Change code below and compare only with selected logs
+    logs = Log.objects.all()
+
+    for log in logs:
+
+        other_g6_graph = dfg_dict_to_g6(
+            convert_dfg_to_dict(
+                LogObjectHandler(log).generate_dfg()))
+
+        for node in g6_graph['nodes']:
+            if find_node_in_g6(node['name'], other_g6_graph):
+                node['isUnique'] = 'False'
+            else:
+                node['isUnique'] = 'True'
+
+    return g6_graph
+
+
+def find_node_in_g6(node_name, other_g6_graph):
+    for node in other_g6_graph['nodes']:
+        if node['name'] == node_name:
+            return True
+    return False
