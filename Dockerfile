@@ -1,35 +1,14 @@
-# image
-FROM pm4py/pm4py-core:latest
+FROM python:3.9-buster as base
 
-# ----
-# set enviroment variables
-# ----
-ENV DockerHOME=/home/app/webapp
+FROM base as builder
+RUN mkdir /install
+WORKDIR /install
+COPY requirements.txt /requirements.txt
+RUN pip install --upgrade pip && \
+pip install --target=/install -r /requirements.txt
 
-# https://docs.python.org/3/using/cmdline.html#envvar-PYTHONDONTWRITEBYTECODE
-ENV PYTHONDONTWRITEBYTECODE 1
-
-# https://docs.python.org/3/using/cmdline.html#envvar-PYTHONUNBUFFERED
-ENV PYTHONUNBUFFERED 1
-# ----
-
-# create path
-RUN mkdir -p ${DockerHOME}
-
-# set as workdir
-WORKDIR ${DockerHOME}
-
-COPY requirements.txt ${DockerHOME}
-
-# update pip and install dependencies
-RUN pip install --upgrade pip \
-&& pip install -r requirements.txt
-
-# copy current files to created work directory
-COPY . ${DockerHOME}
-
-# open django port
-EXPOSE 8000
-
-# start django server
-CMD ["python3", "manage.py", "runserver", "0.0.0.0:8000"]
+FROM base
+COPY --from=builder /install /usr/local/lib/python3.9
+COPY . /app
+WORKDIR /app
+CMD ["/bin/bash", "-c", "--", "while true; do sleep 30; done"]
