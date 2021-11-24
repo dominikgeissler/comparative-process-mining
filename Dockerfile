@@ -11,4 +11,4 @@ FROM base
 COPY --from=builder /install /usr/local/lib/python3.9
 COPY . /app
 WORKDIR /app
-CMD ["/bin/bash", "-c", "--", "while true; do sleep 30; done"]
+CMD ["python3", "manage.py", "runserver", "0.0.0.0:8000"]
