@@ -168,7 +168,7 @@ class LogMetrics(models.Model):
         if self.no_cases <= 0:
             avg_case_duration = 0
         else:
-            avg_case_duration = self.total_case_duration / self.no_cases
+            avg_case_duration = (sum(all_case_durations)) / self.no_cases
         self.avg_case_duration = days_hours_minutes(avg_case_duration)
         """Average Case Duration"""
 
