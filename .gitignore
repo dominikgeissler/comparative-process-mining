@@ -16,9 +16,6 @@ node_modules
 # keep for folder structure
 !/media/logs/.gitkeep
 
-# kubernetes
-cpm.yaml
-
 *.css.map
 # Byte-compiled / optimized / DLL files
 __pycache__/

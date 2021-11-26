@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build-deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -20,3 +20,19 @@ jobs:
       - run: |
           docker build . -t dominik.azurecr.io/cpm:${{ github.sha }}
           docker push dominik.azurecr.io/cpm:${{ github.sha }}
+      - uses: Azure/k8s-create-secret@v1
+        with:
+            cointainer-registry-url: dominik.azurecr.io
+            container-registry-username: ${{ secrets.AZURE_USERNAME }}
+            container-registry-password: ${{ secrets.AZURE_PASSWORD }}
+            secret-name: regcred
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: Azure/k8s-deploy@v1.4
+        with:
+          images: 'dominik.azurecr.io/cpm:${{ github.sha }}'
+          kubectl-version: latest
+          manifest: cpm.yaml
+          imagepullsecrets: |
+            regcred
