@@ -11,5 +11,6 @@ FROM base
 COPY --from=builder /install /usr/local/lib/python3.9
 COPY . /app
 WORKDIR /app
-ENTRYPOINT ["/app/entrypoint.sh"]
+RUN chmod +x ./entrypoint.sh
+ENTRYPOINT ["./entrypoint.sh"]
 CMD ["python3", "manage.py", "runserver", "0.0.0.0:8000"]
