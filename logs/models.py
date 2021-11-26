@@ -162,14 +162,14 @@ class LogMetrics(models.Model):
             self.log, parameters={
                 case_statistics.Parameters.TIMESTAMP_KEY: "time:timestamp"})
         """PM4Py library function"""
-        self.total_case_duration = (sum(all_case_durations))
+        self.total_case_duration = days_hours_minutes(sum(all_case_durations))
         """Total Case Duration"""
 
         if self.no_cases <= 0:
             avg_case_duration = 0
         else:
-            avg_case_duration = self.total_case_duration / self.no_cases
-        self.avg_case_duration = avg_case_duration
+            avg_case_duration = (sum(all_case_durations)) / self.no_cases
+        self.avg_case_duration = days_hours_minutes(avg_case_duration)
         """Average Case Duration"""
 
         median_case_duration = (
@@ -177,7 +177,7 @@ class LogMetrics(models.Model):
                 self.log, parameters={
                     case_statistics.Parameters.TIMESTAMP_KEY: "time:timestamp"}))
         """PM4Py library function"""
-        self.median_case_duration = median_case_duration
+        self.median_case_duration = days_hours_minutes(median_case_duration)
         """Median Case Duration"""
 
     def get_metrics(self):
