@@ -30,7 +30,7 @@ jobs:
 
       - uses: Azure/k8s-create-secret@v1
         with:
-            cointainer-registry-url: dominik.azurecr.io
+            container-registry-url: dominik.azurecr.io
             container-registry-username: ${{ secrets.AZURE_USERNAME }}
             container-registry-password: ${{ secrets.AZURE_PASSWORD }}
             secret-name: regcred
