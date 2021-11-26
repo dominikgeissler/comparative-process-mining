@@ -39,6 +39,6 @@ jobs:
         with:
           images: 'dominik.azurecr.io/cpm:${{ github.sha }}'
           kubectl-version: latest
-          manifest: ${{ secrets.K8S_CONFIG }}
+          manifests: cpm.yaml
           imagepullsecrets: |
             regcred

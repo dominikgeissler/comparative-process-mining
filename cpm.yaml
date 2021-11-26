@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cpm
+spec:
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      app: cpm
+  template:
+    metadata:
+      labels:
+        app: cpm
+    spec:
+      containers:
+      - name: cpm
+        image: dominik.azurecr.io/cpm
+        imagePullPolicy: Always
+        env:
+        - name: DJANGO_DEBUG
+          valueFrom:
+            secretKeyRef:
+              name: django-debug
+              key: debug
+        - name: DJANGO_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: django-secret-key
+              key: secret-key
+      imagePullSecrets:
+      - name: regcred
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: cpm
+spec:
+  selector:
+    app: cpm
+  ports:
+  - port: 8000
+    targetPort: 8000
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: myingress
+  labels:
+    name: myingress
+spec:
+  rules:
+  - host: dg.optiplanning.com
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: cpm
+            port: 
+              number: 8000
