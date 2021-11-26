@@ -21,18 +21,19 @@ jobs:
           docker build . -t dominik.azurecr.io/cpm:${{ github.sha }}
           docker push dominik.azurecr.io/cpm:${{ github.sha }}
 
+      - uses: azure/k8s-set-context@v1
+        with:
+          method: service-account
+          k8s-url: ${{ secrets.API_URL }}
+          k8s-secret: ${{ secrets.K8S_AUTH_TOKEN }}
+
+
       - uses: Azure/k8s-create-secret@v1
         with:
             cointainer-registry-url: dominik.azurecr.io
             container-registry-username: ${{ secrets.AZURE_USERNAME }}
             container-registry-password: ${{ secrets.AZURE_PASSWORD }}
             secret-name: regcred
-
-      - uses: azure/k8s-set-context@v1
-        with:
-          method: service-account
-          k8s-url: ${{ secrets.API_URL }}
-          k8s-secret: ${{ secrets.K8S_AUTH_TOKEN }}
 
       - uses: Azure/k8s-deploy@v1.4
         with:
