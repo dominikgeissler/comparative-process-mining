@@ -12,6 +12,7 @@ __pycache__
 
 # project related
 env
+tests
 .vscode
 cpm.yaml
 Dockerfile

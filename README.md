@@ -15,7 +15,8 @@
 ├── logs        Main project
 ├── media       saved logs
 ├── static      css / js / img
-└── templates   HTML templates
+├── templates   HTML templates
+└── tests       (Unit) Tests
 ````
 # Further information
 * We use the [PEP-8](https://www.python.org/dev/peps/pep-0008/) coding convention.
