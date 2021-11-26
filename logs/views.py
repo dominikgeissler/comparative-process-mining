@@ -67,7 +67,7 @@ class CompareLogs(TemplateView):
     Comparison page
     used to compare different event logs
     """
-    # template_name = 'compare.html'
+    
     template_name = 'compare.html'
 
     def get(self, request, *args, **kwars):
