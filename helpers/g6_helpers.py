@@ -44,7 +44,7 @@ def dfg_dict_to_g6(dfg_dict):
     }
 
 
-def highlight_nonstandard_activities(g6_graph):
+def highlight_nonstandard_activities(g6_graph, reference):
     """
     Highlight non-standard activities in dfg/g6-graph
     """
@@ -52,7 +52,7 @@ def highlight_nonstandard_activities(g6_graph):
     import json
     from helpers.dfg_helper import convert_dfg_to_dict
 
-    log = Log.objects.get(pk=1)
+    log = reference
     """
     The log that is chosen first on the manage side or first uploaded 
     will be the reference log for all comparisons

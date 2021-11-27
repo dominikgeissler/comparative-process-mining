@@ -6,6 +6,7 @@ from helpers.dfg_helper import convert_dfg_to_dict
 
 register = template.Library()
 
+
 @register.filter
 def get_metrics(log, reference):
     if log == reference:
@@ -15,9 +16,12 @@ def get_metrics(log, reference):
 
 
 @register.filter
-def get_graph(log):
+def get_graph(log, reference):
     return json.dumps(
         highlight_nonstandard_activities(
             dfg_dict_to_g6(
                 convert_dfg_to_dict(
-                    LogObjectHandler(log).generate_dfg()))))
+                    LogObjectHandler(log).generate_dfg())), 
+                    dfg_dict_to_g6(
+                        convert_dfg_to_dict(
+                            LogObjectHandler(reference).generate_dfg()))))

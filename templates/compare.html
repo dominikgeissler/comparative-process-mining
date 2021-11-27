@@ -17,7 +17,7 @@
     {% for log in logs %}
         <td>
             {% block graph{{forloop.counter0}} %}
-            {% include 'graph.html' with div_id=forloop.counter0 data=log|get_graph %}
+            {% include 'graph.html' with div_id=forloop.counter0 data=log|get_graph:logs.0 %}
             {% endblock %}
         </td>
     {% endfor %}
