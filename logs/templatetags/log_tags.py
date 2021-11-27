@@ -1,5 +1,5 @@
 from django import template
-from ..models import LogMetrics, LogObjectHandler, Log
+from ..models import LogMetrics, ComparisonMetrics, LogObjectHandler, Log
 import json
 from helpers.g6_helpers import dfg_dict_to_g6, highlight_nonstandard_activities
 from helpers.dfg_helper import convert_dfg_to_dict
