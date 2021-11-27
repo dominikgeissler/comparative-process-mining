@@ -52,20 +52,21 @@ def highlight_nonstandard_activities(g6_graph):
     import json
     from helpers.dfg_helper import convert_dfg_to_dict
 
-    # Change code below and compare only with selected logs
-    logs = Log.objects.all()
+    log = Log.objects.get(pk=1)
+    """
+    The log that is chosen first on the manage side or first uploaded 
+    will be the reference log for all comparisons
+    """
 
-    for log in logs:
+    other_g6_graph = dfg_dict_to_g6(
+        convert_dfg_to_dict(
+            LogObjectHandler(log).generate_dfg()))
 
-        other_g6_graph = dfg_dict_to_g6(
-            convert_dfg_to_dict(
-                LogObjectHandler(log).generate_dfg()))
-
-        for node in g6_graph['nodes']:
-            if find_node_in_g6(node['name'], other_g6_graph):
-                node['isUnique'] = 'False'
-            else:
-                node['isUnique'] = 'True'
+    for node in g6_graph['nodes']:
+        if find_node_in_g6(node['name'], other_g6_graph):
+            node['isUnique'] = 'False'
+        else:
+            node['isUnique'] = 'True'
 
     return g6_graph
 
