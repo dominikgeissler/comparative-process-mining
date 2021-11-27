@@ -28,40 +28,6 @@ class Home(View):
         """returns the home page template"""
         return render(request, self.template_name)
 
-
-class LogsJsonView(View):
-    """
-    Help view for getting the json response
-    """
-
-    def get(self, request, *args, **kwars):
-        """returns results based on the id"""
-        if 'id' in request.GET:
-            id = int(request.GET['id'])
-            return JsonResponse(
-                {"result": [Log.objects.filter(id=id)[0].to_dict()]})
-        else:
-            return JsonResponse(
-                {"result": [log.to_dict() for log in Log.objects.all()]})
-
-
-class CompareLogsJson(View):
-    """
-    Comparison page
-    similar to CompareLogs, but returns a JsonResponse instead of the graphs
-    """
-
-    def get(self, request, *args, **kwars):
-        """returns the logs selected by the user in Json format"""
-        # extract the pks/ids from the query url
-        nr_of_comparisons = int(request.GET['nr_of_comparisons'])
-        pks = [request.GET[f'log{i}'] for i in range(1, nr_of_comparisons + 1)]
-        logs = [LogObjectHandler(Log.objects.get(pk=pk)).to_dict()
-                for pk in pks]
-
-        return JsonResponse({'logs': logs})
-
-
 class CompareLogs(TemplateView):
     """
     Comparison page
@@ -101,55 +67,33 @@ class ManageLogs(View):
 
     def get(self, request, *args, **kwars):
         """returns all uploaded log files"""
-        error = ""
         # get logs from database
         logs = Log.objects.all()
 
-        # get logs from local storage
-        local_logs = [
-            basename(log) for log in listdir(
-                settings.EVENT_LOG_URL) if isfile(
-                join(
-                    settings.EVENT_LOG_URL,
-                    log))]
+        # get shadow objects
+        not_local_logs = Log.objects.filter(pk__in=[
+            log.pk for log in logs if not isfile(log.log_file.path)
+        ])
 
-        # get all logs from database which are not locally represented
-        discrepancy_logs = [log.filename()
-                            for log in logs if log.filename() not in local_logs]
-
-        # give error message (later -> delete)
-        if discrepancy_logs:
-            error = "These logs were not found in the local storage: " + \
-                "\n".join(discrepancy_logs)
+        # if any exist, delete them and refresh
+        if not_local_logs:
+            not_local_logs.delete()
+            logs = Log.objects.all()
 
         return render(
             request, self.template_name, {
-                'logs': logs, 'error': error})
+                'logs': logs})
 
     def post(self, request, *args, **kwars):
         """either uploads or delete a already uploaded log"""
         context = {}
         # we use a hidden field 'action' to determine if the post is used to
         # delete a log or upload a new one
-        if request.POST['action'] == 'handle_log':
+        if request.POST['action'] == 'delete':
             if not request.POST.getlist('pk'):
                 return render(
                     request, self.template_name, {
                         'logs': Log.objects.all(), 'error': 'Please select a log'})
-            if 'view_log' in request.POST:
-                pk = request.POST.getlist('pk')
-                if len(pk) > 1:
-                    return render(
-                        request, self.template_name, {
-                            'logs': Log.objects.all(), 'error': "Please select only one log"})
-                pk = int(pk[0])
-                handler = LogObjectHandler(Log.objects.get(id=pk))
-                dfg = handler.generate_dfg()
-                res = dfg_dict_to_g6(convert_dfg_to_dict(dfg))
-                data = json.dumps(res)
-                return render(
-                    request, 'graph.html', {
-                        'div_id': 'left', 'data': data})
 
             pks = request.POST.getlist('pk')
             logs = Log.objects.filter(pk__in=pks)
@@ -164,7 +108,7 @@ class ManageLogs(View):
                         raise
             # remove the log out of the database
             logs.delete()
-        elif request.POST['action'] == 'upload':
+        else: 
             if not request.FILES:
                 return render(
                     request, self.template_name, {
