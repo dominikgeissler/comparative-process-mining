@@ -14,19 +14,15 @@ def days_hours_minutes(total_seconds):
         + str(seconds) + "s"
 
 
-def get_total_pct(result_case1, result_case2):
-    """
-    Calculates and returns the comparative metrics regarding the
-    difference between two event logs in total and percentage(pct)
-    """
-    total = result_case1 - result_case2
-    pct = total / (result_case1 + result_case2)
-    return total, pct
+def get_difference(res1, res2):
+    if res1-res2 < 0:
+        return str(res1) + " (" + str(res1-res2) + ")"
+    else:
+        return str(res1) + " (+" + str(res1-res2) + ")"
 
 
-def get_pct(metric):
-    """
-    Calculates and returns the percentage value of a handed over metric
-    Accuracy: 2 decimal places
-    """
-    return str(round(metric * 100, 2)) + "%"
+def get_difference_days_hrs_min(res1, res2):
+    if res1-res2 < 0:
+        return days_hours_minutes(res1) + " (" + days_hours_minutes(res1-res2) + ")"
+    else:
+        return days_hours_minutes(res1) + " (+" + days_hours_minutes(res1-res2) + ")"
