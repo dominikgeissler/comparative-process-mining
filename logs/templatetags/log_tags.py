@@ -11,7 +11,7 @@ def get_metrics(log, reference):
     if log == reference:
         return LogMetrics(log.pm4py_log()).get_metrics()
     else:
-        return ComparisonMetrics(reference.pm4py_log(), log.pm4py_log()).get_comparison()
+        return ComparisonMetrics(log.pm4py_log(), reference.pm4py_log()).get_comparison()
 
 
 @register.filter
