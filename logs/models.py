@@ -51,7 +51,7 @@ class Log(models.Model):
         return log
     
     def __eq__(self, other):
-        return cmp(self.log_file, other.log_file)
+        return cmp(self.log_file.path, other.log_file.path)
 
 
 class LogObjectHandler():
