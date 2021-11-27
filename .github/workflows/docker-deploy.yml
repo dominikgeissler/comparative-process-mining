@@ -32,3 +32,5 @@ jobs:
           kubectl-version: latest
           manifests: |
             cpm.yaml
+          imagepullsecrets: |
+            regcred
