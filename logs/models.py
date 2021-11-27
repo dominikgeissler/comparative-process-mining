@@ -14,7 +14,7 @@ from pm4py import discover_directly_follows_graph
 from pm4py import get_event_attribute_values
 from helpers.dfg_helper import convert_dfg_to_dict
 from helpers.g6_helpers import dfg_dict_to_g6
-from helpers.metrics_helper import days_hours_minutes, get_total_pct, get_pct
+from helpers.metrics_helper import days_hours_minutes, get_difference, get_difference_days_hrs_min
 from django.forms.models import model_to_dict
 
 
@@ -207,73 +207,26 @@ class ComparisonMetrics(models.Model):
         self.metrics2 = LogMetrics(log2)
         """Initailize self.metrics2, self.metrics2 to compare metrcis of both event logs"""
 
-        self.no_cases1_total, no_cases1_pct = get_total_pct(
-            self.metrics1.no_cases, self.metrics2.no_cases)
-        self.no_cases1_pct = get_pct(no_cases1_pct)
-        self.no_cases2_total, no_cases2_pct = get_total_pct(
-            self.metrics2.no_cases, self.metrics1.no_cases)
-        self.no_cases2_pct = get_pct(no_cases2_pct)
-        """Total and Percentage Difference Number of Cases"""
-
-        self.no_events1_total, no_events1_pct = get_total_pct(
-            self.metrics1.no_events, self.metrics2.no_events)
-        self.no_events1_pct = get_pct(no_events1_pct)
-        self.no_events2_total, no_events2_pct = get_total_pct(
-            self.metrics2.no_events, self.metrics1.no_events)
-        self.no_events2_pct = get_pct(no_events2_pct)
-        """Total and Percentage Difference Number of Events"""
-
-        self.no_variants1_total, no_variants1_pct = get_total_pct(
-            self.metrics1.no_variants, self.metrics2.no_variants)
-        self.no_variants1_pct = get_pct(no_variants1_pct)
-        self.no_variants2_total, no_variants2_pct = get_total_pct(
-            self.metrics2.no_variants, self.metrics1.no_variants)
-        self.no_variants2_pct = get_pct(no_variants2_pct)
-        """Total and Percentage Difference Number of Variants"""
-
-        tcd1_t, tcd1_p = get_total_pct(
-            self.metrics1.total_case_duration, self.metrics2.total_case_duration)
-        tcd2_t, tcd2_p = get_total_pct(
-            self.metrics2.total_case_duration, self.metrics1.total_case_duration)
-        self.total_case_duration1_total = days_hours_minutes(tcd1_t)
-        self.total_case_duration1_pct = get_pct(tcd1_p)
-        self.total_case_duration2_total = days_hours_minutes(tcd2_t)
-        self.total_case_duration2_pct = get_pct(tcd2_p)
-        """Total and Percentage Difference Total Case Duration"""
-
-        acd1_t, acd1_p = get_total_pct(
-            self.metrics1.avg_case_duration, self.metrics2.avg_case_duration)
-        acd2_t, acd2_p = get_total_pct(
-            self.metrics2.avg_case_duration, self.metrics1.avg_case_duration)
-        self.avg_case_duration1_total = days_hours_minutes(acd1_t)
-        self.avg_case_duration1_pct = get_pct(acd1_p)
-        self.avg_case_duration2_total = days_hours_minutes(acd2_t)
-        self.avg_case_duration2_pct = get_pct(acd2_p)
-        """Total and Percentage Difference Average Case Duration"""
-
-        mcd1_t, mcd1_p = get_total_pct(
-            self.metrics1.median_case_duration, self.metrics2.median_case_duration)
-        mcd2_t, mcd2_p = get_total_pct(
-            self.metrics2.median_case_duration, self.metrics1.median_case_duration)
-        self.median_case_duration1_total = days_hours_minutes(mcd1_t)
-        self.median_case_duration1_pct = get_pct(mcd1_p)
-        self.median_case_duration2_total = days_hours_minutes(mcd2_t)
-        self.median_case_duration2_pct = get_pct(mcd2_p)
-        """Total and Percentage Difference Median Case Duration"""
-
     def get_comparison(self):
         """return of values for rendering"""
         return {
-            'no_cases_total': [self.no_cases1_total, self.no_cases2_total],
-            'no_cases_pct': [self.no_cases1_pct, self.no_cases2_pct],
-            'no_events_total': [self.no_events1_total, self.no_events2_total],
-            'no_events_pct': [self.no_events1_pct, self.no_events2_pct],
-            'no_variants_total': [self.no_variants1_total, self.no_variants2_total],
-            'no_variants_pct': [self.no_variants1_pct, self.no_variants2_pct],
-            'total_case_duration_total': [self.total_case_duration1_total, self.total_case_duration2_total],
-            'total_case_duration_pct': [self.total_case_duration1_pct, self.total_case_duration2_pct],
-            'avg_case_duration_total': [self.avg_case_duration1_total, self.avg_case_duration2_total],
-            'avg_case_duration_pct': [self.avg_case_duration1_pct, self.avg_case_duration2_pct],
-            'median_case_duration_total': [self.median_case_duration1_total, self.median_case_duration2_total],
-            'median_case_duration_pct': [self.median_case_duration1_pct, self.median_case_duration2_pct]
+            'no_cases': get_difference(self.metrics1.no_cases, self.metrics2.no_cases),
+            'no_events': get_difference(self.metrics1.no_events, self.metrics2.no_events),
+            'no_variants': get_difference(self.metrics1.no_variants, self.metrics2.no_variants),
+            'avg_case_duration': get_difference_days_hrs_min(self.metrics1.avg_case_duration,
+                                                             self.metrics2.avg_case_duration),
+            'median_case_duration': get_difference_days_hrs_min(self.metrics1.median_case_duration,
+                                                                self.metrics2.median_case_duration),
+            'total_case_duration': get_difference_days_hrs_min(self.metrics1.total_case_duration,
+                                                               self.metrics2.total_case_duration)
         }
+
+    def check_log_equality(self):
+        if self.metrics1.no_cases == self.metrics2.no_cases:
+            if self.metrics1.no_events == self.metrics2.no_events:
+                if self.metrics1.no_variants == self.metrics2.no_variants:
+                    if self.metrics1.avg_case_duration == self.metrics2.avg_case_duration:
+                        if self.metrics1.median_case_duration == self.metrics2.median_case_duration:
+                            if self.metrics1.total_case_duration == self.metrics2.total_case_duration:
+                                return True
+        return False
