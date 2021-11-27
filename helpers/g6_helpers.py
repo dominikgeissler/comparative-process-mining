@@ -56,10 +56,8 @@ def highlight_nonstandard_activities(g6_graph, reference):
     will be the reference log for all comparisons
     """
 
-    other_g6_graph = reference
-
     for node in g6_graph['nodes']:
-        if find_node_in_g6(node['name'], other_g6_graph):
+        if find_node_in_g6(node['name'], reference):
             node['isUnique'] = 'False'
         else:
             node['isUnique'] = 'True'
@@ -67,8 +65,8 @@ def highlight_nonstandard_activities(g6_graph, reference):
     return g6_graph
 
 
-def find_node_in_g6(node_name, other_g6_graph):
-    for node in other_g6_graph['nodes']:
+def find_node_in_g6(node_name, reference):
+    for node in reference['nodes']:
         if node['name'] == node_name:
             return True
     return False
