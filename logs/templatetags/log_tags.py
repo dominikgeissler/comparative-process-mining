@@ -14,6 +14,7 @@ def get_metrics(log):
 @register.filter
 def get_graph(log):
     return json.dumps(
-        dfg_dict_to_g6(
-            convert_dfg_to_dict(
-                LogObjectHandler(log).generate_dfg())))
+        highlight_nonstandard_activities(
+            dfg_dict_to_g6(
+                convert_dfg_to_dict(
+                    LogObjectHandler(log).generate_dfg()))))
