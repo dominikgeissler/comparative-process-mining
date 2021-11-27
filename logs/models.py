@@ -226,4 +226,4 @@ class ComparisonMetrics(models.Model):
         }
 
     def check_log_equality(self):
-        return self.metrics1.log == self.metrics.log
+        return self.metrics1.log == self.metrics2.log
