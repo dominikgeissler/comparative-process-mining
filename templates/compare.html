@@ -26,7 +26,7 @@
         {% for log in logs %}
             <td>
             {% block metrics{{forloop.counter0}} %}
-            {% include 'metrics.html' with name=log.log_name data=log|get_metrics %}
+            {% include 'metrics.html' with name=log.log_name data=log|get_metrics:logs[0] %}
             {% endblock %}
             </td>
         {% endfor %}
