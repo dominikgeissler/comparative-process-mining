@@ -16,6 +16,7 @@ from helpers.dfg_helper import convert_dfg_to_dict
 from helpers.g6_helpers import dfg_dict_to_g6
 from helpers.metrics_helper import days_hours_minutes, get_difference, get_difference_days_hrs_min
 from django.forms.models import model_to_dict
+from filecmp import cmp
 
 
 class Log(models.Model):
@@ -48,6 +49,9 @@ class Log(models.Model):
         else:
             log = xes_importer_factory.apply(self.log_file.path)
         return log
+    
+    def __eq__(self, other):
+        return cmp(self.log_file, other.log_file)
 
 
 class LogObjectHandler():
@@ -222,11 +226,4 @@ class ComparisonMetrics(models.Model):
         }
 
     def check_log_equality(self):
-        if self.metrics1.no_cases == self.metrics2.no_cases:
-            if self.metrics1.no_events == self.metrics2.no_events:
-                if self.metrics1.no_variants == self.metrics2.no_variants:
-                    if self.metrics1.avg_case_duration == self.metrics2.avg_case_duration:
-                        if self.metrics1.median_case_duration == self.metrics2.median_case_duration:
-                            if self.metrics1.total_case_duration == self.metrics2.total_case_duration:
-                                return True
-        return False
+        return self.metrics1.log == self.metrics.log
