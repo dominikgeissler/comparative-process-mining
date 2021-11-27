@@ -7,11 +7,11 @@ from helpers.dfg_helper import convert_dfg_to_dict
 register = template.Library()
 
 @register.filter
-def get_metrics(log, initial):
-    if initial == log:
-        return LogMetrics(initial.pm4py_log()).get_metrics()
+def get_metrics(log, reference):
+    if log == reference:
+        return LogMetrics(log.pm4py_log()).get_metrics()
     else:
-        return ComparisonMetrics(initial, log).get_comparison()
+        return ComparisonMetrics(reference.pm4py_log(), log.pm4py_log()).get_comparison()
 
 
 @register.filter
