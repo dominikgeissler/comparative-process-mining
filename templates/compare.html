@@ -3,13 +3,16 @@
 {% load static %}
 {% load log_tags %}
 {% block content %}
+
+{# maybe add dynamic reference? #}
 {% with reference=logs.0 %}
+
  <table class="table">
     <thead>
         <tr>
         {% for log in logs %}
             <th>
-                {{log.log_name}}
+                <span class="{% if log == reference %}selected {% else %} not-selected">{{log.log_name}}</span>
             </th>
         {% endfor %}
         </tr>
@@ -35,5 +38,11 @@ table {
     table-layout: fixed;
     width: 100%;
   }
+.selected {
+    color: green;
+}  
+.not-selected {
+    color: orange;
+}
 </style>
 {% endblock %}
