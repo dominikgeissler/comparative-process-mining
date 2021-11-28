@@ -3,15 +3,15 @@
 {% load static %}
 {% load log_tags %}
 {% block content %}
-
+{% with request.get_full_path as url %}
 {# maybe add dynamic reference? #}
-{% with reference=logs.0 %}
-
+{% with reference=logs|index:ref %}
  <table class="table">
     <thead>
         <tr>
         {% for log in logs %}
             <th>
+                <a href="{{url|create_ref_url:forloop.counter0}}">Select as ref</a>
                 <span class="{% if log == reference %} selected {% else %} not-selected {% endif %}">{{log.log_name}}</span>
             </th>
         {% endfor %}
@@ -32,6 +32,7 @@
         {% endfor %}
         </tr>
 </table>
+{% endwith %}
 {% endwith %}
 <style type="text/css">
 table {

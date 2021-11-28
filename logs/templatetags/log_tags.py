@@ -6,6 +6,13 @@ from helpers.dfg_helper import convert_dfg_to_dict
 
 register = template.Library()
 
+@register.filter
+def index(indexable, index):
+    return indexable[index]
+
+@register.filter
+def create_ref_url(url, ref):
+    return "&".join(url.strip().split("&")[0:-1]) + "&ref=" + str(ref)
 
 @register.filter
 def get_metrics(log, reference):

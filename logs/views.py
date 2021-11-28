@@ -41,8 +41,9 @@ class CompareLogs(TemplateView):
         # extract the pks/ids from the query url
         nr_of_comparisons = int(request.GET['nr_of_comparisons'])
         ids = [request.GET[f'log{i}'] for i in range(1, nr_of_comparisons + 1)]
+        ref = int(request.GET['ref'])
         logs = [Log.objects.get(pk=id) for id in ids]
-        return render(request, self.template_name, {"logs": logs})
+        return render(request, self.template_name, {"logs": logs, 'ref': ref})
 
 
 class SelectLogs(TemplateView):
