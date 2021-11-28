@@ -12,7 +12,7 @@
         <tr>
         {% for log in logs %}
             <th>
-                <span class="{% if log == reference %}selected {% else %} not-selected">{{log.log_name}}</span>
+                <span class="{% if log == reference %} selected {% else %} not-selected {% endif %}">{{log.log_name}}</span>
             </th>
         {% endfor %}
         </tr>
