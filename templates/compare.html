@@ -4,7 +4,8 @@
 {% load log_tags %}
 {% block content %}
 {% with request.get_full_path as url %}
-{# maybe add dynamic reference? #}
+
+{# reference log is returned as the position in the log array #}
 {% with reference=logs|index:ref %}
  <table class="table">
     <thead>

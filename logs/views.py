@@ -17,12 +17,11 @@ from django.core.validators import FileExtensionValidator
 # default
 
 
-class Home(View):
+class About(View):
     """
-    Home page
-    First page the user will visit after starting the server
+    User manual and further information
     """
-    template_name = 'home.html'
+    template_name = 'about.html'
 
     def get(self, request):
         """returns the home page template"""
