@@ -224,6 +224,3 @@ class ComparisonMetrics(models.Model):
             'total_case_duration': get_difference_days_hrs_min(self.metrics1.total_case_duration,
                                                                self.metrics2.total_case_duration)
         }
-
-    def check_log_equality(self):
-        return self.metrics1.log == self.metrics2.log

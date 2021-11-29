@@ -12,8 +12,9 @@
         <tr>
         {% for log in logs %}
             <th>
-                <a href="{{url|create_ref_url:forloop.counter0}}">Select as ref</a>
-                <span class="{% if log == reference %} selected {% else %} not-selected {% endif %}">{{log.log_name}}</span>
+                <a href="{{url|create_ref_url:forloop.counter0}}" class="{% if log == reference %} selected {% else %} not-selected {% endif %}">
+                {{log.log_name}}
+                </a>
             </th>
         {% endfor %}
         </tr>
@@ -40,11 +41,14 @@ table {
     table-layout: fixed;
     width: 100%;
   }
-.selected {
-    color: green;
-}  
-.not-selected {
-    color: orange;
-}
+
+  .selected {
+      color: rgb(137, 184, 45);
+
+  }
+  .not-selected {
+      color: #00529F;
+  }
+
 </style>
 {% endblock %}

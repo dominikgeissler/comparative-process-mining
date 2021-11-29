@@ -1,6 +1,7 @@
 {% load static %}
 {% block content %}
 
+{% load metrics_tags %}
 <table class="table table-striped">
     <thead class="thead-dark">
         {{name}}
@@ -8,9 +9,26 @@
     {% for key,value in data.items %}
     <tr>
         <td>
+        <!-- {{key}}:{% if value.1 %}{{value.0}} <span class="{% if '+' in value.1  %}positive{% elif '-' in value.1 %} negative {% endif %}">{{value.1}}</span> {% else %} {{value}} {% endif %} -->
+        
+        {% if value|is_list %}
+        {{key}}: {{value.0}} (<span class="{% if '+' in value.1 %} positive {% elif '-' in value.1 %} negative {% endif %}">{{value.1}}</span>)
+        {% else %}
             {{key}}: {{value}}
-        </td>
+        {% endif %}
+        </td>   
     </tr>
     {% endfor %}
 </table>
 {% endblock %}
+
+<style type="text/css">
+    .positive {
+        color: red;
+        font-weight: bold;
+    }
+    .negative {
+        color: green;
+        font-weight: bold;
+    }
+</style>

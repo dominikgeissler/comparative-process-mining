@@ -1,16 +1,10 @@
 # URLconf
 from genericpath import isfile
-from django.http.response import JsonResponse
 from django.shortcuts import render
 from django.views.generic.base import TemplateView, View
-from .models import Log, LogObjectHandler, ComparisonMetrics, LogMetrics
-from helpers.g6_helpers import dfg_dict_to_g6
-from helpers.dfg_helper import convert_dfg_to_dict
-import json
-from os import remove, listdir
+from .models import Log
+from os import remove
 import errno
-from os.path import join, basename
-from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator
 
@@ -58,6 +52,7 @@ class ManageLogs(View):
         logs = Log.objects.all()
 
         # get shadow objects
+        # (objects that are still in the database but not linked to a file)
         not_local_logs = Log.objects.filter(pk__in=[
             log.pk for log in logs if not isfile(log.log_file.path)
         ])
@@ -87,7 +82,7 @@ class ManageLogs(View):
             for log in logs:
                 try:
                     # remove local files in media/logs
-                    remove(join(settings.EVENT_LOG_URL, log.log_name))
+                    remove(log.log_file.path)
                 except OSError as e:
                     # if error is not FileNotFound, raise it
                     # otherwise ignore
