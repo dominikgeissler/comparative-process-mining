@@ -14,19 +14,6 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator
 
-# default
-
-
-class About(View):
-    """
-    User manual and further information
-    """
-    template_name = 'about.html'
-
-    def get(self, request):
-        """returns the home page template"""
-        return render(request, self.template_name)
-
 class CompareLogs(TemplateView):
     """
     Comparison page

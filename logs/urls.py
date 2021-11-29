@@ -1,10 +1,12 @@
 from django.urls import path
 from django.views.generic.base import TemplateView
-from .views import About, ManageLogs, SelectLogs, CompareLogs
+from .views import ManageLogs, SelectLogs, CompareLogs
 
 urlpatterns = [
     path('', ManageLogs.as_view(), name="manage_view"),
-    path('about', About.as_view(), name="about_view"),
+    path('about', TemplateView.as_view(
+        template_name="about.html"
+    ), name="about_view"),
     path('comp', TemplateView.as_view(
         template_name='select_comparisons.html'), name="select_comp_view"),
     path('select_logs', SelectLogs.as_view(), name="select_log_view"),
