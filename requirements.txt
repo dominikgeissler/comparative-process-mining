@@ -6,6 +6,7 @@ cycler==0.11.0
 decorator==4.4.2
 deprecation==2.1.0
 Django==3.2.9
+django-jux==1.0.2
 graphviz==0.18.2
 importlib-metadata==4.8.2
 intervaltree==3.1.0

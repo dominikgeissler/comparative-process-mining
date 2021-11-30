@@ -33,4 +33,4 @@ jobs:
       if: success() || failure()
       with:
         name: test-results
-        path: results.json
+        path: junit.xml

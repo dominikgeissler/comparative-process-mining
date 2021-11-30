@@ -125,3 +125,8 @@ EVENT_LOG_URL = join(MEDIA_ROOT, 'logs')
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+TEST_RUNNER = 'juxd.JUXDTestSuiteRunner'
+
+JUXD_FILENAME= join(BASE_DIR, 'junit.xml')
+
