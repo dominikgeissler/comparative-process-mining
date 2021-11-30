@@ -1,6 +1,6 @@
-# This is a basic workflow to help you get started with Actions
 
 name: test-reporter
+
 on:
   workflow_run: 
     workflows: ['django-test']
@@ -11,12 +11,9 @@ jobs:
   report:
     runs-on: ubuntu-latest
     steps:
-    - name: Download Artifacts
-      uses: actions/download-artifact@v2
+    - uses: dorny/test-reporter@v1
       with:
-        path: artifacts
-
-    - name: Publish
-      uses: EnricoMi/publish-unit-test-result-action@v1
-      with:
-        files: artifacts/*.xml
+        artifact: test-results
+        name: Result
+        path: '*.xml'
+        reporter: java-junit
