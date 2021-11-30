@@ -28,4 +28,17 @@ jobs:
     
     - run: |
         python manage.py test logs
+
+    - uses: action/upload-artifact@v2
+      if: success() || failure()
+      with:
+        name: test-results
+        path: results.json
+
+    - uses: dorny/test-reporter@v1
+      with:
+        artifact: test-results
+        name: Results
+        path: '*.json'
+        reporter: flutter-json       
       
