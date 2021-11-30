@@ -9,10 +9,9 @@
     {% for key,value in data.items %}
     <tr>
         <td>
-        <!-- {{key}}:{% if value.1 %}{{value.0}} <span class="{% if '+' in value.1  %}positive{% elif '-' in value.1 %} negative {% endif %}">{{value.1}}</span> {% else %} {{value}} {% endif %} -->
-        
         {% if value|is_list %}
-        {{key}}: {{value.0}} (<span class="{% if '+' in value.1 %} positive {% elif '-' in value.1 %} negative {% endif %}">{{value.1}}</span>)
+            {# render difference in color according to its sign #}
+            {{key}}: {{value.0}} (<span class="{% if '+' in value.1 %} positive {% elif '-' in value.1 %} negative {% endif %}">{{value.1}}</span>)
         {% else %}
             {{key}}: {{value}}
         {% endif %}
