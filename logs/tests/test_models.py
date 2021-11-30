@@ -1,5 +1,5 @@
-import unittests
-from django.tests import TestCase
+import unittest
+from django.test import TestCase
 from logs.models import Log, LogObjectHandler, LogMetrics, ComparisonMetrics
 
 class LogTestCase(TestCase):
