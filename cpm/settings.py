@@ -126,7 +126,4 @@ EVENT_LOG_URL = join(MEDIA_ROOT, 'logs')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-TEST_RUNNER = 'juxd.JUXDTestSuiteRunner'
-
-JUXD_FILENAME= join(BASE_DIR, 'junit.xml')
-
+TEST_RUNNER = 'xmlrunner.extra.djangotestrunner.XMLTestRunner'
