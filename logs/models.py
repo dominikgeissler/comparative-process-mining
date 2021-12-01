@@ -231,8 +231,5 @@ class LogFilter(models.Model):
     def __init__(self, log):
         self.log = log
 
-    def get_name(self):
-        return self.log.log_name
-
     def get_attributes(self):
         return get_all_event_attributes_from_log(self.log)
