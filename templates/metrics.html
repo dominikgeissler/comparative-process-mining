@@ -11,9 +11,9 @@
         <td>
         {% if value|is_list %}
             {# render difference in color according to its sign #}
-            {{key}}: {{value.0}} (<span class="{% if '+' in value.1 %} positive {% elif '-' in value.1 %} negative {% endif %}">{{value.1}}</span>)
+            {{key|key_resolve}}: {{value.0}} (<span class="{% if '+' in value.1 %} positive {% elif '-' in value.1 %} negative {% endif %}">{{value.1}}</span>)
         {% else %}
-            {{key}}: {{value}}
+            {{key|key_resolve}}: {{value}}
         {% endif %}
         </td>   
     </tr>
