@@ -9,16 +9,21 @@
 {% with reference=logs|index:ref %}
  <table class="table">
     <thead>
-        <tr>
+    {% for log in logs %}
+       <th>
+            {% include 'filter.html' with log=log %}
+       </th>
+    {% endfor %}
+    </thead>
+    <tr>
         {% for log in logs %}
-            <th>
+            <td>
                 <a href="{{url|create_ref_url:forloop.counter0}}" class="{% if log == reference %} selected {% else %} not-selected {% endif %}">
                 {{log.log_name}}
                 </a>
-            </th>
+            </td>
         {% endfor %}
         </tr>
-    </thead>
     <tr>
     {% for log in logs %}
         <td>
