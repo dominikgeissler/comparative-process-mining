@@ -1,10 +1,14 @@
 from django import template
-from ..models import LogMetrics, ComparisonMetrics, LogObjectHandler, Log
+from ..models import LogFilter, LogMetrics, ComparisonMetrics, LogObjectHandler, Log
 import json
 from helpers.g6_helpers import dfg_dict_to_g6, highlight_nonstandard_activities
 from helpers.dfg_helper import convert_dfg_to_dict
 
 register = template.Library()
+
+@register.filter
+def filter(log):
+    return LogFilter(log.pm4py_log())
 
 @register.filter
 def index(indexable, index):

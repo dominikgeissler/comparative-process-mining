@@ -18,6 +18,8 @@ from helpers.metrics_helper import days_hours_minutes, get_difference, get_diffe
 from django.forms.models import model_to_dict
 from filecmp import cmp
 
+from pm4py.statistics.attributes.log.get import get_all_event_attributes_from_log
+
 
 class Log(models.Model):
     """
@@ -224,3 +226,13 @@ class ComparisonMetrics(models.Model):
             'total_case_duration': get_difference_days_hrs_min(self.metrics1.total_case_duration,
                                                                self.metrics2.total_case_duration)
         }
+
+class LogFilter(models.Model):
+    def __init__(self, log):
+        self.log = log
+
+    def get_name(self):
+        return self.log.log_name
+
+    def get_attributes(self):
+        return get_all_event_attributes_from_log(self.log)
