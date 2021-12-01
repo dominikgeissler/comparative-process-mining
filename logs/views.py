@@ -1,5 +1,6 @@
 # URLconf
 from genericpath import isfile
+from django.http.response import JsonResponse
 from django.shortcuts import render
 from django.views.generic.base import TemplateView, View
 from .models import Log
@@ -24,6 +25,7 @@ class CompareLogs(TemplateView):
         ref = int(request.GET['ref'])
         logs = [Log.objects.get(pk=id) for id in ids]
         return render(request, self.template_name, {"logs": logs, 'ref': ref})
+    
 
 
 class SelectLogs(TemplateView):
@@ -115,3 +117,13 @@ class ManageLogs(View):
         context['logs'] = Log.objects.all()
         context['message'] = 'Upload successful' if request.POST['action'] == 'upload' else 'Successfuly deleted'
         return render(request, self.template_name, context)
+
+
+class FilterView(View):
+    """
+    Manage Logs page
+    used for uploading and deleting logs
+    """
+
+    def get(self, request, *args, **kwars):
+        return JsonResponse({"response": "hi"})

@@ -7,4 +7,25 @@
     <option value="{{forloop.counter0}}">{{attribute}}</option>
     {% endfor %}
 </select>
+
+<button id="sender">Click me</button>
+<p id="my-ret"></p>
+
+<script type="text/javascript">
+$("#sender").click(function() {
+    $.ajax( {
+        url: "{% url 'update_filter' %}",
+        data: {
+            'test': 'hello-world'
+        },
+        dataType: 'json',
+        success: function(data) {
+            document.getElementById('my-ret').innerHTML = data
+        }
+
+
+    })
+})
+</script>
+
 {% endblock %}
