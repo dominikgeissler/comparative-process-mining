@@ -11,7 +11,8 @@
     <thead>
     {% for log in logs %}
        <th>
-            {% include 'filter.html' with log=log|filter id=log.pk %}
+            {% unique_id_for_filter log.pk forloop.counter0 as id %}
+            {% include 'filter.html' with log=log|filter id=id%}
        </th>
     {% endfor %}
     </thead>

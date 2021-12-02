@@ -2,7 +2,6 @@
 {% load filter_tags %}
 {% block content %}
 
-{{id}}
 <select id="filter-select{{id}}">
     {% for attribute in log.get_attributes %}
     <option value="{{id}}-{{attribute}}">{{attribute}}</option>

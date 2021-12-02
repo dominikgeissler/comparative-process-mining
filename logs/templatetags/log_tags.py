@@ -6,6 +6,10 @@ from helpers.dfg_helper import convert_dfg_to_dict
 
 register = template.Library()
 
+@register.simple_tag
+def unique_id_for_filter(pk, forloopcounter):
+    return str(pk)+"-"+str(forloopcounter)
+
 @register.filter
 def filter(log):
     return LogFilter(log.pm4py_log())
