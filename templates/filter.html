@@ -2,25 +2,27 @@
 {% load filter_tags %}
 {% block content %}
 
-<select>
+{{id}}
+<select id="filter-select{{id}}">
     {% for attribute in log.get_attributes %}
-    <option value="{{forloop.counter0}}">{{attribute}}</option>
+    <option value="{{id}}-{{attribute}}">{{attribute}}</option>
     {% endfor %}
 </select>
 
-<button id="sender">Click me</button>
-<p id="my-ret"></p>
+<button id="sender-{{id}}">Click me</button>
+<p id="my-ret{{id}}"></p>
 
 <script type="text/javascript">
-$("#sender").click(function() {
+$("#sender-{{id}}").click(function() {
+    var data = document.getElementById("filter-select{{id}}")
     $.ajax( {
         url: "{% url 'update_filter' %}",
         data: {
-            'test': 'hello-world'
+            data: data.value
         },
         dataType: 'json',
         success: function(data) {
-            document.getElementById('my-ret').innerHTML = data
+            document.getElementById('my-ret{{id}}').innerHTML = data.response
         }
 
 

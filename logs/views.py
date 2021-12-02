@@ -126,4 +126,5 @@ class FilterView(View):
     """
 
     def get(self, request, *args, **kwars):
-        return JsonResponse({"response": "hi"})
+        data = request.GET['data']
+        return JsonResponse({"response": data})

@@ -11,7 +11,7 @@
     <thead>
     {% for log in logs %}
        <th>
-            {% include 'filter.html' with log=log|filter %}
+            {% include 'filter.html' with log=log|filter id=log.pk %}
        </th>
     {% endfor %}
     </thead>
