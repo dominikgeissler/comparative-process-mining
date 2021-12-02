@@ -13,11 +13,13 @@
 
 <script type="text/javascript">
 $("#sender-{{id}}").click(function() {
-    var data = document.getElementById("filter-select{{id}}")
+    var data = {
+        filter: document.getElementById("filter-select{{id}}").value
+    }
     $.ajax( {
         url: "{% url 'update_filter' %}",
         data: {
-            data: data.value
+            data: JSON.stringify(data)
         },
         dataType: 'json',
         success: function(data) {
