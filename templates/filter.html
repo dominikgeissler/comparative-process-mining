@@ -4,7 +4,7 @@
 <label for="range-{{id}}" id="label-range-{{id}}" class="form-label">100</label><br>
 <input min="0" max="100" value="100" type="range" id="range-{{id}}" onchange="updateSlider(this.value, '{{id}}')">
 <select id="filter-select{{id}}">
-    {% for attribute in log.get_attributes %}
+    {% for attribute in log.get_properties %}
     <option value="{{id}}-{{attribute}}">{{attribute}}</option>
     {% endfor %}
 </select>
@@ -21,7 +21,8 @@ function updateSlider(val, id) {
 }
 $("#sender-{{id}}").click(function() {
     var data = {
-        filter: document.getElementById("filter-select{{id}}").value
+        attribute: document.getElementById("filter-select{{id}}").value,
+        percentage_filter: document.getElementById("range-{{id}}").value
     }
     $.ajax( {
         url: "{% url 'update_filter' %}",

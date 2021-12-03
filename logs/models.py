@@ -13,36 +13,23 @@ from pm4py.statistics.traces.generic.log import case_statistics
 from pm4py import discover_directly_follows_graph
 from pm4py import get_event_attribute_values
 from helpers.dfg_helper import convert_dfg_to_dict
-from helpers.g6_helpers import dfg_dict_to_g6
+from helpers.g6_helpers import dfg_dict_to_g6, highlight_nonstandard_activities
 from helpers.metrics_helper import days_hours_minutes, get_difference, get_difference_days_hrs_min
 from django.forms.models import model_to_dict
 from filecmp import cmp
+import json
 
 from pm4py.statistics.attributes.log.get import get_all_event_attributes_from_log
 
 
 class Log(models.Model):
-    """
-    Model of a log file
-
-    Attributes:
-    log_file (linked file)
-    log_name (name of the log)
-
-    Functions:
-    filename() -> returns name of the log
-    pm4py_log() -> returns the converted log using the pm4py
-    and pandas libraries
-    """
     log_file = models.FileField(upload_to='logs')
     log_name = models.CharField(max_length=500)
 
     def filename(self):
-        """returns name of log"""
         return basename(self.log_file.name)
 
     def pm4py_log(self):
-        """returns converted log"""
         _, extension = splitext(self.log_file.path)
         if extension == ".csv":
             log = pd.read_csv(self.log_file.path, sep=",")
@@ -55,53 +42,15 @@ class Log(models.Model):
     def __eq__(self, other):
         return cmp(self.log_file.path, other.log_file.path)
 
+class LogObjectHandler(models.Model):
+    log_object = models.ForeignKey(Log,
+      on_delete=models.CASCADE)
+    filter = {}
 
-class LogObjectHandler():
-    """
-    Model of a log object handler
-    used for working with logs from the backend
-
-    Attributes:
-    log_object (a log model)
-    log (the converted log)
-
-    Functions:
-    __init__(log_object) -> sets the attributes according to the log_object
-
-    pm4py_log() -> returns the log attribute
-
-    pk() -> returns the primary key of the log
-
-    to_df() -> returns the date frame conversion of the log
-
-    get_properties() -> returns the properties of the log file
-
-    generate_dfg() -> returns the dfg of the log
-
-    g6() -> returns the g6 visualization of the log
-
-    to_dict() -> returns the log parsed into a dictionary
-    and adds the g6 visualization and properties
-    """
-    log_object = None
-    log = None
-
-    def __init__(self, log_object):
-        """creates new LogObjectHandler instance"""
-        self.log_object = log_object
-        self.log = log_object.pm4py_log()
-
-    def pm4py_log(self):
-        """returns parsed log"""
-        return self.log
-
-    def pk(self):
-        """returns logs primary key"""
-        return self.log_object.pk
 
     def to_df(self):
         """converts log to df"""
-        return log_to_data_frame.apply(self.log)
+        return log_to_data_frame.apply(self.pm4py_log())
 
     def get_properties(self):
         """returns properties of log"""
@@ -113,9 +62,18 @@ class LogObjectHandler():
             results[columName] = list(set(values_w_o_na))
         return results
 
-    def generate_dfg(self,
-                     percentage_most_freq_edges=100,
-                     type=dfg_discovery.Variants.FREQUENCY):
+    def pm4py_log(self):
+        return self.log_object.pm4py_log()
+
+    def log_name(self):
+        return self.log_object.log_name  
+
+    def generate_dfg(self):
+        if not self.filter:
+            percentage_most_freq_edges=100
+            type=dfg_discovery.Variants.FREQUENCY
+        else:
+            percentage_most_freq_edges= self.filter["percentage"]
         """generates the dfg of the log"""
         log = self.pm4py_log()
         dfg, sa, ea = discover_directly_follows_graph(log)
@@ -126,19 +84,88 @@ class LogObjectHandler():
             dfg, sa, ea, activities_count, percentage_most_freq_edges)
         return dfg
 
-    def g6(self):
-        """converts to g6"""
-        return dfg_dict_to_g6(convert_dfg_to_dict(self.generate_dfg()))
+    def metrics(self, reference=None):
+        metrics1 = LogMetrics(self.pm4py_log())
+        if reference and reference.log_object != self.log_object:
+            metrics2 = LogMetrics(reference.pm4py_log())
+            return Metrics([
+            get_difference(
+                getattr(metrics1, attr),
+                getattr(metrics2, attr)
+             )
+            if 'duration' not in attr 
+            else
+            get_difference_days_hrs_min(
+                getattr(metrics1, attr),
+                getattr(metrics2, attr))
+            for attr in Metrics.get_order()
+            ])
+        return Metrics([
+            getattr(metrics1, attr)
+         for attr in Metrics.get_order()])
 
-    def to_dict(self):
-        """converts to dictionary"""
-        ret = model_to_dict(self.log_object)
-        ret['g6'] = self.g6()
-        ret['properties'] = self.get_properties()
-        return ret
+    def graph(self, reference=None):
+        if reference and reference.log_object != self.log_object:
+            return json.dumps(
+                highlight_nonstandard_activities(
+                    dfg_dict_to_g6(
+                        convert_dfg_to_dict(
+                            self.generate_dfg()
+                        )
+                    ), 
+                    dfg_dict_to_g6(
+                        convert_dfg_to_dict(
+                            reference.generate_dfg()
+                        )
+                    )
+                )
+            )
+        return json.dumps(
+            dfg_dict_to_g6(
+                convert_dfg_to_dict(
+                    self.generate_dfg()
+                )
+            )
+        )
+
+    # set_filter(filter) -> set filter
+    # set_filter() -> reset filter
+    def set_filter(self, filter={}):
+        self.filter = filter
+
+    def get_filter(self):
+        return self.filter
 
 
-class LogMetrics(models.Model):
+class Metrics():
+    def __init__(self, metrics):
+        self.order = ["no_cases", 
+        "no_events", 
+        "no_variants", 
+        "avg_case_duration", 
+        "median_case_duration", 
+        "total_case_duration"]
+
+        for index, metric in enumerate(metrics):
+            setattr(self, self.order[index], metric)
+
+    def get_metrics(self):
+        return {
+            'no_cases': self.no_cases,
+            'no_variants': self.no_variants,
+            'avg_case_duration': self.avg_case_duration,
+            'median_case_duration': self.median_case_duration,
+            'total_case_duration': self.total_case_duration
+        }
+    def get_order():
+        return ["no_cases", 
+        "no_events", 
+        "no_variants", 
+        "avg_case_duration", 
+        "median_case_duration", 
+        "total_case_duration"]
+
+class LogMetrics():
     """
     Metrics for a single log
     get_metrics(self) -> return of values
@@ -185,44 +212,3 @@ class LogMetrics(models.Model):
         """PM4Py library function"""
         self.median_case_duration = median_case_duration
         """Median Case Duration"""
-
-    def get_metrics(self):
-        return {
-            'no_cases': self.no_cases,
-            'no_events': self.no_events,
-            'no_variants': self.no_variants,
-            'avg_case_duration': days_hours_minutes(self.avg_case_duration),
-            'median_case_duration': days_hours_minutes(self.median_case_duration),
-            'total_case_duration': days_hours_minutes(self.total_case_duration)
-        }
-# get_metrics(self) -> return values for rendering (only for test purposes)"""
-
-
-class ComparisonMetrics(models.Model):
-    """
-    Calculation of metrics regarding the comparison of two logs:
-    log1, log2: two handed over event logs (initialized via constructor).
-    self.metrics1, self.metrics2: Create new objects to calculate the metrics for each event log.
-    Afterwards, calculated all metrics and assign values to variables (still part of constructor).
-    All comparison metrics are calculated for the left and right processes. Plus, in total and pct.
-    get_comparison(self) -> return of values for rendering
-    """
-
-    def __init__(self, log1, log2):
-        self.metrics1 = LogMetrics(log1)
-        self.metrics2 = LogMetrics(log2)
-        """Initailize self.metrics2, self.metrics2 to compare metrcis of both event logs"""
-
-    def get_comparison(self):
-        """return of values for rendering"""
-        return {
-            'no_cases': get_difference(self.metrics1.no_cases, self.metrics2.no_cases),
-            'no_events': get_difference(self.metrics1.no_events, self.metrics2.no_events),
-            'no_variants': get_difference(self.metrics1.no_variants, self.metrics2.no_variants),
-            'avg_case_duration': get_difference_days_hrs_min(self.metrics1.avg_case_duration,
-                                                             self.metrics2.avg_case_duration),
-            'median_case_duration': get_difference_days_hrs_min(self.metrics1.median_case_duration,
-                                                                self.metrics2.median_case_duration),
-            'total_case_duration': get_difference_days_hrs_min(self.metrics1.total_case_duration,
-                                                               self.metrics2.total_case_duration)
-        }

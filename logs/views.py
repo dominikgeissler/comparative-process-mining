@@ -3,7 +3,7 @@ from genericpath import isfile
 from django.http.response import JsonResponse
 from django.shortcuts import render
 from django.views.generic.base import TemplateView, View
-from .models import Log
+from .models import Log, LogObjectHandler
 from os import remove
 import errno
 from django.core.exceptions import ValidationError
@@ -24,7 +24,17 @@ class CompareLogs(TemplateView):
         ids = [request.GET[f'log{i}'] for i in range(1, nr_of_comparisons + 1)]
         ref = int(request.GET['ref'])
         logs = [Log.objects.get(pk=id) for id in ids]
-        return render(request, self.template_name, {"logs": logs, 'ref': ref})
+        handlers_pk = []
+        for log in logs:
+            if LogObjectHandler.objects.filter(log_object=log).exists():
+                handler = LogObjectHandler.objects.get(log_object=log)
+            else:
+                handler = LogObjectHandler(log_object=log)
+                handler.save()
+            handlers_pk.append(handler.pk)
+        handlers = [LogObjectHandler.objects.get(pk=id) for id in handlers_pk]
+        return render(request, self.template_name, {"logs": handlers, 'ref': ref})
+
     
 
 
@@ -126,5 +136,14 @@ class FilterView(View):
     """
 
     def get(self, request, *args, **kwars):
-        data = request.GET['data']
-        return JsonResponse({"response": data})
+        import json
+        data = json.loads(request.GET['data'])
+        id,pos,attr = data["attribute"].strip().split("-")
+        perc_filter = data["percentage_filter"]
+        
+        handler = LogObjectHandler.objects.get(pk=id)
+        old_filter = handler.get_filter()
+        handler.set_filter({"percentage": int(perc_filter)})
+        new_filter = handler.get_filter()
+
+        return JsonResponse({"response": ["Old", str(old_filter), "New", str(new_filter)]})
