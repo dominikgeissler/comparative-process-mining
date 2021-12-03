@@ -1,7 +1,8 @@
 {% load static %}
 {% load filter_tags %}
 {% block content %}
-
+<label for="range-{{id}}" id="label-range-{{id}}" class="form-label">100</label><br>
+<input min="0" max="100" value="100" type="range" id="range-{{id}}" onchange="updateSlider(this.value, '{{id}}')">
 <select id="filter-select{{id}}">
     {% for attribute in log.get_attributes %}
     <option value="{{id}}-{{attribute}}">{{attribute}}</option>
@@ -12,6 +13,12 @@
 <p id="my-ret{{id}}"></p>
 
 <script type="text/javascript">
+document.addEventListener("DOMContentLoaded", function() {
+    document.getElementById("range-{{id}}").value = 100;
+})
+function updateSlider(val, id) {
+    document.getElementById("label-range-"+id).innerHTML = val
+}
 $("#sender-{{id}}").click(function() {
     var data = {
         filter: document.getElementById("filter-select{{id}}").value

@@ -226,10 +226,3 @@ class ComparisonMetrics(models.Model):
             'total_case_duration': get_difference_days_hrs_min(self.metrics1.total_case_duration,
                                                                self.metrics2.total_case_duration)
         }
-
-class LogFilter(models.Model):
-    def __init__(self, log):
-        self.log = log
-
-    def get_attributes(self):
-        return get_all_event_attributes_from_log(self.log)
