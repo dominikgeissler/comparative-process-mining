@@ -33,8 +33,7 @@ class CompareLogs(TemplateView):
                 handler.save()
             handlers_pk.append(handler.pk)
         handlers = [LogObjectHandler.objects.get(pk=id) for id in handlers_pk]
-        debug = [handler.__dict__ for handler in handlers]
-        return render(request, self.template_name, {"logs": handlers, 'ref': ref, "debug": debug})
+        return render(request, self.template_name, {"logs": handlers, 'ref': ref})
 
     
 
