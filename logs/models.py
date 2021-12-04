@@ -1,5 +1,6 @@
 from django.db import models
 from os.path import basename, splitext
+from django.db.models.fields.related import ForeignKey
 import pandas as pd
 from pm4py.objects.log.util import dataframe_utils
 from pm4py.objects.conversion.log import converter as log_converter
@@ -21,6 +22,7 @@ import json
 
 from pm4py.statistics.attributes.log.get import get_all_event_attributes_from_log
 
+# Attributes for metrics
 order = ["no_cases", 
         "no_events", 
         "no_variants", 
@@ -49,14 +51,22 @@ class Log(models.Model):
     def __eq__(self, other):
         return cmp(self.log_file.path, other.log_file.path)
 
+
+class Filter(models.Model):
+    percentage = models.FloatField()
+    
+    def set_attr(self, attr,value):
+        ret = [getattr(self, attr)]
+        setattr(self, attr, value)
+        ret += [getattr(self, attr)]
+        return ret
+
+
 class LogObjectHandler(models.Model):
     log_object = models.ForeignKey(Log,
       on_delete=models.CASCADE)
-
-
-    def __init__(self, *args, **kwargs):
-        super(LogObjectHandler, self).__init__(*args, **kwargs)
-        self.filter = {}
+    filter = models.OneToOneField(Filter,
+    on_delete=models.CASCADE, default=Filter.objects.create())
 
     def to_df(self):
         """converts log to df"""
@@ -137,8 +147,9 @@ class LogObjectHandler(models.Model):
 
     # set_filter(filter) -> set filter
     # set_filter() -> reset filter
-    def set_filter(self, filter={}):
-        self.filter = filter
+    def set_filter(self, attr, value):
+        ret= self.filter.set_attr(attr,value)
+        return ret
 
     def get_filter(self):
         return self.filter

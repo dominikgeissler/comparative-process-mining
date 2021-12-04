@@ -33,7 +33,8 @@ class CompareLogs(TemplateView):
                 handler.save()
             handlers_pk.append(handler.pk)
         handlers = [LogObjectHandler.objects.get(pk=id) for id in handlers_pk]
-        return render(request, self.template_name, {"logs": handlers, 'ref': ref})
+        debug = [handler.__dict__ for handler in handlers]
+        return render(request, self.template_name, {"logs": handlers, 'ref': ref, "debug": debug})
 
     
 
@@ -137,13 +138,18 @@ class FilterView(View):
 
     def get(self, request, *args, **kwars):
         import json
+        from .models import Filter
         data = json.loads(request.GET['data'])
         id,pos,attr = data["attribute"].strip().split("-")
         perc_filter = data["percentage_filter"]
-        
         handler = LogObjectHandler.objects.get(pk=id)
-        old_filter = handler.get_filter()
-        handler.set_filter({"percentage": int(perc_filter)})
-        new_filter = handler.get_filter()
+        old_val = handler.filter.percentage
+        filter = Filter.objects.get(pk=handler.filter_id)
+        old_filter = str(filter.__dict__)
+        filter.percentage = perc_filter
+        filter.save()
+        new_filter = str(filter.__dict__)
 
-        return JsonResponse({"response": ["Old", str(old_filter), "New", str(new_filter)]})
+        
+        
+        return JsonResponse({"response": [old_filter, new_filter, str(handler.get_filter())]})

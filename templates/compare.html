@@ -7,6 +7,9 @@
 
 {# reference log is returned as the position in the log array #}
 {% with reference=logs|index:ref %}
+{% for el in debug %}
+{{el}}
+{% endfor %}
  <table class="table">
     <thead>
     {% for log in logs %}
