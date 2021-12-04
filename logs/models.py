@@ -135,6 +135,10 @@ class LogObjectHandler(models.Model):
                 )
             )
         )
+    def create_filter(self):
+        if not self.filter:
+            self.filter = Filter.objects.create()
+            self.filter.save()
 
 
 class Metrics():
