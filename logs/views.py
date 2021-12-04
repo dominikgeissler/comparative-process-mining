@@ -137,19 +137,5 @@ class FilterView(View):
     """
 
     def get(self, request, *args, **kwars):
-        import json
-        from .models import Filter
-        data = json.loads(request.GET['data'])
-        id,pos,attr = data["attribute"].strip().split("-")
-        perc_filter = data["percentage_filter"]
-        handler = LogObjectHandler.objects.get(pk=id)
-        old_val = handler.filter.percentage
-        filter = Filter.objects.get(pk=handler.filter_id)
-        old_filter = str(filter.__dict__)
-        filter.percentage = perc_filter
-        filter.save()
-        new_filter = str(filter.__dict__)
-
-        
-        
-        return JsonResponse({"response": [old_filter, new_filter, str(handler.get_filter())]})
+       
+        return JsonResponse({"response": ""})

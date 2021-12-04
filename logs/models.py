@@ -51,22 +51,13 @@ class Log(models.Model):
     def __eq__(self, other):
         return cmp(self.log_file.path, other.log_file.path)
 
-
 class Filter(models.Model):
-    percentage = models.FloatField()
-    
-    def set_attr(self, attr,value):
-        ret = [getattr(self, attr)]
-        setattr(self, attr, value)
-        ret += [getattr(self, attr)]
-        return ret
-
+    percentage = models.FloatField(default=100)
 
 class LogObjectHandler(models.Model):
     log_object = models.ForeignKey(Log,
       on_delete=models.CASCADE)
-    filter = models.OneToOneField(Filter,
-    on_delete=models.CASCADE, default=Filter.objects.create())
+    filter = models.OneToOneField(Filter, null=True, on_delete=models.CASCADE)
 
     def to_df(self):
         """converts log to df"""
@@ -144,15 +135,6 @@ class LogObjectHandler(models.Model):
                 )
             )
         )
-
-    # set_filter(filter) -> set filter
-    # set_filter() -> reset filter
-    def set_filter(self, attr, value):
-        ret= self.filter.set_attr(attr,value)
-        return ret
-
-    def get_filter(self):
-        return self.filter
 
 
 class Metrics():
