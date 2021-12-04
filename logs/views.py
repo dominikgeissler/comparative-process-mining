@@ -145,6 +145,5 @@ class FilterView(View):
         # create filter
 
         handler.set_filter("percentage", perc_filter)
-        handler.save()
 
         return JsonResponse({"response": "Ok"})
