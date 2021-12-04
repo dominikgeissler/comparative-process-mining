@@ -21,6 +21,13 @@ import json
 
 from pm4py.statistics.attributes.log.get import get_all_event_attributes_from_log
 
+order = ["no_cases", 
+        "no_events", 
+        "no_variants", 
+        "avg_case_duration", 
+        "median_case_duration", 
+        "total_case_duration"]
+
 
 class Log(models.Model):
     log_file = models.FileField(upload_to='logs')
@@ -45,8 +52,11 @@ class Log(models.Model):
 class LogObjectHandler(models.Model):
     log_object = models.ForeignKey(Log,
       on_delete=models.CASCADE)
-    filter = {}
 
+
+    def __init__(self, *args, **kwargs):
+        super(LogObjectHandler, self).__init__(*args, **kwargs)
+        self.filter = {}
 
     def to_df(self):
         """converts log to df"""
@@ -68,12 +78,7 @@ class LogObjectHandler(models.Model):
     def log_name(self):
         return self.log_object.log_name  
 
-    def generate_dfg(self):
-        if not self.filter:
-            percentage_most_freq_edges=100
-            type=dfg_discovery.Variants.FREQUENCY
-        else:
-            percentage_most_freq_edges= self.filter["percentage"]
+    def generate_dfg(self, percentage_most_freq_edges=100):
         """generates the dfg of the log"""
         log = self.pm4py_log()
         dfg, sa, ea = discover_directly_follows_graph(log)
@@ -85,10 +90,11 @@ class LogObjectHandler(models.Model):
         return dfg
 
     def metrics(self, reference=None):
+        global order
         metrics1 = LogMetrics(self.pm4py_log())
         if reference and reference.log_object != self.log_object:
             metrics2 = LogMetrics(reference.pm4py_log())
-            return Metrics([
+            return vars(Metrics([
             get_difference(
                 getattr(metrics1, attr),
                 getattr(metrics2, attr)
@@ -98,11 +104,12 @@ class LogObjectHandler(models.Model):
             get_difference_days_hrs_min(
                 getattr(metrics1, attr),
                 getattr(metrics2, attr))
-            for attr in Metrics.get_order()
-            ])
-        return Metrics([
+            for attr in order
+            ]))
+        return vars(Metrics([
             getattr(metrics1, attr)
-         for attr in Metrics.get_order()])
+         for attr in order]))
+
 
     def graph(self, reference=None):
         if reference and reference.log_object != self.log_object:
@@ -139,31 +146,9 @@ class LogObjectHandler(models.Model):
 
 class Metrics():
     def __init__(self, metrics):
-        self.order = ["no_cases", 
-        "no_events", 
-        "no_variants", 
-        "avg_case_duration", 
-        "median_case_duration", 
-        "total_case_duration"]
-
+        global order
         for index, metric in enumerate(metrics):
-            setattr(self, self.order[index], metric)
-
-    def get_metrics(self):
-        return {
-            'no_cases': self.no_cases,
-            'no_variants': self.no_variants,
-            'avg_case_duration': self.avg_case_duration,
-            'median_case_duration': self.median_case_duration,
-            'total_case_duration': self.total_case_duration
-        }
-    def get_order():
-        return ["no_cases", 
-        "no_events", 
-        "no_variants", 
-        "avg_case_duration", 
-        "median_case_duration", 
-        "total_case_duration"]
+            setattr(self, order[index], metric)
 
 class LogMetrics():
     """

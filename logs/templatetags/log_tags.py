@@ -21,4 +21,4 @@ def get_graph(log, reference):
 
 @register.filter
 def get_metrics(log, reference):
-    return log.metrics(reference).get_metrics()
+    return log.metrics(reference)

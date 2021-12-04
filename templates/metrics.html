@@ -7,7 +7,6 @@
         {{name}}
     </thead>
     {% for key,value in data.items %}
-    {% if key != 'order' %}
     <tr>
         <td>
         {% if value|is_list %}
@@ -18,7 +17,6 @@
         {% endif %}
         </td>   
     </tr>
-    {% endif %}
     {% endfor %}
 </table>
 {% endblock %}
