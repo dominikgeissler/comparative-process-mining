@@ -1,6 +1,5 @@
 from django.db import models
 from os.path import basename, splitext
-from django.db.models.fields.related import ForeignKey
 import pandas as pd
 from pm4py.objects.log.util import dataframe_utils
 from pm4py.objects.conversion.log import converter as log_converter
@@ -8,19 +7,15 @@ from pm4py.objects.log.importer.xes import importer as xes_importer_factory
 from pm4py.objects.conversion.log.variants import (
     to_data_frame
     as log_to_data_frame)
-from pm4py.algo.discovery.dfg import algorithm as dfg_discovery
 from pm4py.algo.filtering.dfg import dfg_filtering
 from pm4py.statistics.traces.generic.log import case_statistics
 from pm4py import discover_directly_follows_graph
 from pm4py import get_event_attribute_values
 from helpers.dfg_helper import convert_dfg_to_dict
 from helpers.g6_helpers import dfg_dict_to_g6, highlight_nonstandard_activities
-from helpers.metrics_helper import days_hours_minutes, get_difference, get_difference_days_hrs_min
-from django.forms.models import model_to_dict
+from helpers.metrics_helper import get_difference, get_difference_days_hrs_min
 from filecmp import cmp
 import json
-
-from pm4py.statistics.attributes.log.get import get_all_event_attributes_from_log
 
 # Attributes for metrics
 order = ["no_cases", 
@@ -32,6 +27,7 @@ order = ["no_cases",
 
 
 class Log(models.Model):
+    """A log with linked file"""
     log_file = models.FileField(upload_to='logs')
     log_name = models.CharField(max_length=500)
 
@@ -39,6 +35,7 @@ class Log(models.Model):
         return basename(self.log_file.name)
 
     def pm4py_log(self):
+        """parse log"""
         _, extension = splitext(self.log_file.path)
         if extension == ".csv":
             log = pd.read_csv(self.log_file.path, sep=",")
@@ -55,12 +52,15 @@ class Log(models.Model):
         return super().__hash__()
 
 class Filter(models.Model):
+    """Filter for a log"""
     percentage = models.FloatField(default=100)
 
     def set_attribute(self, attr, value):
+        """set attribute to value"""
         setattr(self,attr,value)
 
 class LogObjectHandler(models.Model):
+    """Handler for log object in comparison page"""
     log_object = models.ForeignKey(Log,
       on_delete=models.CASCADE)
     filter = models.OneToOneField(Filter, null=True, on_delete=models.SET_NULL)
@@ -80,9 +80,11 @@ class LogObjectHandler(models.Model):
         return results
 
     def pm4py_log(self):
+        """return parsed log"""
         return self.log_object.pm4py_log()
 
     def log_name(self):
+        """return name of the log"""
         return self.log_object.log_name  
 
     def generate_dfg(self, percentage_most_freq_edges=100):
@@ -97,6 +99,8 @@ class LogObjectHandler(models.Model):
         return dfg
 
     def metrics(self, reference=None):
+        """returns the metrics of a log
+        or the comparison relative to the reference"""
         global order
         metrics1 = LogMetrics(self.pm4py_log())
         if reference and reference.log_object != self.log_object:
@@ -119,6 +123,9 @@ class LogObjectHandler(models.Model):
 
 
     def graph(self, reference=None):
+        """returns the graph of a log object
+        or return the graph of a log object with 
+        highlighted nodes relative to reference"""
         if reference and reference.log_object != self.log_object:
             return json.dumps(
                 highlight_nonstandard_activities(
@@ -142,6 +149,8 @@ class LogObjectHandler(models.Model):
             )
         )
     def set_filter(self, attr, value):
+        """set filter of log (or create and then 
+        set if, if it doesnt exist)"""
         if not self.filter:
             self.filter = Filter.objects.create()
             self.filter.save()
@@ -150,6 +159,9 @@ class LogObjectHandler(models.Model):
 
 
 class Metrics():
+    """
+    Class for ordered return (and refactoring)
+    """
     def __init__(self, metrics):
         global order
         for index, metric in enumerate(metrics):
@@ -157,8 +169,7 @@ class Metrics():
 
 class LogMetrics():
     """
-    Metrics for a single log
-    get_metrics(self) -> return of values
+    Calculates the metrics for a given log
     """
 
     def __init__(self, log):
