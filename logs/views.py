@@ -137,5 +137,14 @@ class FilterView(View):
     """
 
     def get(self, request, *args, **kwars):
-       
-        return JsonResponse({"response": ""})
+        import json
+        data = json.loads(request.GET['data'])
+        id,_,attr = data["attribute"].strip().split("-")
+        perc_filter = data["percentage_filter"]
+        handler = LogObjectHandler.objects.get(pk=id)
+        # create filter
+
+        handler.set_filter("percentage", perc_filter)
+        handler.save()
+
+        return JsonResponse({"response": "Ok"})
