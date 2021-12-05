@@ -16,6 +16,8 @@ def key_resolve(key):
         ret = "Number of Events"
     elif key == "no_variants":
         ret = "Number of Variants"
+    elif key == "no_attributes":
+        ret = "Number of Attributes"
     elif key == "avg_case_duration":
         ret = "Average Case Duration"
     elif key == "median_case_duration":
