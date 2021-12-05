@@ -9,6 +9,7 @@ from pm4py.objects.conversion.log.variants import (
     as log_to_data_frame)
 from pm4py.algo.filtering.dfg import dfg_filtering
 from pm4py.statistics.traces.generic.log import case_statistics
+import pm4py
 from pm4py import discover_directly_follows_graph
 from pm4py import get_event_attribute_values
 from helpers.dfg_helper import convert_dfg_to_dict
@@ -21,6 +22,7 @@ import json
 order = ["no_cases", 
         "no_events", 
         "no_variants", 
+        "no_activities"
         "avg_case_duration", 
         "median_case_duration", 
         "total_case_duration"]
@@ -191,6 +193,9 @@ class LogMetrics():
         """PM4Py library function"""
         self.no_variants = len(variants_count)
         """Number of Variants"""
+
+        activities_count = pm4py.get_attribute_values(log, "concept:name")
+        self.no_activities = len(activities_count)
 
         all_case_durations = case_statistics.get_all_casedurations(
             self.log, parameters={
