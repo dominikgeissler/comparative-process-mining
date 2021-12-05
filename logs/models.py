@@ -19,13 +19,13 @@ from filecmp import cmp
 import json
 
 # Attributes for metrics
-order = ["no_cases", 
-        "no_events", 
-        "no_variants", 
-        "no_activities",
-        "avg_case_duration", 
-        "median_case_duration", 
-        "total_case_duration"]
+order = ["no_cases",
+         "no_events",
+         "no_variants",
+         "no_activities",
+         "avg_case_duration",
+         "median_case_duration",
+         "total_case_duration"]
 
 
 class Log(models.Model):
@@ -46,12 +46,13 @@ class Log(models.Model):
         else:
             log = xes_importer_factory.apply(self.log_file.path)
         return log
-    
+
     def __eq__(self, other):
         return cmp(self.log_file.path, other.log_file.path)
 
     def __hash__(self):
         return super().__hash__()
+
 
 class Filter(models.Model):
     """Filter for a log"""
@@ -59,12 +60,13 @@ class Filter(models.Model):
 
     def set_attribute(self, attr, value):
         """set attribute to value"""
-        setattr(self,attr,value)
+        setattr(self, attr, value)
+
 
 class LogObjectHandler(models.Model):
     """Handler for log object in comparison page"""
     log_object = models.ForeignKey(Log,
-      on_delete=models.CASCADE)
+                                   on_delete=models.CASCADE)
     filter = models.OneToOneField(Filter, null=True, on_delete=models.SET_NULL)
 
     def to_df(self):
@@ -87,7 +89,7 @@ class LogObjectHandler(models.Model):
 
     def log_name(self):
         """return name of the log"""
-        return self.log_object.log_name  
+        return self.log_object.log_name
 
     def generate_dfg(self, percentage_most_freq_edges=100):
         """generates the dfg of the log"""
@@ -108,25 +110,24 @@ class LogObjectHandler(models.Model):
         if reference and reference.log_object != self.log_object:
             metrics2 = LogMetrics(reference.pm4py_log())
             return vars(Metrics([
-            get_difference(
-                getattr(metrics1, attr),
-                getattr(metrics2, attr)
-             )
-            if 'duration' not in attr 
-            else
-            get_difference_days_hrs_min(
-                getattr(metrics1, attr),
-                getattr(metrics2, attr))
-            for attr in order
+                get_difference(
+                    getattr(metrics1, attr),
+                    getattr(metrics2, attr)
+                )
+                if 'duration' not in attr
+                else
+                get_difference_days_hrs_min(
+                    getattr(metrics1, attr),
+                    getattr(metrics2, attr))
+                for attr in order
             ]))
         return vars(Metrics([
             getattr(metrics1, attr)
-         for attr in order]))
-
+            for attr in order]))
 
     def graph(self, reference=None):
         """returns the graph of a log object
-        or return the graph of a log object with 
+        or return the graph of a log object with
         highlighted nodes relative to reference"""
         if reference and reference.log_object != self.log_object:
             return json.dumps(
@@ -135,7 +136,7 @@ class LogObjectHandler(models.Model):
                         convert_dfg_to_dict(
                             self.generate_dfg()
                         )
-                    ), 
+                    ),
                     dfg_dict_to_g6(
                         convert_dfg_to_dict(
                             reference.generate_dfg()
@@ -150,13 +151,14 @@ class LogObjectHandler(models.Model):
                 )
             )
         )
+
     def set_filter(self, attr, value):
-        """set filter of log (or create and then 
+        """set filter of log (or create and then
         set if, if it doesnt exist)"""
         if not self.filter:
             self.filter = Filter.objects.create()
             self.filter.save()
-        self.filter.set_attribute(attr,value)
+        self.filter.set_attribute(attr, value)
         self.filter.save()
 
 
@@ -164,10 +166,12 @@ class Metrics():
     """
     Class for ordered return (and refactoring)
     """
+
     def __init__(self, metrics):
         global order
         for index, metric in enumerate(metrics):
             setattr(self, order[index], metric)
+
 
 class LogMetrics():
     """

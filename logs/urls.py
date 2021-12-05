@@ -11,5 +11,5 @@ urlpatterns = [
         template_name='select_comparisons.html'), name="select_comp_view"),
     path('select_logs', SelectLogs.as_view(), name="select_log_view"),
     path('compare', CompareLogs.as_view(), name="compare_log_view"),
-    path(r'^ajax/get_response/$',FilterView.as_view(), name="update_filter")
+    path(r'^ajax/get_response/$', FilterView.as_view(), name="update_filter")
 ]

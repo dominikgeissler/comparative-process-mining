@@ -9,12 +9,13 @@ import errno
 from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator
 
+
 class CompareLogs(TemplateView):
     """
     Comparison page
     used to compare different event logs
     """
-    
+
     template_name = 'compare.html'
 
     def get(self, request, *args, **kwars):
@@ -30,9 +31,9 @@ class CompareLogs(TemplateView):
             handler.save()
             handlers_pk.append(handler.pk)
         handlers = [LogObjectHandler.objects.get(pk=id) for id in handlers_pk]
-        return render(request, self.template_name, {"logs": handlers, 'ref': ref})
-
-    
+        return render(
+            request, self.template_name, {
+                "logs": handlers, 'ref': ref})
 
 
 class SelectLogs(TemplateView):
@@ -106,7 +107,7 @@ class ManageLogs(View):
                         raise
             # remove the log out of the database
             logs.delete()
-        else: 
+        else:
             if not request.FILES:
                 return render(
                     request, self.template_name, {
@@ -142,7 +143,7 @@ class FilterView(View):
     def get(self, request, *args, **kwars):
         import json
         data = json.loads(request.GET['data'])
-        id,_,attr = data["attribute"].strip().split("-")
+        id, _, attr = data["attribute"].strip().split("-")
         perc_filter = data["percentage_filter"]
         handler = LogObjectHandler.objects.get(pk=id)
         # create filter

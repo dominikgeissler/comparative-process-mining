@@ -49,7 +49,7 @@ def highlight_nonstandard_activities(g6_graph, reference):
     Highlight non-standard activities in dfg/g6-graph
     """
     """
-    The log that is chosen first on the manage side or first uploaded 
+    The log that is chosen first on the manage side or first uploaded
     will be the reference log for all comparisons
     """
 
