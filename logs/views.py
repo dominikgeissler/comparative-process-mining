@@ -27,8 +27,11 @@ class CompareLogs(TemplateView):
         logs = [Log.objects.get(pk=id) for id in ids]
         handlers_pk = []
         for log in logs:
-            handler = LogObjectHandler(log_object=log)
-            handler.save()
+            if LogObjectHandler.objects.filter(log_object=log).exists():
+                handler = LogObjectHandler.objects.get(log_object=log)
+            else:
+                handler = LogObjectHandler(log_object=log)
+                handler.save()
             handlers_pk.append(handler.pk)
         handlers = [LogObjectHandler.objects.get(pk=id) for id in handlers_pk]
         return render(
@@ -72,13 +75,7 @@ class ManageLogs(View):
             not_local_logs.delete()
             logs = Log.objects.all()
 
-        # delete all log object handler and filter to maintain space
-        handler = LogObjectHandler.objects.all()
-        handler.delete()
-
-        filter = Filter.objects.all()
-        filter.delete()
-
+        
         return render(
             request, self.template_name, {
                 'logs': logs})
@@ -143,11 +140,16 @@ class FilterView(View):
     def get(self, request, *args, **kwars):
         import json
         data = json.loads(request.GET['data'])
-        id, _, attr = data["attribute"].strip().split("-")
-        perc_filter = data["percentage_filter"]
+        if "delete" in data:
+            id = data["delete"].split("-")[0]
+            handler = LogObjectHandler.objects.get(pk=id)
+            filter = Filter.objects.get(id=handler.filter_id)
+            filter.delete()
+            return JsonResponse({"success": True})
+        id,_,filter = data['type'].split("-")
         handler = LogObjectHandler.objects.get(pk=id)
-        # create filter
-
-        handler.set_filter("percentage", perc_filter)
-
-        return JsonResponse({"response": "Ok"})
+        values = list(data.values())
+        values[0] = filter
+        handler.set_filter(list(data.keys()), values)
+        handler.save()
+        return JsonResponse({'success': True})

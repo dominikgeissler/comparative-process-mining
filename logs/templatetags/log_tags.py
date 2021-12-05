@@ -12,6 +12,10 @@ def unique_id_for_filter(pk, forloopcounter):
 def index(indexable, index):
     return indexable[index]
 
+@register.filter
+def filter(log):
+    return log.filter
+
 
 @register.filter
 def create_ref_url(url, ref):

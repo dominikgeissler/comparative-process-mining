@@ -17,7 +17,7 @@ def dfg_dict_to_g6(dfg_dict):
                     'target': endnode,
                     'label': frequency,
                     'style': {
-                        'lineWidth': ((frequency - min_frequency) / (max_frequency - min_frequency)) * (18) + 2,
+                        # 'lineWidth': ((frequency - min_frequency) / (max_frequency - min_frequency)) * (18) + 2,
                         'endArrow': True
                     }
                 }

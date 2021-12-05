@@ -53,14 +53,25 @@ class Log(models.Model):
     def __hash__(self):
         return super().__hash__()
 
-
 class Filter(models.Model):
     """Filter for a log"""
-    percentage = models.FloatField(default=100)
+    percentage = models.FloatField(default=1)
+    type = models.CharField(max_length=500, null=True, default=None)
+    attribute = models.CharField(max_length=500, null=True,default=None)
+    case_performance1 = models.IntegerField(null=True,default=None)
+    case_performance2 = models.IntegerField(null=True,default=None)
+    case1 = models.CharField(max_length=500, null=True,default=None)
+    case2 = models.CharField(max_length=500, null=True,default=None)
+    case_size1 = models.IntegerField(null=True,default=None)
+    case_size2 = models.IntegerField(null=True,default=None)
 
     def set_attribute(self, attr, value):
         """set attribute to value"""
-        setattr(self, attr, value)
+        if isinstance(attr,list):
+            for i, at in enumerate(attr):
+                setattr(self, at, value[i])
+        else:
+            setattr(self, attr, value)
 
 
 class LogObjectHandler(models.Model):
@@ -72,6 +83,9 @@ class LogObjectHandler(models.Model):
     def to_df(self):
         """converts log to df"""
         return log_to_data_frame.apply(self.pm4py_log())
+
+    def get_activities(self):
+        return pm4py.get_attribute_values(self.pm4py_log(), "concept:name")
 
     def get_properties(self):
         """returns properties of log"""
@@ -91,9 +105,35 @@ class LogObjectHandler(models.Model):
         """return name of the log"""
         return self.log_object.log_name
 
-    def generate_dfg(self, percentage_most_freq_edges=100):
+    def generate_dfg(self):
         """generates the dfg of the log"""
         log = self.pm4py_log()
+        percentage_most_freq_edges = 100
+        if self.filter:
+            filtered_log = None
+            if self.filter.type == "variant_percentage":
+                from pm4py.algo.filtering.log.variants import variants_filter
+                filtered_log = variants_filter.filter_log_variants_percentage(log, percentage=self.filter.percentage)
+            elif self.filter.type == "variant_coverage_percentage":
+                from pm4py.algo.filtering.log.variants import variants_filter
+                filtered_log = pm4py.filter_variants_by_coverage_percentage(log, self.filter.percentage)
+            elif self.filter.type == "attribute_filter":
+                from pm4py.algo.filtering.log.attributes import attributes_filter
+                filtered_log = attributes_filter.apply_auto_filter(log, parameters={
+                attributes_filter.Parameters.ATTRIBUTE_KEY: self.filter.attribute, attributes_filter.Parameters.DECREASING_FACTOR: self.filter.percentage})
+            elif self.filter.type == "case_performance":
+                from pm4py.algo.filtering.log.cases import case_filter
+                filtered_log = case_filter.filter_case_performance(log, self.filter.case_performance1, self.filter.case_performance2)
+            elif self.filter.type == "between_filter"  :
+                import pm4py
+                filtered_log = pm4py.filter_between(log, self.filter.case1, self.filter.case2)    
+            elif self.filter.type == "case_size":
+                import pm4py
+                filtered_log = pm4py.filter_case_size(log, self.filter.case_size1, self.filter.case_size2)
+
+            if filtered_log:
+                log = filtered_log
+
         dfg, sa, ea = discover_directly_follows_graph(log)
         activities_count = get_event_attribute_values(log, "concept:name")
 

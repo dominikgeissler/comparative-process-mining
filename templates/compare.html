@@ -12,7 +12,7 @@
     {% for log in logs %}
        <th>
             {% unique_id_for_filter log.pk forloop.counter0 as id %}
-            {% include 'filter.html' with log=log id=id%}
+            {% include 'filter.html' with log=log id=id filter=log|filter%}
        </th>
     {% endfor %}
     </thead>

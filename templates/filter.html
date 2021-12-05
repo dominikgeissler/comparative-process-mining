@@ -1,28 +1,143 @@
 {% load static %}
 {% load filter_tags %}
 {% block content %}
-<label for="range-{{id}}" id="label-range-{{id}}" class="form-label">100</label><br>
-<input min="0" max="100" value="100" type="range" id="range-{{id}}" onchange="updateSlider(this.value, '{{id}}')">
-<select id="filter-select{{id}}">
-    {% for attribute in log.get_properties %}
-    <option value="{{id}}-{{attribute}}">{{attribute}}</option>
+<select value="{{id}}-{{filter.type}}" id="filter-select-{{id}}" onchange="changeSelect(this.value, '{{id}}')">
+    <option value="{{id}}-variant_percentage">Variant Percentage</option>
+    <option value="{{id}}-variant_coverage_percentage">Variant Coverage Percentage</option>
+    <option value="{{id}}-attribute_filter">Attribute Filter</option>
+    <option value="{{id}}-case_performance">Case Performance</option>
+    <option value="{{id}}-between_filter">Between Filter</option>
+    <option value="{{id}}-case_size">Case Size</option>
+</select>
+<div id="{{id}}-percentage-range"> 
+    <label for="range-{{id}}" id="label-range-{{id}}" class="form-label">100</label><br>
+    <input min="0" max="100" value="100" type="range" id="range-{{id}}" onchange="updateSlider(this.value, '{{id}}')">
+</div>
+<div id="{{id}}-attribute-select">
+    <select id="{{id}}-attribute-select1">
+        {% for attribute in log.get_properties %}
+        <option value="{{attribute}}">{{attribute}}</option>
+        {% endfor %}
+    </select>
+</div>
+<div id="{{id}}-between-select">
+<select id="{{id}}-between-select1">
+    {% for activity in log.get_activities %}
+    <option value="{{activity}}">{{activity}}</option>
     {% endfor %}
 </select>
-
+<select id="{{id}}-between-select2">
+    {% for activity in log.get_activities %}
+    <option value="{{activity}}">{{activity}}</option>
+    {% endfor %}
+</select>
+</div>
+<div id="{{id}}-case-size">
+    <input type="number" id="{{id}}-case-size1">
+    <input type="number" id="{{id}}-case-size2">
+</div>
+<div id="{{id}}-case-performance">
+    <input type="number" id="{{id}}-case-performance1">
+    <input type="number" id="{{id}}-case-performance2">
+</div>
 <button id="sender-{{id}}">Click me</button>
+<button id="sender-delete-{{id}}">Reset filter</button>
 <p id="my-ret{{id}}"></p>
 
 <script type="text/javascript">
+function changeSelect(val, id) {
+    var percentage_id = id+"-percentage-range"
+    var between_id = id+"-between-select"
+    var attribute_id = id+"-attribute-select"
+    var casesize_id = id+"-case-size"
+    var caseperf_id = id+"-case-performance"
+    if(val == id+"-variant_percentage") {
+        document.getElementById(percentage_id).style.display = "block";
+        document.getElementById(between_id).style.display = "none"
+        document.getElementById(attribute_id).style.display = "none"
+        document.getElementById(casesize_id).style.display = "none"
+        document.getElementById(caseperf_id).style.display = "none"
+    } else if(val == id+"-variant_coverage_percentage") {
+        document.getElementById(percentage_id).style.display = "block";
+        document.getElementById(between_id).style.display = "none"
+        document.getElementById(attribute_id).style.display = "none"
+        document.getElementById(casesize_id).style.display = "none"
+        document.getElementById(caseperf_id).style.display = "none"
+    } else if(val == id+"-attribute_filter") {
+        document.getElementById(percentage_id).style.display = "block";
+        document.getElementById(between_id).style.display = "none"
+        document.getElementById(attribute_id).style.display = "block"
+        document.getElementById(casesize_id).style.display = "none"
+        document.getElementById(caseperf_id).style.display = "none"
+    } else if(val == id+"-case_performance") {
+        document.getElementById(percentage_id).style.display = "none";
+        document.getElementById(between_id).style.display = "none"
+        document.getElementById(attribute_id).style.display = "none"
+        document.getElementById(casesize_id).style.display = "none"
+        document.getElementById(caseperf_id).style.display = "block"
+    } else if(val == id+"-between_filter") {
+        document.getElementById(percentage_id).style.display = "none";
+        document.getElementById(between_id).style.display = "block"
+        document.getElementById(attribute_id).style.display = "none"
+        document.getElementById(casesize_id).style.display = "none"
+        document.getElementById(caseperf_id).style.display = "none"
+    }else {
+        document.getElementById(percentage_id).style.display = "none";
+        document.getElementById(between_id).style.display = "none"
+        document.getElementById(attribute_id).style.display = "none"
+        document.getElementById(casesize_id).style.display = "block"
+        document.getElementById(caseperf_id).style.display = "none"
+    }
+}
+
 document.addEventListener("DOMContentLoaded", function() {
     document.getElementById("range-{{id}}").value = 100;
+    document.getElementById("filter-select-{{id}}").value = "{{filter.type}}" ? "{{id}}-{{filter.type}}" : "{{id}}-variant_percentage"
+    changeSelect(document.getElementById("filter-select-{{id}}").value, "{{id}}")
 })
 function updateSlider(val, id) {
     document.getElementById("label-range-"+id).innerHTML = val
 }
 $("#sender-{{id}}").click(function() {
-    var data = {
-        attribute: document.getElementById("filter-select{{id}}").value,
-        percentage_filter: document.getElementById("range-{{id}}").value
+    selected_filter = document.getElementById("filter-select-{{id}}").value
+    switch(selected_filter) {
+        case '{{id}}-variant_coverage_percentage':
+        case '{{id}}-variant_percentage':
+            data = {
+                type: selected_filter,
+                percentage: document.getElementById("range-{{id}}").value
+            }
+            break;
+        case '{{id}}-attribute_filter':
+            data = {
+                    type: selected_filter,
+                    percentage: document.getElementById("range-{{id}}").value,
+                    attribute: document.getElementById("{{id}}-attribute-select1").value
+            }
+            break;
+        case '{{id}}-case_performance':
+            data = {
+                type: selected_filter,
+                case_performance1: document.getElementById('{{id}}-case-performance1').value,
+                case_performance2: document.getElementById('{{id}}-case-performance2').value
+            }
+            break;
+        case '{{id}}-between_filter':
+            data = {
+                type: selected_filter,
+                case1: document.getElementById('{{id}}-between-select1').value,
+                case2: document.getElementById('{{id}}-between-select2').value
+            }
+            break;
+        case '{{id}}-case_size':
+            data = {
+                type: selected_filter,
+                case_size1: document.getElementById('{{id}}-case-size1').value,
+                case_size2: document.getElementById('{{id}}-case-size2').value
+            }
+            break;
+        default:
+            return;
     }
     $.ajax( {
         url: "{% url 'update_filter' %}",
@@ -30,11 +145,23 @@ $("#sender-{{id}}").click(function() {
             data: JSON.stringify(data)
         },
         dataType: 'json',
-        success: function(data) {
-            document.getElementById('my-ret{{id}}').innerHTML = data.response
+        success: function() {
+            location.reload(true)
         }
-
-
+    })
+})
+$("#sender-delete-{{id}}").click(function() {
+    $.ajax( {
+        url: "{% url 'update_filter' %}",
+        data: {
+            data: JSON.stringify({
+                delete: "{{id}}"
+            })
+        },
+        dataType: 'json',
+        success: function() {
+            location.reload(true)
+        }
     })
 })
 </script>
