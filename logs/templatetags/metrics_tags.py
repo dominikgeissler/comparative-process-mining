@@ -9,21 +9,8 @@ def is_list(obj):
     return isinstance(obj, List)
 
 @register.filter
-def key_resolve(key):
-    if key == "no_cases":
-        ret = "Number of Cases"
-    elif key == "no_events":
-        ret = "Number of Events"
-    elif key == "no_variants":
-        ret = "Number of Variants"
-    elif key == "no_attributes":
-        ret = "Number of Attributes"
-    elif key == "avg_case_duration":
-        ret = "Average Case Duration"
-    elif key == "median_case_duration":
-        ret = "Median Case Duration"
-    elif key == "total_case_duration":
-        ret = "Total Case Duration"
+def key_resolve(metric):
+    if metric.split("_")[0] == "no":
+        return "Number of "+metric.split("_")[1].capitalize()
     else:
-        ret = key
-    return ret
+        return " ".join(metric.split("_")).title()

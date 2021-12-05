@@ -22,7 +22,7 @@ import json
 order = ["no_cases", 
         "no_events", 
         "no_variants", 
-        "no_activities"
+        "no_activities",
         "avg_case_duration", 
         "median_case_duration", 
         "total_case_duration"]
