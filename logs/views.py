@@ -3,7 +3,7 @@ from genericpath import isfile
 from django.http.response import JsonResponse
 from django.shortcuts import render
 from django.views.generic.base import TemplateView, View
-from .models import Log, LogObjectHandler
+from .models import Filter, Log, LogObjectHandler
 from os import remove
 import errno
 from django.core.exceptions import ValidationError
@@ -26,11 +26,8 @@ class CompareLogs(TemplateView):
         logs = [Log.objects.get(pk=id) for id in ids]
         handlers_pk = []
         for log in logs:
-            if LogObjectHandler.objects.filter(log_object=log).exists():
-                handler = LogObjectHandler.objects.get(log_object=log)
-            else:
-                handler = LogObjectHandler(log_object=log)
-                handler.save()
+            handler = LogObjectHandler(log_object=log)
+            handler.save()
             handlers_pk.append(handler.pk)
         handlers = [LogObjectHandler.objects.get(pk=id) for id in handlers_pk]
         return render(request, self.template_name, {"logs": handlers, 'ref': ref})
@@ -73,6 +70,13 @@ class ManageLogs(View):
         if not_local_logs:
             not_local_logs.delete()
             logs = Log.objects.all()
+
+        # delete all log object handler and filter to maintain space
+        handler = LogObjectHandler.objects.all()
+        handler.delete()
+
+        filter = Filter.objects.all()
+        filter.delete()
 
         return render(
             request, self.template_name, {
