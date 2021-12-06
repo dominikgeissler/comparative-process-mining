@@ -1,6 +1,7 @@
 from django.db import models
 from os.path import basename, splitext
 import pandas as pd
+from pm4py.algo.filtering.log import attributes
 from pm4py.objects.log.util import dataframe_utils
 from pm4py.objects.conversion.log import converter as log_converter
 from pm4py.objects.log.importer.xes import importer as xes_importer_factory
@@ -142,7 +143,7 @@ class LogObjectHandler(models.Model):
             elif self.filter.type == "attribute_filter":
                 from pm4py.algo.filtering.log.attributes import attributes_filter
                 filtered_log = attributes_filter.apply_auto_filter(log, parameters={
-                attributes_filter.Parameters.ATTRIBUTE_KEY: self.filter.attribute, attributes_filter.Parameters.DECREASING_FACTOR: self.filter.percentage})
+                attributes_filter.Parameters.ATTRIBUTE_KEY: self.filter.attribute, attributes_filter.Parameters.DECREASING_FACTOR: str(self.filter.percentage)})
             elif self.filter.type == "case_performance":
                 from pm4py.algo.filtering.log.cases import case_filter
                 filtered_log = case_filter.filter_case_performance(log, self.filter.case_performance1, self.filter.case_performance2)
