@@ -12,6 +12,7 @@ __pycache__
 
 # project related
 env
+doc
 **/tests
 .vscode
 cpm.yaml
