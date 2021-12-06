@@ -8,6 +8,8 @@
     <option value="{{id}}-case_performance">Case Performance</option>
     <option value="{{id}}-between_filter">Between Filter</option>
     <option value="{{id}}-case_size">Case Size</option>
+    <option value="{{id}}-timestamp_filter_contained">Timestamp (Contained)</option>
+    <option value="{{id}}-timestamp_filter_intersecting">Timestamp (Intersecting)</option>
 </select>
 <div id="{{id}}-percentage-range" style="display: none;"> 
     <label for="{{id}}-percentage-range-input" id="{{id}}-percentage-range-label" class="form-label">100</label><br>
@@ -40,6 +42,18 @@
     <input type="number" id="{{id}}-case-performance1">
     <input type="number" id="{{id}}-case-performance2">
 </div>
+<div id="{{id}}-timestamp" style="display: none;">
+<select id="{{id}}-timestamp-select1">
+    {% for timestamp in log.get_timestamps %}
+    <option value="{{timestamp}}">{{timestamp}}</option>
+    {% endfor %}
+</select>
+<select id="{{id}}-timestamp-select2">
+    {% for timestamp in log.get_timestamps %}
+    <option value="{{timestamp}}">{{timestamp}}</option>
+    {% endfor %}
+</select>
+</div>
 <button id="{{id}}-sender">Click me</button>
 {% if filter %}
 <button id="{{id}}-sender-delete">Reset filter</button>
@@ -52,7 +66,8 @@ divs = [
     "-attribute-select",
     "-between-select",
     "-case-size",
-    "-case-performance"
+    "-case-performance",
+    "-timestamp"
 ]
 
 // maps a choice to the divs that need to be visible in order to
@@ -78,6 +93,11 @@ function mapChoices(choice, id) {
 
         case id+"-case_size":
             return [id+"-case-size"]
+            break;
+
+        case id+"-timestamp_filter_contained":
+        case id+"-timestamp_filter_intersecting":
+            return [id+"-timestamp"]
             break;
     }
 }
@@ -106,7 +126,7 @@ document.addEventListener("DOMContentLoaded", function() {
         type = "{{filter.type}}"
         choices = mapChoices(id+ '-'+type, id)
         if (choices.includes(id+"-percentage-range")) {
-            document.getElementById(id+"-percentage-range-input").value = "{{filter.percentage}}" * 100
+            document.getElementById(id+"-percentage-range-input").value = "{{filter.percentage}}"
         }
         if(choices.includes(id+"-attribute-select")) {
             document.getElementById(id+"-attribute-select1").value = "{{filter.attribute}}"
@@ -124,10 +144,15 @@ document.addEventListener("DOMContentLoaded", function() {
             document.getElementById(id+'-case-performance1').value = "{{filter.case_performance1}}"
             document.getElementById(id+'-case-performance2').value = "{{filter.case_performance2}}"
         }
+        if(choices.includes(id+"-timestamp")) {
+            document.getElementById(id+'-timestamp-select1').value ="{{filter.timestamp1}}"
+            document.getElementById(id+'-timestamp-select2').value ="{{filter.timestamp2}}"
+        }
         document.getElementById(id+"-filter-select").value = id+ '-'+ type
         changeVisualization(choices, id)
     }   
     else {
+        // set default view
         document.getElementById(id+"-filter-select").value = id + "-variant_percentage"
         changeVisualization([id+"-percentage-range"], id)
     }
@@ -180,6 +205,14 @@ $("#{{id}}-sender").click(function() {
                 case_size2: document.getElementById('{{id}}-case-size2').value
             }
             break;
+        case '{{id}}-timestamp_filter_contained':
+        case '{{id}}-timestamp_filter_intersecting':
+            data = {
+                type: selected_filter,
+                timestamp1: document.getElementById('{{id}}-timestamp-select1').value,
+                timestamp2: document.getElementById('{{id}}-timestamp-select2').value
+            }
+            break;
         default:
             return;
     }
@@ -190,7 +223,7 @@ $("#{{id}}-sender").click(function() {
         },
         dataType: 'json',
         success: function() {
-            location.reload(true)
+            //location.reload(true)
         }
     })
 })
