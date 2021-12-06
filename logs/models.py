@@ -147,7 +147,7 @@ class LogObjectHandler(models.Model):
                 sum(act_count1.values()) - different_activities)/sum(act_count1.values())
             """
             Calculation of the number of similar activities in comparison to the 
-            sum of all activities in act_count1.
+            sum of all activities in act_count1 (Dictionary activities_count).
             Special feature: 
             The index emphasis the size of the log.
             The index is higher if the analyzed log has fewer events compared to the reference log.
@@ -160,7 +160,7 @@ class LogObjectHandler(models.Model):
             res_similar_activities2 = similar_activities/len(act_count1)
             """
             Calculation of the number of similar activities in comparison to the 
-            number of activities in act_count1.
+            number of activities in act_count1 (Dictionary activities_count).
             Special feature: 
             This index focuses on the number of similar activities (not how often they occur)
             and neglects the size of or size difference between the two event logs.
@@ -169,7 +169,7 @@ class LogObjectHandler(models.Model):
             return res
             """
             Result = Similarity index:
-            50% weighting with emphasis of the size or size difference between the logs.
+            50% weighting with emphasis on the size or size difference between the logs.
             And 50% weighting without focusing on the size or size difference of the two logs.
             """
         return 1
