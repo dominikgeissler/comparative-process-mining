@@ -48,9 +48,13 @@ class Log(models.Model):
         return log
 
     def __eq__(self, other):
+        # two logs are equal, if their associated log files are equal
         return cmp(self.log_file.path, other.log_file.path)
 
     def __hash__(self):
+        # due to overwriting the __eq__ function, the __hash__ function
+        # needs to be set as well
+        # (Django overwrites it)
         return super().__hash__()
 
 class Filter(models.Model):
