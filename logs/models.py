@@ -130,9 +130,48 @@ class LogObjectHandler(models.Model):
         
     def get_similarity_index(self, reference):
         if reference and reference.log_object != self.log_object:
-            act_count1 = pm4py.get_attribute_values(self.pm4py_log(), "concept:name")
-            act_count2 = pm4py.get_attribute_values(reference.pm4py_log(), "concept:name")
-            return [act_count1, act_count2]
+            act_count1 = pm4py.get_attribute_values(
+                self.pm4py_log(), "concept:name")
+            act_count2 = pm4py.get_attribute_values(
+                reference.pm4py_log(), "concept:name")
+            different_activities = 0
+            for key in act_count1:
+                if key in act_count2.keys():
+                    different_activities += abs(
+                        act_count1[key] - act_count2[key])
+                else:
+                    different_activities += act_count1[key]
+            if different_activities > sum(act_count1.values()):
+                different_activities = sum(act_count1.values())
+            res_similar_activities1 = (
+                sum(act_count1.values()) - different_activities)/sum(act_count1.values())
+            """
+            Calculation of the number of similar activities in comparison to the 
+            sum of all activities in act_count1.
+            Special feature: 
+            The index emphasis the size of the log.
+            The index is higher if the analyzed log has fewer events compared to the reference log.
+            And the index is lower if the analyzed log has more events than the reference log.
+            """
+            similar_activities = 0
+            for key in act_count1:
+                if key in act_count2.keys():
+                    similar_activities += 1
+            res_similar_activities2 = similar_activities/len(act_count1)
+            """
+            Calculation of the number of similar activities in comparison to the 
+            number of activities in act_count1.
+            Special feature: 
+            This index focuses on the number of similar activities (not how often they occur)
+            and neglects the size of or size difference between the two event logs.
+            """
+            res = (res_similar_activities1 + res_similar_activities2)/2
+            return res
+            """
+            Result = Similarity index:
+            50% weighting with emphasis of the size or size difference between the logs.
+            And 50% weighting without focusing on the size or size difference of the two logs.
+            """
         return 1
 
     def pm4py_log(self):
@@ -308,7 +347,9 @@ class LogMetrics():
         """Number of Variants"""
 
         activities_count = pm4py.get_attribute_values(log, "concept:name")
+        """PM4Py library function"""
         self.no_activities = len(activities_count)
+        """Number of Activities"""
 
         all_case_durations = case_statistics.get_all_casedurations(
             self.log, parameters={
