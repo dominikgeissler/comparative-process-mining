@@ -27,12 +27,18 @@ class CompareLogs(TemplateView):
         logs = [Log.objects.get(pk=id) for id in ids]
         handlers_pk = []
         for log in logs:
+            # if a handler for a certain log already exists, select it
+            # instead of creating a new one
+            # (refresh consistency)
             if LogObjectHandler.objects.filter(log_object=log).exists():
                 handler = LogObjectHandler.objects.get(log_object=log)
             else:
+                # if no handler for the log exists, create it
                 handler = LogObjectHandler(log_object=log)
                 handler.save()
+            # collect the pks of the handler to return them
             handlers_pk.append(handler.pk)
+        # get all handlers for the logs
         handlers = [LogObjectHandler.objects.get(pk=id) for id in handlers_pk]
         return render(
             request, self.template_name, {
@@ -140,16 +146,32 @@ class FilterView(View):
     def get(self, request, *args, **kwars):
         import json
         data = json.loads(request.GET['data'])
+        # check if the delete button was pressed
         if "delete" in data:
+            # get the id of the LogObjectHandler from body
             id = data["delete"].split("-")[0]
+            # get the handler
             handler = LogObjectHandler.objects.get(pk=id)
+            # get the filter associated with the handler
             filter = Filter.objects.get(id=handler.filter_id)
+            # delete the filter
             filter.delete()
             return JsonResponse({"success": True})
+        # get id (from LogObjectHandler) and filter from body
         id,_,filter = data['type'].split("-")
+        # get handler
         handler = LogObjectHandler.objects.get(pk=id)
+
+        # remove the <id> from the values to refactor
         values = list(data.values())
+        # since the filter given by the template is structured like
+        # <id>-filtername
+        # reset it to just the filtername
         values[0] = filter
+
+        # set the filter
         handler.set_filter(list(data.keys()), values)
+
+        # save the handler
         handler.save()
         return JsonResponse({'success': True})
