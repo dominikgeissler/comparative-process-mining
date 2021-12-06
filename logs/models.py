@@ -166,7 +166,7 @@ class LogObjectHandler(models.Model):
             and neglects the size of or size difference between the two event logs.
             """
             res = (res_similar_activities1 + res_similar_activities2)/2
-            return res
+            return round(res, 4)
             """
             Result = Similarity index:
             50% weighting with emphasis on the size or size difference between the logs.
