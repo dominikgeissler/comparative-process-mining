@@ -4,13 +4,13 @@
 {% load log_tags %}
 {% block content %}
 {% with request.get_full_path as url %}
-
 {# reference log is returned as the position in the log array #}
 {% with reference=logs|index:ref %}
  <table class="table">
     <thead>
     {% for log in logs %}
        <th>
+           {{log|similarity:reference}}
             {% unique_id_for_filter log.pk forloop.counter0 as id %}
             {% include 'filter.html' with log=log id=id filter=log|filter%}
        </th>

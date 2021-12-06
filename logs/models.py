@@ -127,6 +127,13 @@ class LogObjectHandler(models.Model):
 
     def get_timestamps(self):
         return sorted(pm4py.get_attribute_values(self.pm4py_log(), "time:timestamp"))
+        
+    def get_similarity_index(self, reference):
+        if reference and reference.log_object != self.log_object:
+            act_count1 = pm4py.get_attribute_values(self.pm4py_log(), "concept:name")
+            act_count2 = pm4py.get_attribute_values(reference.pm4py_log(), "concept:name")
+            return [act_count1, act_count2]
+        return 1
 
     def pm4py_log(self):
         """return parsed log"""
