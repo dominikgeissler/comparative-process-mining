@@ -46,6 +46,7 @@
 
 <script type="text/javascript">
 function changeSelect(val, id) {
+    // very very ugly -> refactor
     var percentage_id = id+"-percentage-range"
     var between_id = id+"-between-select"
     var attribute_id = id+"-attribute-select"
@@ -87,7 +88,13 @@ function changeSelect(val, id) {
 document.addEventListener("DOMContentLoaded", function() {
     document.getElementById("range-{{id}}").value = 100;
     document.getElementById("filter-select-{{id}}").value = "{{filter.type}}" ? "{{id}}-{{filter.type}}" : "{{id}}-variant_percentage"
-    changeSelect(document.getElementById("filter-select-{{id}}").value, "{{id}}")
+    
+    // check if the log has already a set filter
+    if("{{filter}}" != "None") {
+        /*
+            set values here
+        */
+    }
 })
 function updateSlider(val, id) {
     document.getElementById("label-range-"+id).innerHTML = val
