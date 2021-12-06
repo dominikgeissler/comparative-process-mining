@@ -138,7 +138,7 @@ class LogObjectHandler(models.Model):
                 filtered_log = variants_filter.filter_log_variants_percentage(log, percentage=self.filter.percentage)
             elif self.filter.type == "variant_coverage_percentage":
                 from pm4py.algo.filtering.log.variants import variants_filter
-                filtered_log = pm4py.filter_variants_by_coverage_percentage(log, self.filter.percentage)
+                filtered_log = variants_filter.filter_variants_by_coverage_percentage(log, self.filter.percentage)
             elif self.filter.type == "attribute_filter":
                 from pm4py.algo.filtering.log.attributes import attributes_filter
                 filtered_log = attributes_filter.apply_auto_filter(log, parameters={

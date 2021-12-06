@@ -1,7 +1,7 @@
 {% load static %}
 {% load filter_tags %}
 {% block content %}
-<select value="{{id}}-{{filter.type}}" id="filter-select-{{id}}" onchange="changeSelect(this.value, '{{id}}')">
+<select value="{{id}}-{{filter.type}}" id="filter-select-{{id}}" onchange="changeSelect(this.value)">
     <option value="{{id}}-variant_percentage">Variant Percentage</option>
     <option value="{{id}}-variant_coverage_percentage">Variant Coverage Percentage</option>
     <option value="{{id}}-attribute_filter">Attribute Filter</option>
@@ -9,18 +9,18 @@
     <option value="{{id}}-between_filter">Between Filter</option>
     <option value="{{id}}-case_size">Case Size</option>
 </select>
-<div id="{{id}}-percentage-range"> 
+<div class="hideable" id="{{id}}-percentage-range"> 
     <label for="range-{{id}}" id="label-range-{{id}}" class="form-label">100</label><br>
     <input min="0" max="100" value="100" type="range" id="range-{{id}}" onchange="updateSlider(this.value, '{{id}}')">
 </div>
-<div id="{{id}}-attribute-select">
+<div class="hideable" id="{{id}}-attribute-select">
     <select id="{{id}}-attribute-select1">
         {% for attribute in log.get_properties %}
         <option value="{{attribute}}">{{attribute}}</option>
         {% endfor %}
     </select>
 </div>
-<div id="{{id}}-between-select">
+<div class="hideable" id="{{id}}-between-select">
 <select id="{{id}}-between-select1">
     {% for activity in log.get_activities %}
     <option value="{{activity}}">{{activity}}</option>
@@ -32,74 +32,101 @@
     {% endfor %}
 </select>
 </div>
-<div id="{{id}}-case-size">
+<div class="hideable" id="{{id}}-case-size">
     <input type="number" id="{{id}}-case-size1">
     <input type="number" id="{{id}}-case-size2">
 </div>
-<div id="{{id}}-case-performance">
+<div class="hideable" id="{{id}}-case-performance">
     <input type="number" id="{{id}}-case-performance1">
     <input type="number" id="{{id}}-case-performance2">
 </div>
-<button id="sender-{{id}}">Click me</button>
-<button id="sender-delete-{{id}}">Reset filter</button>
-<p id="my-ret{{id}}"></p>
+<button id="{{id}}-sender">Click me</button>
+{% if filter %}
+<button id="{{id}}-sender-delete">Reset filter</button>
+{% endif %}
 
 <script type="text/javascript">
-function changeSelect(val, id) {
-    // very very ugly -> refactor
-    var percentage_id = id+"-percentage-range"
-    var between_id = id+"-between-select"
-    var attribute_id = id+"-attribute-select"
-    var casesize_id = id+"-case-size"
-    var caseperf_id = id+"-case-performance"
-    if(val == id+"-variant_percentage" || val == id+"-variant_coverage_percentage") {
-        document.getElementById(percentage_id).style.display = "block";
-        document.getElementById(between_id).style.display = "none"
-        document.getElementById(attribute_id).style.display = "none"
-        document.getElementById(casesize_id).style.display = "none"
-        document.getElementById(caseperf_id).style.display = "none"
-    } else if(val == id+"-attribute_filter") {
-        document.getElementById(percentage_id).style.display = "block";
-        document.getElementById(between_id).style.display = "none"
-        document.getElementById(attribute_id).style.display = "block"
-        document.getElementById(casesize_id).style.display = "none"
-        document.getElementById(caseperf_id).style.display = "none"
-    } else if(val == id+"-case_performance") {
-        document.getElementById(percentage_id).style.display = "none";
-        document.getElementById(between_id).style.display = "none"
-        document.getElementById(attribute_id).style.display = "none"
-        document.getElementById(casesize_id).style.display = "none"
-        document.getElementById(caseperf_id).style.display = "block"
-    } else if(val == id+"-between_filter") {
-        document.getElementById(percentage_id).style.display = "none";
-        document.getElementById(between_id).style.display = "block"
-        document.getElementById(attribute_id).style.display = "none"
-        document.getElementById(casesize_id).style.display = "none"
-        document.getElementById(caseperf_id).style.display = "none"
-    }else {
-        document.getElementById(percentage_id).style.display = "none";
-        document.getElementById(between_id).style.display = "none"
-        document.getElementById(attribute_id).style.display = "none"
-        document.getElementById(casesize_id).style.display = "block"
-        document.getElementById(caseperf_id).style.display = "none"
+// get all divs which should be toggled
+divs = document.getElementsByClassName("hideable")
+
+// set id
+id = "{{id}}"
+
+// gets the divs ids 
+div_ids = []
+for(let i = 0; i<divs.length; i++) {
+    div_ids.push(divs[i].id)
+}
+
+// array of all supported filters in select
+choices = [
+    id+"-variant_percentage",
+    id+"-variant_coverage_percentage",
+    id+"-attribute_filter",
+    id+"-case_performance",
+    id+"-between_filter",
+    id+"-case_size",
+]
+
+
+// maps a choice to the divs that need to be visible in order to
+// select the required attributes for the filter
+function mapChoices(choice) {
+    switch(choice) {
+        default:
+        case id+"-variant_percentage":
+        case id+"-variant_coverage_percentage":
+            return [id+"-percentage-range"]
+            break;
+        
+        case id+"-attribute_filter":
+            return [id+"-percentage-range",id+"-attribute-select"]
+            break;
+        
+        case id+"-case_performance":
+            return [id+"-case-performance"]
+            break;
+        
+        case id+"-between_filter":
+            return [id+"-between-select"]
+            break;
+
+        case id+"-case_size":
+            return [id+"-case-size"]
+            break;
     }
+}
+
+// arr: array of ids
+// sets all divs in arr to visible and those not in arr to not visible 
+function changeVisualization(arr) {
+    arr.forEach(el => divs[div_ids.findIndex(id => id == el)].style.display = "block")
+    div_ids.forEach((el,index) => {
+        if(arr.includes(el)) {
+            return;
+        }
+        divs[index].style.display = "none"
+    })
+}
+
+function changeSelect(val) {
+    changeVisualization(mapChoices(val));
 }
 
 document.addEventListener("DOMContentLoaded", function() {
-    document.getElementById("range-{{id}}").value = 100;
-    document.getElementById("filter-select-{{id}}").value = "{{filter.type}}" ? "{{id}}-{{filter.type}}" : "{{id}}-variant_percentage"
-    
-    // check if the log has already a set filter
-    if("{{filter}}" != "None") {
-        /*
-            set values here
-        */
-    }
+
 })
+
+// val: new value of slider
+// id: the id
+// updates the label next to the slider
 function updateSlider(val, id) {
     document.getElementById("label-range-"+id).innerHTML = val
 }
-$("#sender-{{id}}").click(function() {
+
+// sends a request to FilterView in order to set the filter
+// values are taken from the respected fields the user omits from
+$("#{{id}}-sender").click(function() {
     selected_filter = document.getElementById("filter-select-{{id}}").value
     switch(selected_filter) {
         case '{{id}}-variant_coverage_percentage':
@@ -151,7 +178,9 @@ $("#sender-{{id}}").click(function() {
         }
     })
 })
-$("#sender-delete-{{id}}").click(function() {
+
+// sends a request to FilterView in order to reset the filter associated to the log
+$("#{{id}}-sender-delete").click(function() {
     $.ajax( {
         url: "{% url 'update_filter' %}",
         data: {
