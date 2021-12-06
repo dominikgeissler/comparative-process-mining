@@ -1,6 +1,6 @@
 import unittest
 from django.test import TestCase
-from logs.models import Log, LogObjectHandler, LogMetrics, ComparisonMetrics
+from logs.models import Log, LogObjectHandler, LogMetrics, Filter
 
 class LogTestCase(TestCase):
     pass
@@ -11,5 +11,5 @@ class LogObjectHandlerTestCase(TestCase):
 class LogMetricsTestCase(TestCase):
     pass
 
-class ComparisonMetricsTestCase(TestCase):
+class FilterTestCase(TestCase):
     pass
