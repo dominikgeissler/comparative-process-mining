@@ -13,10 +13,9 @@
 ├── cpm         Django settings
 ├── helpers     Help functions
 ├── logs        Main project
-├── media       saved logs
-├── static      css / js / img
-├── templates   HTML templates
-└── tests       (Unit) Tests
+├── media       Saved logs
+├── static      CSS / JS / Img
+└── templates   HTML templates
 ````
 # Further information
 * We use the [PEP-8](https://www.python.org/dev/peps/pep-0008/) coding convention.
