@@ -1,7 +1,7 @@
 {% load static %}
 {% load filter_tags %}
 {% block content %}
-<select value="{{id}}-{{filter.type}}" id="filter-select-{{id}}" onchange="changeSelect(this.value)">
+<select value="{{id}}-{{filter.type}}" id="filter-select-{{id}}" onchange="changeSelect(this.value, '{{id}}')">
     <option value="{{id}}-variant_percentage">Variant Percentage</option>
     <option value="{{id}}-variant_coverage_percentage">Variant Coverage Percentage</option>
     <option value="{{id}}-attribute_filter">Attribute Filter</option>
@@ -47,31 +47,18 @@
 
 <script type="text/javascript">
 // get all divs which should be toggled
-divs = document.getElementsByClassName("hideable")
-
-// set id
-id = "{{id}}"
-
-// gets the divs ids 
-div_ids = []
-for(let i = 0; i<divs.length; i++) {
-    div_ids.push(divs[i].id)
-}
-
-// array of all supported filters in select
-choices = [
-    id+"-variant_percentage",
-    id+"-variant_coverage_percentage",
-    id+"-attribute_filter",
-    id+"-case_performance",
-    id+"-between_filter",
-    id+"-case_size",
+divs = [
+    "-percentage-range",
+    "-attribute-select",
+    "-between-select",
+    "-case-size",
+    "-case-performance"
 ]
 
 
 // maps a choice to the divs that need to be visible in order to
 // select the required attributes for the filter
-function mapChoices(choice) {
+function mapChoices(choice, id) {
     switch(choice) {
         default:
         case id+"-variant_percentage":
@@ -99,22 +86,26 @@ function mapChoices(choice) {
 
 // arr: array of ids
 // sets all divs in arr to visible and those not in arr to not visible 
-function changeVisualization(arr) {
-    arr.forEach(el => divs[div_ids.findIndex(id => id == el)].style.display = "block")
-    div_ids.forEach((el,index) => {
-        if(arr.includes(el)) {
+function changeVisualization(arr, id) {
+    arr.forEach(el => document.getElementById(el).style.display = "block")
+    divs.forEach(el => {
+        if(arr.includes(id+el)) {
             return;
         }
-        divs[index].style.display = "none"
+        document.getElementById(id+el).style.display = "none"
     })
 }
 
-function changeSelect(val) {
-    changeVisualization(mapChoices(val));
+// changes the display of input divs for a givens selection
+function changeSelect(val, id) {
+    changeVisualization(mapChoices(val, id),id);
 }
 
 document.addEventListener("DOMContentLoaded", function() {
-
+    // if a filter is already existent, set default values
+    if("{{filter}}" != "None") {
+        type = "{{filter.type}}"
+    }
 })
 
 // val: new value of slider
