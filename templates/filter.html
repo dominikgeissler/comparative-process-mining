@@ -9,18 +9,18 @@
     <option value="{{id}}-between_filter">Between Filter</option>
     <option value="{{id}}-case_size">Case Size</option>
 </select>
-<div id="{{id}}-percentage-range"> 
+<div id="{{id}}-percentage-range" style="display: none;"> 
     <label for="{{id}}-percentage-range-input" id="{{id}}-percentage-range-label" class="form-label">100</label><br>
     <input min="0" max="100" value="100" type="range" id="{{id}}-percentage-range-input" onchange="updateSlider(this.value, '{{id}}')">
 </div>
-<div id="{{id}}-attribute-select">
+<div id="{{id}}-attribute-select" style="display: none;">
     <select id="{{id}}-attribute-select1">
         {% for attribute in log.get_properties %}
         <option value="{{attribute}}">{{attribute}}</option>
         {% endfor %}
     </select>
 </div>
-<div id="{{id}}-between-select">
+<div id="{{id}}-between-select" style="display: none;">
 <select id="{{id}}-between-select1">
     {% for activity in log.get_activities %}
     <option value="{{activity}}">{{activity}}</option>
@@ -32,11 +32,11 @@
     {% endfor %}
 </select>
 </div>
-<div id="{{id}}-case-size">
+<div id="{{id}}-case-size" style="display: none;">
     <input type="number" id="{{id}}-case-size1">
     <input type="number" id="{{id}}-case-size2">
 </div>
-<div id="{{id}}-case-performance">
+<div id="{{id}}-case-performance" style="display: none;">
     <input type="number" id="{{id}}-case-performance1">
     <input type="number" id="{{id}}-case-performance2">
 </div>
