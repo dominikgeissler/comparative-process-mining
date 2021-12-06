@@ -51,13 +51,7 @@ function changeSelect(val, id) {
     var attribute_id = id+"-attribute-select"
     var casesize_id = id+"-case-size"
     var caseperf_id = id+"-case-performance"
-    if(val == id+"-variant_percentage") {
-        document.getElementById(percentage_id).style.display = "block";
-        document.getElementById(between_id).style.display = "none"
-        document.getElementById(attribute_id).style.display = "none"
-        document.getElementById(casesize_id).style.display = "none"
-        document.getElementById(caseperf_id).style.display = "none"
-    } else if(val == id+"-variant_coverage_percentage") {
+    if(val == id+"-variant_percentage" || val == id+"-variant_coverage_percentage") {
         document.getElementById(percentage_id).style.display = "block";
         document.getElementById(between_id).style.display = "none"
         document.getElementById(attribute_id).style.display = "none"

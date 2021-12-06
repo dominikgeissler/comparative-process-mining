@@ -55,22 +55,34 @@ class Log(models.Model):
 
 class Filter(models.Model):
     """Filter for a log"""
+    # field for a percentage float: 0 <= x <= 1
     percentage = models.FloatField(default=1)
+    # string description of the filter type
     type = models.CharField(max_length=500, null=True, default=None)
+    # for attribute-filter
     attribute = models.CharField(max_length=500, null=True,default=None)
+
+    # for case-performance filter
     case_performance1 = models.IntegerField(null=True,default=None)
     case_performance2 = models.IntegerField(null=True,default=None)
+
+    # for between filter
     case1 = models.CharField(max_length=500, null=True,default=None)
     case2 = models.CharField(max_length=500, null=True,default=None)
+
+    # for case-size filter
     case_size1 = models.IntegerField(null=True,default=None)
     case_size2 = models.IntegerField(null=True,default=None)
 
     def set_attribute(self, attr, value):
-        """set attribute to value"""
+        """set attribute(s) to value"""
+        # if a list of keys is given, set each key to the corresponding
+        # value key with index(key) = index(value)
         if isinstance(attr,list):
             for i, at in enumerate(attr):
                 setattr(self, at, value[i])
         else:
+            # since no list was given, just set the single attribute
             setattr(self, attr, value)
 
 
@@ -108,9 +120,15 @@ class LogObjectHandler(models.Model):
     def generate_dfg(self):
         """generates the dfg of the log"""
         log = self.pm4py_log()
+        # default value for pm4py dfg discovery
         percentage_most_freq_edges = 100
+
+        # if a filter was selected
         if self.filter:
+            # if something wents wrong while filtering,
+            # the filter is ignored
             filtered_log = None
+            # 'switch' over implemeneted filters
             if self.filter.type == "variant_percentage":
                 from pm4py.algo.filtering.log.variants import variants_filter
                 filtered_log = variants_filter.filter_log_variants_percentage(log, percentage=self.filter.percentage)
@@ -131,6 +149,8 @@ class LogObjectHandler(models.Model):
                 import pm4py
                 filtered_log = pm4py.filter_case_size(log, self.filter.case_size1, self.filter.case_size2)
 
+            # since the filtered log is only set if a filter was applied,
+            # and thus not None, otherwise the filter is ignored
             if filtered_log:
                 log = filtered_log
 
@@ -145,8 +165,14 @@ class LogObjectHandler(models.Model):
     def metrics(self, reference=None):
         """returns the metrics of a log
         or the comparison relative to the reference"""
+        # get the global list of attributes
         global order
+        # calculate the metrics for linked log
         metrics1 = LogMetrics(self.pm4py_log())
+        # if a reference was selected and the reference is different
+        # to linked log, calulate the metrics for the reference
+        # log as well and return the metrics of the linked log
+        # and the difference relative to the reference log
         if reference and reference.log_object != self.log_object:
             metrics2 = LogMetrics(reference.pm4py_log())
             return vars(Metrics([
@@ -161,6 +187,8 @@ class LogObjectHandler(models.Model):
                     getattr(metrics2, attr))
                 for attr in order
             ]))
+        # since no reference log was given (or the refrence log is
+        # equal to the linked log) return the metrics of the linked log
         return vars(Metrics([
             getattr(metrics1, attr)
             for attr in order]))
@@ -169,6 +197,11 @@ class LogObjectHandler(models.Model):
         """returns the graph of a log object
         or return the graph of a log object with
         highlighted nodes relative to reference"""
+        # if a reference log is selected (and its different than the
+        # linked log), highlight the non-standard activites
+        # (e.g. the activites in the reference log that are not
+        # present in the linked log) and then calculate the g6-graph.
+        # Otherwise just calculate the g6-graph
         if reference and reference.log_object != self.log_object:
             return json.dumps(
                 highlight_nonstandard_activities(
@@ -195,9 +228,13 @@ class LogObjectHandler(models.Model):
     def set_filter(self, attr, value):
         """set filter of log (or create and then
         set if, if it doesnt exist)"""
+        # if no filter exists
         if not self.filter:
+            # create filter
             self.filter = Filter.objects.create()
+            # save created filter
             self.filter.save()
+        # set the attribute(s) of the filter and save it 
         self.filter.set_attribute(attr, value)
         self.filter.save()
 
