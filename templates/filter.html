@@ -2,6 +2,10 @@
 {% load filter_tags %}
 {% block content %}
 <div class="form-group">
+<select value="{{id}}-{{abc}}" id="{{id}}-abc" onchange="changeSelect(this.value, '{{id}}')">
+    <option value="{{id}}-frequency">Frequency</option>
+    <option value="{{id}}-performance">Performance</option>
+</select><br>
 <select class="form-select form-select-sm" value="{{id}}-{{filter.type}}" id="{{id}}-filter-select" onchange="changeSelect(this.value, '{{id}}')">
     <option value="{{id}}-variant_percentage">Variant Percentage</option>
     <option value="{{id}}-variant_coverage_percentage">Variant Coverage Percentage</option>
