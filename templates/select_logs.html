@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
+{% if logs %}
     <form method="get" action="compare">
         <input type="hidden" name="nr_of_comparisons"value="{{request.GET.nr_of_comparisons}}">
         <div class="form-group">
@@ -20,4 +21,7 @@
         </div>
 
     </form>
+{% else %}
+<p>Please upload at least one log before comparing</p>
+{% endif %}
 {% endblock %}
