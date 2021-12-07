@@ -1,7 +1,8 @@
 {% load static %}
 {% load filter_tags %}
 {% block content %}
-<select value="{{id}}-{{filter.type}}" id="{{id}}-filter-select" onchange="changeSelect(this.value, '{{id}}')">
+<div class="form-group">
+<select class="form-select form-select-sm" value="{{id}}-{{filter.type}}" id="{{id}}-filter-select" onchange="changeSelect(this.value, '{{id}}')">
     <option value="{{id}}-variant_percentage">Variant Percentage</option>
     <option value="{{id}}-variant_coverage_percentage">Variant Coverage Percentage</option>
     <option value="{{id}}-attribute_filter">Attribute Filter</option>
@@ -54,9 +55,10 @@
     {% endfor %}
 </select>
 </div>
-<button id="{{id}}-sender">Click me</button>
+</div>
+<button id="{{id}}-sender"class ="btn btn-success">Apply Filter</button>
 {% if filter %}
-<button id="{{id}}-sender-delete">Reset filter</button>
+<button id="{{id}}-sender-delete" class="btn btn-danger">Reset filter</button>
 {% endif %}
 
 <script type="text/javascript">
