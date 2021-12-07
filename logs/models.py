@@ -167,13 +167,13 @@ class LogObjectHandler(models.Model):
             and neglects the size of or size difference between the two event logs.
             """
             res = (res_similar_activities1 + res_similar_activities2)/2
-            return round(res, 4)
+            return str("%.2f" % round(res*100, 2))+"%"
             """
             Result = Similarity index:
             50% weighting with emphasis on the size or size difference between the logs.
             And 50% weighting without focusing on the size or size difference of the two logs.
             """
-        return 1
+        return "100%"
 
     def pm4py_log(self):
         """return parsed log"""
