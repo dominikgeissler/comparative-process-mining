@@ -10,7 +10,6 @@
     <thead>
     {% for log in logs %}
        <th>
-           {{log|similarity:reference}}
             {% unique_id_for_filter log.pk forloop.counter0 as id %}
             {% include 'filter.html' with log=log id=id filter=log|filter%}
        </th>
@@ -35,6 +34,9 @@
     <tr>
         {% for log in logs %}
             <td>
+            <table class="table table-striped">
+            &nbsp;&nbsp;&nbsp;Similarity Index: {{log|similarity:reference}}
+            </table>
             {% include 'metrics.html' with name=log.log_name data=log|get_metrics:reference %}
             </td>
         {% endfor %}
