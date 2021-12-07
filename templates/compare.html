@@ -4,7 +4,7 @@
 {% load log_tags %}
 {% block content %}
 {% with request.get_full_path as url %}
-{# reference log is returned as the position in the log array #}
+{# ref is returned as the position in the log array #}
 {% with reference=logs|index:ref %}
  <table class="table">
     <thead>

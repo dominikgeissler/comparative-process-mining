@@ -61,7 +61,8 @@ class Log(models.Model):
 class Filter(models.Model):
     """Filter for a log"""
     # percentage field
-    percentage = models.FloatField(default=100)
+    percentage = models.IntegerField(default=100)
+    
     # string description of the filter type
     type = models.CharField(max_length=500, null=True, default=None)
     # for attribute-filter

@@ -127,6 +127,7 @@ document.addEventListener("DOMContentLoaded", function() {
         choices = mapChoices(id+ '-'+type, id)
         if (choices.includes(id+"-percentage-range")) {
             document.getElementById(id+"-percentage-range-input").value = "{{filter.percentage}}"
+            updateSlider("{{filter.percentage}}", id)
         }
         if(choices.includes(id+"-attribute-select")) {
             document.getElementById(id+"-attribute-select1").value = "{{filter.attribute}}"
@@ -223,7 +224,7 @@ $("#{{id}}-sender").click(function() {
         },
         dataType: 'json',
         success: function() {
-            //location.reload(true)
+            location.reload(true)
         }
     })
 })
