@@ -1,0 +1,22 @@
+{% load static %}
+{% block content %}
+<div class="d-flex justify-content-center">
+    <button id="download" class="btn btn-primary">Download comparison</button>
+</div>
+<script type="text/javascript">
+$("#download").click(function() {
+    data = {}
+    $.ajax(
+        {
+        url: "{% url 'download_comparison' %}",
+        data: {
+            data: JSON.stringify(data)
+        },
+        dataType: 'json',
+        success: function(data) {
+            console.log(data)
+        }
+   })
+})
+</script>
+{% endblock %}

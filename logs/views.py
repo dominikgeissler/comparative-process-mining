@@ -1,6 +1,6 @@
 # URLconf
 from genericpath import isfile
-from django.http.response import JsonResponse
+from django.http.response import FileResponse, JsonResponse
 from django.shortcuts import render
 from django.views.generic.base import TemplateView, View
 from .models import Filter, Log, LogObjectHandler
@@ -175,3 +175,9 @@ class FilterView(View):
         # save the handler
         handler.save()
         return JsonResponse({'success': True})
+
+class DownloadView(View):
+    def get(self, request, *args, **kwars):
+        #import reportlab
+
+        return FileResponse()
