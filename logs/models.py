@@ -263,6 +263,9 @@ class LogObjectHandler(models.Model):
         # equal to the linked log) return the metrics of the linked log
         return vars(Metrics([
             getattr(metrics1, attr)
+            if 'duration' not in attr
+            else
+            days_hours_minutes(getattr(metrics1, attr))
             for attr in order]))
 
     def graph(self, reference=None):
