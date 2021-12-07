@@ -1,10 +1,13 @@
 from django import template
-from pytz import timezone
+from pandas import Timestamp
+from datetime import datetime
 
 register = template.Library()
 formatstring = "%Y-%m-%d %H:%M:%S"
-utc = timezone('UTC')
 
 @register.filter
 def convert_timestamp(timestamp):
-    return timestamp.strftime(formatstring)
+    if type(timestamp) is Timestamp or type(timestamp) is datetime:
+        return timestamp.strftime(formatstring)
+    else:
+        return timestamp

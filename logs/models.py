@@ -203,14 +203,16 @@ class LogObjectHandler(models.Model):
             elif self.filter.type == "timestamp_filter_contained":
                 from pm4py.algo.filtering.log.timestamp import timestamp_filter
                 from django.utils.timezone import make_naive
-                import pytz
-                timestamp1, timestamp2 = make_naive(self.filter.timestamp1, pytz.UTC), make_naive(self.filter.timestamp2,pytz.UTC)
+                from pytz import UTC
+                # normalize timestamps
+                timestamp1, timestamp2 = make_naive(self.filter.timestamp1, UTC), make_naive(self.filter.timestamp2, UTC)
                 filtered_log = timestamp_filter.filter_traces_contained(log, timestamp1,timestamp2) 
             elif self.filter.type == "timestamp_filter_intersecting":
                 from django.utils.timezone import make_naive
                 from pm4py.algo.filtering.log.timestamp import timestamp_filter
-                import pytz
-                timestamp1, timestamp2 = make_naive(self.filter.timestamp1, pytz.UTC), make_naive(self.filter.timestamp2,pytz.UTC)
+                from pytz import UTC
+                # normalize timestamps
+                timestamp1, timestamp2 = make_naive(self.filter.timestamp1, UTC), make_naive(self.filter.timestamp2, UTC)
                 filtered_log = timestamp_filter.filter_traces_intersecting(log, timestamp1,timestamp2)
 
             # since the filtered log is only set if a filter was applied,
@@ -251,7 +253,7 @@ class LogObjectHandler(models.Model):
                     getattr(metrics2, attr))
                 for attr in order
             ]))
-        # since no reference log was given (or the refrence log is
+        # since no reference log was given (or the reference log is
         # equal to the linked log) return the metrics of the linked log
         return vars(Metrics([
             getattr(metrics1, attr)
@@ -262,7 +264,7 @@ class LogObjectHandler(models.Model):
 
     def graph(self, reference=None):
         """returns the graph of a log object
-        or return the graph of a log object with
+        or returns the graph of a log object with
         highlighted nodes relative to reference"""
         # if a reference log is selected (and its different than the
         # linked log), highlight the non-standard activites
@@ -299,8 +301,6 @@ class LogObjectHandler(models.Model):
         if not self.filter:
             # create filter
             self.filter = Filter.objects.create()
-            # save created filter
-            self.filter.save()
         # set the attribute(s) of the filter and save it 
         self.filter.set_attribute(attr, value)
         self.filter.save()
