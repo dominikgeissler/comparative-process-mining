@@ -15,7 +15,7 @@ from pm4py import discover_directly_follows_graph
 from pm4py import get_event_attribute_values
 from helpers.dfg_helper import convert_dfg_to_dict
 from helpers.g6_helpers import dfg_dict_to_g6, highlight_nonstandard_activities
-from helpers.metrics_helper import get_difference, get_difference_days_hrs_min
+from helpers.metrics_helper import get_difference, get_difference_days_hrs_min, days_hours_minutes
 from filecmp import cmp
 import json
 
