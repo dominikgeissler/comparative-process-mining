@@ -7,26 +7,12 @@
     <option value="{{id}}-performance">Performance</option>
 </select><br>
 <select class="form-select form-select-sm" value="{{id}}-{{filter.type}}" id="{{id}}-filter-select" onchange="changeSelect(this.value, '{{id}}')">
-    <option value="{{id}}-variant_percentage">Variant Percentage</option>
-    <option value="{{id}}-variant_coverage_percentage">Variant Coverage Percentage</option>
-    <option value="{{id}}-attribute_filter">Attribute Filter</option>
     <option value="{{id}}-case_performance">Case Performance</option>
     <option value="{{id}}-between_filter">Between Filter</option>
     <option value="{{id}}-case_size">Case Size</option>
     <option value="{{id}}-timestamp_filter_contained">Timestamp (Contained)</option>
     <option value="{{id}}-timestamp_filter_intersecting">Timestamp (Intersecting)</option>
 </select>
-<div id="{{id}}-percentage-range" style="display: none;"> 
-    <label for="{{id}}-percentage-range-input" id="{{id}}-percentage-range-label" class="form-label">100</label><br>
-    <input min="0" max="100" value="100" type="range" id="{{id}}-percentage-range-input" onchange="updateSlider(this.value, '{{id}}')">
-</div>
-<div id="{{id}}-attribute-select" style="display: none;">
-    <select id="{{id}}-attribute-select1">
-        {% for attribute in log.get_properties %}
-        <option value="{{attribute}}">{{attribute}}</option>
-        {% endfor %}
-    </select>
-</div>
 <div id="{{id}}-between-select" style="display: none;">
 <select id="{{id}}-between-select1">
     {% for activity in log.get_activities %}
@@ -50,12 +36,12 @@
 <div id="{{id}}-timestamp" style="display: none;">
 <select id="{{id}}-timestamp-select1">
     {% for timestamp in log.get_timestamps %}
-    <option value="{{timestamp}}">{{timestamp}}</option>
+    <option value="{{timestamp|convert_timestamp}}">{{timestamp|convert_timestamp}}</option>
     {% endfor %}
 </select>
 <select id="{{id}}-timestamp-select2">
     {% for timestamp in log.get_timestamps %}
-    <option value="{{timestamp}}">{{timestamp}}</option>
+    <option value="{{timestamp|convert_timestamp}}">{{timestamp|convert_timestamp}}</option>
     {% endfor %}
 </select>
 </div>
@@ -68,8 +54,6 @@
 <script type="text/javascript">
 // get all divs which should be toggled
 divs = [
-    "-percentage-range",
-    "-attribute-select",
     "-between-select",
     "-case-size",
     "-case-performance",
@@ -80,15 +64,6 @@ divs = [
 // select the required attributes for the filter
 function mapChoices(choice, id) {
     switch(choice) {
-        case id+"-variant_percentage":
-        case id+"-variant_coverage_percentage":
-            return [id+"-percentage-range"]
-            break;
-        
-        case id+"-attribute_filter":
-            return [id+"-percentage-range",id+"-attribute-select"]
-            break;
-        
         case id+"-case_performance":
             return [id+"-case-performance"]
             break;
@@ -131,13 +106,6 @@ document.addEventListener("DOMContentLoaded", function() {
     if("{{filter}}" != "None") {
         type = "{{filter.type}}"
         choices = mapChoices(id+ '-'+type, id)
-        if (choices.includes(id+"-percentage-range")) {
-            document.getElementById(id+"-percentage-range-input").value = "{{filter.percentage}}"
-            updateSlider("{{filter.percentage}}", id)
-        }
-        if(choices.includes(id+"-attribute-select")) {
-            document.getElementById(id+"-attribute-select1").value = "{{filter.attribute}}"
-        }
         if(choices.includes(id+"-between-select")) {
             document.getElementById(id+'-between-select1').value = "{{filter.case1}}"
             document.getElementById(id+'-between-select2').value = "{{filter.case2}}"
@@ -152,45 +120,24 @@ document.addEventListener("DOMContentLoaded", function() {
             document.getElementById(id+'-case-performance2').value = "{{filter.case_performance2}}"
         }
         if(choices.includes(id+"-timestamp")) {
-            document.getElementById(id+'-timestamp-select1').value ="{{filter.timestamp1}}"
-            document.getElementById(id+'-timestamp-select2').value ="{{filter.timestamp2}}"
+            document.getElementById(id+'-timestamp-select1').value ="{{filter.timestamp1|convert_timestamp}}"
+            document.getElementById(id+'-timestamp-select2').value ="{{filter.timestamp2|convert_timestamp}}"
         }
         document.getElementById(id+"-filter-select").value = id+ '-'+ type
         changeVisualization(choices, id)
     }   
     else {
         // set default view
-        document.getElementById(id+"-filter-select").value = id + "-variant_percentage"
-        changeVisualization([id+"-percentage-range"], id)
+        document.getElementById(id+"-filter-select").value = id + "-case_performance"
+        changeVisualization([id+"-case-performance"], id)
     }
 })
-
-// val: new value of slider
-// id: the id
-// updates the label next to the slider
-function updateSlider(val, id) {
-    document.getElementById(id+"-percentage-range-label").innerHTML = val
-}
 
 // sends a request to FilterView in order to set the filter
 // values are taken from the respected fields the user omits from
 $("#{{id}}-sender").click(function() {
     selected_filter = document.getElementById("{{id}}-filter-select").value
     switch(selected_filter) {
-        case '{{id}}-variant_coverage_percentage':
-        case '{{id}}-variant_percentage':
-            data = {
-                type: selected_filter,
-                percentage: document.getElementById("{{id}}-percentage-range-input").value
-            }
-            break;
-        case '{{id}}-attribute_filter':
-            data = {
-                    type: selected_filter,
-                    percentage: document.getElementById("{{id}}-percentage-range-input").value,
-                    attribute: document.getElementById("{{id}}-attribute-select1").value
-            }
-            break;
         case '{{id}}-case_performance':
             data = {
                 type: selected_filter,

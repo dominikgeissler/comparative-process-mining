@@ -1,5 +1,6 @@
 from django.db import models
 from os.path import basename, splitext
+from packaging.version import parse
 import pandas as pd
 from pm4py.algo.filtering.log import attributes
 from pm4py.objects.log.util import dataframe_utils
@@ -60,14 +61,9 @@ class Log(models.Model):
 
 class Filter(models.Model):
     """Filter for a log"""
-    # percentage field
-    percentage = models.IntegerField(default=100)
-    
     # string description of the filter type
     type = models.CharField(max_length=500, null=True, default=None)
-    # for attribute-filter
-    attribute = models.CharField(max_length=500, null=True,default=None)
-
+    
     # for case-performance filter
     case_performance1 = models.IntegerField(null=True,default=None)
     case_performance2 = models.IntegerField(null=True,default=None)
@@ -81,12 +77,8 @@ class Filter(models.Model):
     case_size2 = models.IntegerField(null=True,default=None)
 
     # for timestamp
-    timestamp1 = models.CharField(max_length=500, null=True)
-    timestamp2 = models.CharField(max_length =500, null=True)
-
-    # parsed timestamps
-    timestamp1_parsed = models.DateTimeField(null=True)
-    timestamp2_parsed = models.DateTimeField(null=True)
+    timestamp1 = models.DateTimeField(null=True)
+    timestamp2 = models.DateTimeField(null=True)
 
     def set_attribute(self, attr, value):
         """set attribute(s) to value"""
@@ -95,9 +87,6 @@ class Filter(models.Model):
         if isinstance(attr,list):
             for i, at in enumerate(attr):
                 setattr(self, at, value[i])
-                if "timestamp" in at:
-                    from dateutil.parser import parse
-                    setattr(self, at+"_parsed", parse(value[i]).strftime("%Y-%m-%d %H:%M"))
         else:
             # since no list was given, just set the single attribute
             setattr(self, attr, value)
@@ -128,6 +117,13 @@ class LogObjectHandler(models.Model):
 
     def get_timestamps(self):
         return sorted(pm4py.get_attribute_values(self.pm4py_log(), "time:timestamp"))
+
+    def is_timezone_aware(self):
+        from django.utils.timezone import is_aware
+        for timestamp in self.get_timestamps():
+            if not is_aware(timestamp):
+                return False
+        return True
         
     def get_similarity_index(self, reference):
         if reference and reference.log_object != self.log_object:
@@ -195,17 +191,7 @@ class LogObjectHandler(models.Model):
             # the filter is ignored
             filtered_log = None
             # 'switch' over implemeneted filters
-            if self.filter.type == "variant_percentage":
-                from pm4py.algo.filtering.log.variants import variants_filter
-                filtered_log = variants_filter.filter_log_variants_percentage(log, percentage=self.filter.percentage/100)
-            elif self.filter.type == "variant_coverage_percentage":
-                from pm4py.algo.filtering.log.variants import variants_filter
-                filtered_log = variants_filter.filter_variants_by_coverage_percentage(log, self.filter.percentage/100)
-            elif self.filter.type == "attribute_filter":
-                from pm4py.algo.filtering.log.attributes import attributes_filter
-                filtered_log = attributes_filter.apply_auto_filter(log, parameters={
-                attributes_filter.Parameters.ATTRIBUTE_KEY: self.filter.attribute, attributes_filter.Parameters.DECREASING_FACTOR: self.filter.percentage/100})
-            elif self.filter.type == "case_performance":
+            if self.filter.type == "case_performance":
                 from pm4py.algo.filtering.log.cases import case_filter
                 filtered_log = case_filter.filter_case_performance(log, self.filter.case_performance1, self.filter.case_performance2)
             elif self.filter.type == "between_filter"  :
@@ -216,10 +202,16 @@ class LogObjectHandler(models.Model):
                 filtered_log = pm4py.filter_case_size(log, self.filter.case_size1, self.filter.case_size2)
             elif self.filter.type == "timestamp_filter_contained":
                 from pm4py.algo.filtering.log.timestamp import timestamp_filter
-                filtered_log = timestamp_filter.filter_traces_contained(log, self.filter.timestamp1_parsed, self.filter.timestamp2_parsed)
+                from django.utils.timezone import make_naive
+                import pytz
+                timestamp1, timestamp2 = make_naive(self.filter.timestamp1, pytz.UTC), make_naive(self.filter.timestamp2,pytz.UTC)
+                filtered_log = timestamp_filter.filter_traces_contained(log, timestamp1,timestamp2) 
             elif self.filter.type == "timestamp_filter_intersecting":
+                from django.utils.timezone import make_naive
                 from pm4py.algo.filtering.log.timestamp import timestamp_filter
-                filtered_log = timestamp_filter.filter_traces_intersecting(log, self.filter.timestamp1_parsed, self.filter.timestamp2_parsed)
+                import pytz
+                timestamp1, timestamp2 = make_naive(self.filter.timestamp1, pytz.UTC), make_naive(self.filter.timestamp2,pytz.UTC)
+                filtered_log = timestamp_filter.filter_traces_intersecting(log, timestamp1,timestamp2)
 
             # since the filtered log is only set if a filter was applied,
             # and thus not None, otherwise the filter is ignored
