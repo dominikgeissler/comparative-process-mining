@@ -25,21 +25,15 @@ class CompareLogs(TemplateView):
         ids = [request.GET[f'log{i}'] for i in range(1, nr_of_comparisons + 1)]
         ref = int(request.GET['ref'])
         logs = [Log.objects.get(pk=id) for id in ids]
-        handlers_pk = []
+        handlers = []
         for log in logs:
-            # if a handler for a certain log already exists, select it
-            # instead of creating a new one
-            # (refresh consistency)
-            if LogObjectHandler.objects.filter(log_object=log).exists():
-                handler = LogObjectHandler.objects.get(log_object=log)
+            unique_handler_for_log = [handler for handler in LogObjectHandler.objects.filter(log_object=log) if handler not in handlers]
+            if unique_handler_for_log:
+                handler = unique_handler_for_log[0]
             else:
-                # if no handler for the log exists, create it
-                handler = LogObjectHandler(log_object=log)
+                handler = LogObjectHandler.objects.create(log_object=log)
                 handler.save()
-            # collect the pks of the handler to return them
-            handlers_pk.append(handler.pk)
-        # get all handlers for the logs
-        handlers = [LogObjectHandler.objects.get(pk=id) for id in handlers_pk]
+            handlers.append(handler)
         return render(
             request, self.template_name, {
                 "logs": handlers, 'ref': ref})
@@ -180,4 +174,4 @@ class DownloadView(View):
     def get(self, request, *args, **kwars):
         #import reportlab
 
-        return FileResponse()
+        return JsonResponse({"data": "hi"})
