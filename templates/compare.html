@@ -42,7 +42,9 @@
         {% endfor %}
         </tr>
 </table>
-{% include 'download.html' %}
+<div class="d-flex justify-content-center">
+    <a href="{{request.get_full_path}}&download=true" class="btn btn-primary">Download</a>
+</div>
 {% endwith %}
 {% endwith %}
 <style type="text/css">
@@ -61,11 +63,3 @@ table {
 
 </style>
 {% endblock %}
-<script>
-    /*
-window.addEventListener('beforeunload', function(e) {
-    e.preventDefault();
-    e.defaultPrevented = ""
-})
-    */
-</script>

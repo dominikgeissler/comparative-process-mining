@@ -2,6 +2,7 @@
 from genericpath import isfile
 from django.http.response import FileResponse, HttpResponse, JsonResponse
 from django.shortcuts import render
+from django.template.loader import get_template
 from django.views.generic.base import TemplateView, View
 from .models import Filter, Log, LogObjectHandler
 from os import remove
@@ -41,18 +42,16 @@ class CompareLogs(TemplateView):
                 handler.save()
             handlers.append(handler)
         if request.GET.get("download", ""):
-            from .utils import render_to_pdf
-            pdf = render_to_pdf('compare.html', {
-                "logs": handlers, 'ref': ref})
-            response = HttpResponse(pdf, content_type='application/pdf')
-            filename = "Invoice_%s.pdf" %("12341231")
-            content = "inline; filename='%s'" %(filename)
-            download = request.GET.get("download")
-            if download:
-                content = "attachment; filename='%s'" %(filename)
-                response['Content-Disposition'] = content
-                return response
-            return HttpResponse("Not found")
+            import io
+            from django.http import FileResponse
+            from reportlab.pdfgen import canvas
+            buffer = io.BytesIO()
+            p = canvas.Canvas(buffer)
+            p.drawString(100,100, "Hello World")
+            p.showPage()
+            p.save()
+            buffer.seek(0)
+            return FileResponse(buffer, as_attachment=True, filename="hello.pdf")
         return render(
             request, self.template_name, {
                 "logs": handlers, 'ref': ref})
