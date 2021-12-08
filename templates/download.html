@@ -6,13 +6,13 @@
 <script type="text/javascript">
 $("#download").click(function() {
     data = {
-        test: 'hi'
+        download: true
     }
     $.ajax(
         {
-        url: "{% url 'download_comparison' %}",
+        url: "{{ request.get_full_path | safe }}",
         data: {
-            data: JSON.stringify(data)
+            download: true
         },
         dataType: 'json',
         success: function(data) {

@@ -1,6 +1,6 @@
 # URLconf
 from genericpath import isfile
-from django.http.response import FileResponse, JsonResponse
+from django.http.response import FileResponse, HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.views.generic.base import TemplateView, View
 from .models import Filter, Log, LogObjectHandler
@@ -40,6 +40,19 @@ class CompareLogs(TemplateView):
                 handler = LogObjectHandler.objects.create(log_object=log)
                 handler.save()
             handlers.append(handler)
+        if request.GET.get("download", ""):
+            from .utils import render_to_pdf
+            pdf = render_to_pdf('compare.html', {
+                "logs": handlers, 'ref': ref})
+            response = HttpResponse(pdf, content_type='application/pdf')
+            filename = "Invoice_%s.pdf" %("12341231")
+            content = "inline; filename='%s'" %(filename)
+            download = request.GET.get("download")
+            if download:
+                content = "attachment; filename='%s'" %(filename)
+                response['Content-Disposition'] = content
+                return response
+            return HttpResponse("Not found")
         return render(
             request, self.template_name, {
                 "logs": handlers, 'ref': ref})
