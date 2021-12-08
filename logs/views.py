@@ -21,23 +21,63 @@ class CompareLogs(TemplateView):
     def get(self, request, *args, **kwars):
         """returns the logs selected by the user and the rendered graph"""
         # extract the pks/ids from the query url
-        nr_of_comparisons = int(request.GET['nr_of_comparisons'])
-        ids = [request.GET[f'log{i}'] for i in range(1, nr_of_comparisons + 1)]
-        ref = int(request.GET['ref'])
+        nr_of_comparisons = int(request.GET.get('nr_of_comparisons', 2))
+        ids = [int(request.GET.get(f'log{i}', 0)) for i in range(1, nr_of_comparisons + 1)]
+        ref = int(request.GET.get('ref', 0))
         logs = [Log.objects.get(pk=id) for id in ids]
+        # list of handlers
         handlers = []
         for log in logs:
+            # get handler for log that aren't in the handler array
+            # (refresh consistency and comparison between two
+            # instances of same log)
             unique_handler_for_log = [handler for handler in LogObjectHandler.objects.filter(log_object=log) if handler not in handlers]
+            # if a unique handler exists, select it
             if unique_handler_for_log:
                 handler = unique_handler_for_log[0]
             else:
+                # no unique handler exists -> create new one
                 handler = LogObjectHandler.objects.create(log_object=log)
                 handler.save()
             handlers.append(handler)
         return render(
             request, self.template_name, {
                 "logs": handlers, 'ref': ref})
+    def download(self):
+        data = self.GET.get('data', '')
+        return JsonResponse({"data": data})
+    def filter(self):
+        import json
+        data = json.loads(self.GET.get('data', ''))
+        # check if the delete button was pressed
+        if "delete" in data:
+            # get the id of the LogObjectHandler from body
+            id = data["delete"].split("-")[0]
+            # get the handler
+            handler = LogObjectHandler.objects.get(pk=id)
+            # get the filter associated with the handler
+            filter = Filter.objects.get(id=handler.filter_id)
+            # delete the filter
+            filter.delete()
+            return JsonResponse({"success": True})
+        # get id (from LogObjectHandler) and filter from body
+        id,_,filter = data['type'].split("-")
+        # get handler
+        handler = LogObjectHandler.objects.get(pk=id)
 
+        # remove the <id> from the values to refactor
+        values = list(data.values())
+        # since the filter given by the template is structured like
+        # <id>-filtername
+        # reset it to just the filtername
+        values[0] = filter
+
+        # set the filter
+        handler.set_filter(list(data.keys()), values)
+
+        # save the handler
+        handler.save()
+        return JsonResponse({'success': True})
 
 class SelectLogs(TemplateView):
     """
@@ -129,49 +169,3 @@ class ManageLogs(View):
         context['logs'] = Log.objects.all()
         context['message'] = 'Upload successful' if request.POST['action'] == 'upload' else 'Successfuly deleted'
         return render(request, self.template_name, context)
-
-
-class FilterView(View):
-    """
-    Manage Logs page
-    used for uploading and deleting logs
-    """
-
-    def get(self, request, *args, **kwars):
-        import json
-        data = json.loads(request.GET['data'])
-        # check if the delete button was pressed
-        if "delete" in data:
-            # get the id of the LogObjectHandler from body
-            id = data["delete"].split("-")[0]
-            # get the handler
-            handler = LogObjectHandler.objects.get(pk=id)
-            # get the filter associated with the handler
-            filter = Filter.objects.get(id=handler.filter_id)
-            # delete the filter
-            filter.delete()
-            return JsonResponse({"success": True})
-        # get id (from LogObjectHandler) and filter from body
-        id,_,filter = data['type'].split("-")
-        # get handler
-        handler = LogObjectHandler.objects.get(pk=id)
-
-        # remove the <id> from the values to refactor
-        values = list(data.values())
-        # since the filter given by the template is structured like
-        # <id>-filtername
-        # reset it to just the filtername
-        values[0] = filter
-
-        # set the filter
-        handler.set_filter(list(data.keys()), values)
-
-        # save the handler
-        handler.save()
-        return JsonResponse({'success': True})
-
-class DownloadView(View):
-    def get(self, request, *args, **kwars):
-        #import reportlab
-
-        return JsonResponse({"data": "hi"})

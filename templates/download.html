@@ -5,7 +5,9 @@
 </div>
 <script type="text/javascript">
 $("#download").click(function() {
-    data = {}
+    data = {
+        test: 'hi'
+    }
     $.ajax(
         {
         url: "{% url 'download_comparison' %}",
