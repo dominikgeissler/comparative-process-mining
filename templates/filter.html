@@ -2,9 +2,9 @@
 {% load filter_tags %}
 {% block content %}
 <div class="form-group">
-<select value="{{id}}-{{abc}}" id="{{id}}-abc" onchange="changeSelect(this.value, '{{id}}')">
-    <option value="{{id}}-frequency">Frequency</option>
-    <option value="{{id}}-performance">Performance</option>
+<select value="frequency" id="{{id}}-frequency-performance">
+    <option value="frequency">Frequency</option>
+    <option value="performance">Performance</option>
 </select><br>
 <select class="form-select form-select-sm" value="{{id}}-{{filter.type}}" id="{{id}}-filter-select" onchange="changeSelect(this.value, '{{id}}')">
     <option value="{{id}}-case_performance">Case Performance</option>
@@ -12,6 +12,7 @@
     <option value="{{id}}-case_size">Case Size</option>
     <option value="{{id}}-timestamp_filter_contained">Timestamp (Contained)</option>
     <option value="{{id}}-timestamp_filter_intersecting">Timestamp (Intersecting)</option>
+    <option value="{{id}}-filter_on_attributes">Filter on attributes</option>
 </select>
 <div id="{{id}}-between-select" style="display: none;">
 <select id="{{id}}-between-select1">
@@ -46,6 +47,22 @@
 </select>
 </div>
 </div>
+<div id="{{id}}-attribute-filter" style="display: none;">
+<select id="{{id}}-attribute-select" onchange="getValuesForAttribute(this.value,'{{id}}')">
+    {% for attribute in log.get_properties %}
+    <option value="{{attribute}}">{{attribute}}</option>
+    {% endfor %}
+</select>
+<label for="{{id}}-attribute-select-lower" class="form-label">Lower Bound</label>
+<select id="{{id}}-attribute-select-lower">
+
+</select>
+
+<label for="{{id}}-attribute-select-upper" class="form-label">Upper Bound</label>
+<select id="{{id}}-attribute-select-upper">
+
+</select>
+</div>
 <button id="{{id}}-sender"class ="btn btn-success">Apply Filter</button>
 {% if filter %}
 <button id="{{id}}-sender-delete" class="btn btn-danger">Reset filter</button>
@@ -53,11 +70,13 @@
 
 <script type="text/javascript">
 // get all divs which should be toggled
+
 divs = [
     "-between-select",
     "-case-size",
     "-case-performance",
-    "-timestamp"
+    "-timestamp",
+    "-attribute-filter"
 ]
 
 // maps a choice to the divs that need to be visible in order to
@@ -79,6 +98,10 @@ function mapChoices(choice, id) {
         case id+"-timestamp_filter_contained":
         case id+"-timestamp_filter_intersecting":
             return [id+"-timestamp"]
+            break;
+        
+        case id+"-filter_on_attributes":
+            return [id+"-attribute-filter"]
             break;
     }
 }
@@ -123,6 +146,9 @@ document.addEventListener("DOMContentLoaded", function() {
             document.getElementById(id+'-timestamp-select1').value ="{{filter.timestamp1|convert_timestamp}}"
             document.getElementById(id+'-timestamp-select2').value ="{{filter.timestamp2|convert_timestamp}}"
         }
+        if(choices.includes(id+"-attribute-filter")) {
+            document.getElementById(id+"-attribute-select").value = "{{filter.attribute}}"
+        }
         document.getElementById(id+"-filter-select").value = id+ '-'+ type
         changeVisualization(choices, id)
     }   
@@ -141,6 +167,7 @@ $("#{{id}}-sender").click(function() {
         case '{{id}}-case_performance':
             data = {
                 type: selected_filter,
+                isFrequency: document.getElementById("{{id}}-frequency-performance").value == "frequency",
                 case_performance1: document.getElementById('{{id}}-case-performance1').value,
                 case_performance2: document.getElementById('{{id}}-case-performance2').value
             }
@@ -148,6 +175,7 @@ $("#{{id}}-sender").click(function() {
         case '{{id}}-between_filter':
             data = {
                 type: selected_filter,
+                isFrequency: document.getElementById("{{id}}-frequency-performance").value == "frequency",
                 case1: document.getElementById('{{id}}-between-select1').value,
                 case2: document.getElementById('{{id}}-between-select2').value
             }
@@ -155,6 +183,7 @@ $("#{{id}}-sender").click(function() {
         case '{{id}}-case_size':
             data = {
                 type: selected_filter,
+                isFrequency: document.getElementById("{{id}}-frequency-performance").value == "frequency",
                 case_size1: document.getElementById('{{id}}-case-size1').value,
                 case_size2: document.getElementById('{{id}}-case-size2').value
             }
@@ -163,10 +192,17 @@ $("#{{id}}-sender").click(function() {
         case '{{id}}-timestamp_filter_intersecting':
             data = {
                 type: selected_filter,
+                isFrequency: document.getElementById("{{id}}-frequency-performance").value == "frequency",
                 timestamp1: document.getElementById('{{id}}-timestamp-select1').value,
                 timestamp2: document.getElementById('{{id}}-timestamp-select2').value
             }
             break;
+        case '{{id}}-filter_on_attributes':
+            data = {
+                type: selected_filter,
+                isFrequency: document.getElementById("{{id}}-frequency-performance").value == "frequency",
+                attribute: document.getElementById('{{id}}-attribute-select').value
+            }
         default:
             return;
     }

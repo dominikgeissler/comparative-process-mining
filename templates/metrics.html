@@ -4,7 +4,9 @@
 {% load metrics_tags %}
 <table class="table table-striped">
     <thead class="thead-dark">
-        <!--{{name}}-->
+        <th>
+            Similarity: {{similarity}}
+        </th>
     </thead>
     {% for key,value in data.items %}
     <tr>

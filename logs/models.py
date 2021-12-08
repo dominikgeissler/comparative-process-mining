@@ -80,6 +80,9 @@ class Filter(models.Model):
     timestamp1 = models.DateTimeField(null=True)
     timestamp2 = models.DateTimeField(null=True)
 
+    # frequency / performance
+    isFrequency = models.BooleanField(default=True)
+
     def set_attribute(self, attr, value):
         """set attribute(s) to value"""
         # if a list of keys is given, set each key to the corresponding
@@ -179,7 +182,7 @@ class LogObjectHandler(models.Model):
         """return name of the log"""
         return self.log_object.log_name
 
-    def generate_dfg(self):
+    def generate_dfg(self, only_extract_filtered_log=False):
         """generates the dfg of the log"""
         log = self.pm4py_log()
         # default value for pm4py dfg discovery
@@ -219,22 +222,29 @@ class LogObjectHandler(models.Model):
             # and thus not None, otherwise the filter is ignored
             if filtered_log:
                 log = filtered_log
-
-        dfg, sa, ea = discover_directly_follows_graph(log)
-        activities_count = get_event_attribute_values(log, "concept:name")
-
-        dfg, sa, ea,
-        activities_count = dfg_filtering.filter_dfg_on_paths_percentage(
-            dfg, sa, ea, activities_count, percentage_most_freq_edges)
+                if only_extract_filtered_log:
+                    return filtered_log
+        from pm4py.algo.discovery.dfg import algorithm as dfg_discovery
+        variant = dfg_discovery.Variants.FREQUENCY
+        if not self.filter.isFrequency:
+            variant = dfg_discovery.Variants.PERFORMANCE
+        
+        dfg = dfg_discovery.apply(log, variant=variant)
         return dfg
+
+    def get_values_for_attribute(self, attribute):
+        return pm4py.get_attribute_values(self.pm4py_log(), attribute)
 
     def metrics(self, reference=None):
         """returns the metrics of a log
         or the comparison relative to the reference"""
         # get the global list of attributes
         global order
+        log = self.pm4py_log()
+        if self.filter:
+            log = self.generate_dfg(only_extract_filtered_log=True)
         # calculate the metrics for linked log
-        metrics1 = LogMetrics(self.pm4py_log())
+        metrics1 = LogMetrics(log)
         # if a reference was selected and the reference is different
         # to linked log, calulate the metrics for the reference
         # log as well and return the metrics of the linked log

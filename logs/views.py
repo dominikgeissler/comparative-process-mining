@@ -42,22 +42,11 @@ class CompareLogs(TemplateView):
                 handler.save()
             handlers.append(handler)
         if request.GET.get("download", ""):
-            import io
-            from django.http import FileResponse
-            from reportlab.pdfgen import canvas
-            buffer = io.BytesIO()
-            p = canvas.Canvas(buffer)
-            p.drawString(100,100, "Hello World")
-            p.showPage()
-            p.save()
-            buffer.seek(0)
-            return FileResponse(buffer, as_attachment=True, filename="hello.pdf")
+            pass
+            #return FileResponse(buffer, as_attachment=True, filename="hello.pdf")
         return render(
             request, self.template_name, {
                 "logs": handlers, 'ref': ref})
-    def download(self):
-        data = self.GET.get('data', '')
-        return JsonResponse({"data": data})
     def filter(self):
         import json
         data = json.loads(self.GET.get('data', ''))

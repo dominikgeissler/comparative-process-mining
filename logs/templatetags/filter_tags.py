@@ -11,3 +11,7 @@ def convert_timestamp(timestamp):
         return timestamp.strftime(formatstring)
     else:
         return timestamp
+
+@register.filter
+def values_for_attribute(log, attribute):
+    return log.get_values_for_attribute(attribute)

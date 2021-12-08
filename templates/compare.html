@@ -34,10 +34,7 @@
     <tr>
         {% for log in logs %}
             <td>
-            <table class="table table-striped">
-            &nbsp;&nbsp;&nbsp;Similarity Index: {{log|similarity:reference}}
-            </table>
-            {% include 'metrics.html' with name=log.log_name data=log|get_metrics:reference %}
+            {% include 'metrics.html' with name=log.log_name data=log|get_metrics:reference similarity=log|similarity:reference %}
             </td>
         {% endfor %}
         </tr>
