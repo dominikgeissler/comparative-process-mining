@@ -226,7 +226,7 @@ class LogObjectHandler(models.Model):
                     return filtered_log
         from pm4py.algo.discovery.dfg import algorithm as dfg_discovery
         variant = dfg_discovery.Variants.FREQUENCY
-        if not self.filter.isFrequency:
+        if self.filter and not self.filter.isFrequency:
             variant = dfg_discovery.Variants.PERFORMANCE
         
         dfg = dfg_discovery.apply(log, variant=variant)

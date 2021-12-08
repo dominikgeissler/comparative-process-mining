@@ -151,11 +151,13 @@ document.addEventListener("DOMContentLoaded", function() {
         }
         document.getElementById(id+"-filter-select").value = id+ '-'+ type
         changeVisualization(choices, id)
+        document.getElementById(id+"-frequency-performance").value = "{{filter.isFrequency}}" === "True" ? "frequency" : "performance"
     }   
     else {
         // set default view
         document.getElementById(id+"-filter-select").value = id + "-case_performance"
         changeVisualization([id+"-case-performance"], id)
+        document.getElementById(id+"-frequency-performance").value = "frequency"
     }
 })
 
