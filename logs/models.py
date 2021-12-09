@@ -212,6 +212,9 @@ class LogObjectHandler(models.Model):
                 # normalize timestamps
                 timestamp1, timestamp2 = make_naive(self.filter.timestamp1, UTC), make_naive(self.filter.timestamp2, UTC)
                 filtered_log = timestamp_filter.filter_traces_intersecting(log, timestamp1,timestamp2)
+            elif self.filter.type == "filter_on_attributes":
+                import pm4py
+                pass
 
             # since the filtered log is only set if a filter was applied,
             # and thus not None, otherwise the filter is ignored
@@ -233,17 +236,20 @@ class LogObjectHandler(models.Model):
         or the comparison relative to the reference"""
         # get the global list of attributes
         global order
-        log = self.pm4py_log()
         if self.filter:
             log = self.generate_dfg(only_extract_filtered_log=True)
         # calculate the metrics for linked log
-        metrics1 = LogMetrics(log)
+        # if a filter is applied, calculate the metrics for the filtered log
+        metrics1 = LogMetrics(log if log else self.pm4py_log())
         # if a reference was selected and the reference is different
         # to linked log, calulate the metrics for the reference
         # log as well and return the metrics of the linked log
         # and the difference relative to the reference log
         if reference and reference.log_object != self.log_object:
-            metrics2 = LogMetrics(reference.pm4py_log())
+            # if reference is filtered, calculate comparison for filtered
+            if reference.filter:
+                ref_log = reference.generate_dfg(only_extract_filtered_log=True)
+            metrics2 = LogMetrics(ref_log if ref_log else reference.pm4py_log())
             return vars(Metrics([
                 get_difference(
                     getattr(metrics1, attr),
