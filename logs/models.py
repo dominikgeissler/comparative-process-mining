@@ -224,10 +224,12 @@ class LogObjectHandler(models.Model):
                 log = filtered_log
         if only_extract_filtered_log:
             return log
+            
         from pm4py.algo.discovery.dfg import algorithm as dfg_discovery
-        variant = dfg_discovery.Variants.FREQUENCY
-        if self.filter and not self.filter.isFrequency:
-            variant = dfg_discovery.Variants.PERFORMANCE
+
+        variant = dfg_discovery.Variants.FREQUENCY\
+                if not self.filter or self.filter.isFrequency\
+                else dfg_discovery.Variants.PERFORMANCE
         
         dfg = dfg_discovery.apply(log, variant=variant)
         return dfg
