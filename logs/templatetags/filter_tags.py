@@ -16,3 +16,13 @@ def convert_timestamp(timestamp):
 def get_attributes(log):
     import json
     return json.dumps(list(log.get_properties().keys()))
+
+@register.filter
+def get_operations(attribute_list):
+    import numbers
+    for attribute in attribute_list:
+        if isinstance(attribute, numbers.Number):
+            continue
+        else:
+            return ['=', '≠']
+    return ['<', '>', '=', '≠']

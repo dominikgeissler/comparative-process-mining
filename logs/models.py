@@ -1,19 +1,14 @@
 from django.db import models
 from os.path import basename, splitext
-from packaging.version import parse
 import pandas as pd
-from pm4py.algo.filtering.log import attributes
 from pm4py.objects.log.util import dataframe_utils
 from pm4py.objects.conversion.log import converter as log_converter
 from pm4py.objects.log.importer.xes import importer as xes_importer_factory
 from pm4py.objects.conversion.log.variants import (
     to_data_frame
     as log_to_data_frame)
-from pm4py.algo.filtering.dfg import dfg_filtering
 from pm4py.statistics.traces.generic.log import case_statistics
 import pm4py
-from pm4py import discover_directly_follows_graph
-from pm4py import get_event_attribute_values
 from helpers.dfg_helper import convert_dfg_to_dict
 from helpers.g6_helpers import dfg_dict_to_g6, highlight_nonstandard_activities
 from helpers.metrics_helper import get_difference, get_difference_days_hrs_min, days_hours_minutes
@@ -85,8 +80,8 @@ class Filter(models.Model):
 
     # attribute filter
     attribute = models.CharField(max_length=500, null=True)
-    attribute_val1 = models.CharField(max_length=500, null=True)
-    attribute_val2 = models.CharField(max_length=500, null=True)
+    attribute_value = models.CharField(max_length=500, null=True)
+    operator = models.CharField(max_length=500, null=True)
 
     def set_attribute(self, attr, value):
         """set attribute(s) to value"""
@@ -213,18 +208,29 @@ class LogObjectHandler(models.Model):
                 timestamp1, timestamp2 = make_naive(self.filter.timestamp1, UTC), make_naive(self.filter.timestamp2, UTC)
                 filtered_log = timestamp_filter.filter_traces_intersecting(log, timestamp1,timestamp2)
             elif self.filter.type == "filter_on_attributes":
-                import pm4py
-                # create lambda expression
-                # filtered_log = pm4py.filter_log(lambda, log)
-                pass
+                from pm4py.algo.filtering.log.attributes import attributes_filter
+                import math
+                if self.filter.operator == "=":
+                    filtered_log = attributes_filter.apply(log, [self.filter.attribute_value],
+                                          parameters={attributes_filter.Parameters.ATTRIBUTE_KEY: self.filter.attribute, attributes_filter.Parameters.POSITIVE: True})
+                elif self.filter.operator == "≠":
+                    filtered_log = attributes_filter.apply(log, [self.filter.attribute_value],
+                                          parameters={attributes_filter.Parameters.ATTRIBUTE_KEY: self.filter.attribute, attributes_filter.Parameters.POSITIVE: False})
+                elif self.filter.operator == "<":
+                    filtered_log = attributes_filter.apply_numeric_events(log, -math.inf, float(self.filter.attribute_value),
+                                             parameters={attributes_filter.Parameters.ATTRIBUTE_KEY: self.filter.attribute})
+                elif self.filter.operator == ">":
+                    filtered_log = attributes_filter.apply_numeric_events(log, float(self.filter.attribute_value), math.inf,
+                                             parameters={attributes_filter.Parameters.ATTRIBUTE_KEY: self.filter.attribute})
 
+            
             # since the filtered log is only set if a filter was applied,
             # and thus not None, otherwise the filter is ignored
             if filtered_log:
                 log = filtered_log
         if only_extract_filtered_log:
             return log
-            
+
         from pm4py.algo.discovery.dfg import algorithm as dfg_discovery
 
         variant = dfg_discovery.Variants.FREQUENCY\
@@ -233,6 +239,12 @@ class LogObjectHandler(models.Model):
         
         dfg = dfg_discovery.apply(log, variant=variant)
         return dfg
+
+
+    def create_expression_from_input(self, filter):
+        attribute = filter.attribute
+        attr_val_1 = filter.attribute_val1
+        attr_val_2 = filter.attribute_val2
 
 
     def metrics(self, reference=None):

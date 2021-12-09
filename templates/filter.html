@@ -61,23 +61,18 @@
             <option value="{{value|convert_timestamp}}">{{value|convert_timestamp}}</option>
             {% endfor %}
         </select>
-        <select id="{{id}}-attribute-filter-{{attribute}}-select2">
-            {% for value in value_list %}
-            <option value="{{value|convert_timestamp}}">{{value|convert_timestamp}}</option>
-            {% endfor %}
-        </select>
         {% else %}
         <select id="{{id}}-attribute-filter-{{attribute}}-select1">
         {% for value in value_list %}
         <option value="{{value}}">{{value}}</option>
         {% endfor %}
         </select>
+        {% endif %}
         <select id="{{id}}-attribute-filter-{{attribute}}-select2">
-            {% for value in value_list %}
-            <option value="{{value}}">{{value}}</option>
+            {% for operation in value_list|get_operations %}
+            <option value="{{operation}}">{{operation}}</option>          
             {% endfor %}
         </select>
-        {% endif %}
 </div>
     {% endif %}
 {% endfor %}
@@ -183,8 +178,8 @@ document.addEventListener("DOMContentLoaded", function() {
         }
         if(choices.includes(id+"-attribute-filter")) {
             document.getElementById(id+"-attribute-select").value = "{{filter.attribute}}"
-            document.getElementById(id+"-attribute-filter-"+"{{filter.attribute}}"+ "-select1").value = "{{filter.attribute_val1}}"
-            document.getElementById(id+"-attribute-filter-"+"{{filter.attribute}}"+ "-select2").value = "{{filter.attribute_val2}}"
+            document.getElementById(id+"-attribute-filter-"+"{{filter.attribute}}"+ "-select1").value = "{{filter.attribute_value}}"
+            document.getElementById(id+"-attribute-filter-"+"{{filter.attribute}}"+ "-select2").value = "{{filter.operator}}"
             changeAttributeVisualization("{{filter.attribute}}", id)
         }
         document.getElementById(id+"-filter-select").value = id+ '-'+ type
@@ -243,8 +238,8 @@ $("#{{id}}-sender").click(function() {
                 type: selected_filter,
                 isFrequency: document.getElementById("{{id}}-frequency-performance").value == "frequency",
                 attribute: attribute,
-                attribute_val1: document.getElementById("{{id}}-attribute-filter-"+attribute+ "-select1").value,
-                attribute_val2: document.getElementById("{{id}}-attribute-filter-"+attribute+ "-select2").value
+                attribute_value: document.getElementById("{{id}}-attribute-filter-"+attribute+ "-select1").value,
+                operator: document.getElementById("{{id}}-attribute-filter-"+attribute+ "-select2").value
             }
             break;
         default:
