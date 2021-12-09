@@ -46,22 +46,31 @@
     {% endfor %}
 </select>
 </div>
-</div>
 <div id="{{id}}-attribute-filter" style="display: none;">
 <select id="{{id}}-attribute-select" onchange="getValuesForAttribute(this.value,'{{id}}')">
     {% for attribute in log.get_properties %}
     <option value="{{attribute}}">{{attribute}}</option>
     {% endfor %}
 </select>
-<label for="{{id}}-attribute-select-lower" class="form-label">Lower Bound</label>
-<select id="{{id}}-attribute-select-lower">
-
-</select>
-
-<label for="{{id}}-attribute-select-upper" class="form-label">Upper Bound</label>
-<select id="{{id}}-attribute-select-upper">
-
-</select>
+{% for attribute, value_list in log.get_properties.items %}
+    {% if value_list %}
+    <div id="{{id}}-attribute-filter-{{attribute}}" style="display: none;">
+        {% if attribute == "time:timestamp" %}  
+        <select>
+            {% for value in value_list %}
+            <option value="{{value|convert_timestamp}}">{{value|convert_timestamp}}</option>
+            {% endfor %}
+        </select>
+        {% else %}
+        <select>
+        {% for value in value_list %}
+        <option value="{{value}}">{{value}}</option>
+        {% endfor %}
+        </select>
+        {% endif %}
+</div>
+    {% endif %}
+{% endfor %}
 </div>
 <button id="{{id}}-sender"class ="btn btn-success">Apply Filter</button>
 {% if filter %}
@@ -69,8 +78,13 @@
 {% endif %}
 
 <script type="text/javascript">
+function getValuesForAttribute(attribute, id) {
+    var attr_divs = []
+    var attributes = {{ log|get_attributes | safe }}
+    attributes.forEach(x => attr_divs.push(["-attribute-filter-",x].join("")))
+    changeVisualization([id+"-attribute-filter-"+attribute], id, attr_divs)
+}
 // get all divs which should be toggled
-
 divs = [
     "-between-select",
     "-case-size",
@@ -106,16 +120,27 @@ function mapChoices(choice, id) {
     }
 }
 
-// arr: array of ids
+// arr: array of div ids
 // sets all divs in arr to visible and those not in arr to not visible 
-function changeVisualization(arr, id) {
-    arr.forEach(el => document.getElementById(el).style.display = "block")
-    divs.forEach(el => {
+function changeVisualization(arr, id, div_arr=null) {
+    if(!div_arr) {
+        arr.forEach(el => document.getElementById(el).style.display = "block")
+        divs.forEach(el => {
         if(arr.includes(id+el)) {
             return;
         }
         document.getElementById(id+el).style.display = "none"
     })
+    } else {
+        arr.forEach(el => document.getElementById(el).style.display = "block")
+    div_arr.forEach(el => {
+        if(arr.includes(id+el)) {
+            return;
+        }
+        document.getElementById(id+el).style.display = "none"
+    })
+    }
+    
 }
 
 // changes the display of input divs for a givens selection

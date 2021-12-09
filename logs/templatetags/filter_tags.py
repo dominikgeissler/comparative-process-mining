@@ -13,5 +13,6 @@ def convert_timestamp(timestamp):
         return timestamp
 
 @register.filter
-def values_for_attribute(log, attribute):
-    return log.get_values_for_attribute(attribute)
+def get_attributes(log):
+    import json
+    return json.dumps(list(log.get_properties().keys()))

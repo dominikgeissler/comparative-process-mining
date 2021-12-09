@@ -121,13 +121,6 @@ class LogObjectHandler(models.Model):
     def get_timestamps(self):
         return sorted(pm4py.get_attribute_values(self.pm4py_log(), "time:timestamp"))
 
-    def is_timezone_aware(self):
-        from django.utils.timezone import is_aware
-        for timestamp in self.get_timestamps():
-            if not is_aware(timestamp):
-                return False
-        return True
-        
     def get_similarity_index(self, reference):
         if reference and reference.log_object != self.log_object:
             act_count1 = pm4py.get_attribute_values(
@@ -232,8 +225,6 @@ class LogObjectHandler(models.Model):
         dfg = dfg_discovery.apply(log, variant=variant)
         return dfg
 
-    def get_values_for_attribute(self, attribute):
-        return pm4py.get_attribute_values(self.pm4py_log(), attribute)
 
     def metrics(self, reference=None):
         """returns the metrics of a log
