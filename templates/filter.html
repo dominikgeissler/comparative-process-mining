@@ -47,7 +47,7 @@
 </select>
 </div>
 <div id="{{id}}-attribute-filter" style="display: none;">
-<select id="{{id}}-attribute-select" onchange="getValuesForAttribute(this.value,'{{id}}')">
+<select id="{{id}}-attribute-select" onchange="changeAttributeVisualization(this.value,'{{id}}')">
     {% for attribute in log.get_properties %}
     <option value="{{attribute}}">{{attribute}}</option>
     {% endfor %}
@@ -56,16 +56,26 @@
     {% if value_list %}
     <div id="{{id}}-attribute-filter-{{attribute}}" style="display: none;">
         {% if attribute == "time:timestamp" %}  
-        <select>
+        <select id="{{id}}-attribute-filter-{{attribute}}-select1">
+            {% for value in value_list %}
+            <option value="{{value|convert_timestamp}}">{{value|convert_timestamp}}</option>
+            {% endfor %}
+        </select>
+        <select id="{{id}}-attribute-filter-{{attribute}}-select2">
             {% for value in value_list %}
             <option value="{{value|convert_timestamp}}">{{value|convert_timestamp}}</option>
             {% endfor %}
         </select>
         {% else %}
-        <select>
+        <select id="{{id}}-attribute-filter-{{attribute}}-select1">
         {% for value in value_list %}
         <option value="{{value}}">{{value}}</option>
         {% endfor %}
+        </select>
+        <select id="{{id}}-attribute-filter-{{attribute}}-select2">
+            {% for value in value_list %}
+            <option value="{{value}}">{{value}}</option>
+            {% endfor %}
         </select>
         {% endif %}
 </div>
@@ -78,7 +88,7 @@
 {% endif %}
 
 <script type="text/javascript">
-function getValuesForAttribute(attribute, id) {
+function changeAttributeVisualization(attribute, id) {
     var attr_divs = []
     var attributes = {{ log|get_attributes | safe }}
     attributes.forEach(x => attr_divs.push(["-attribute-filter-",x].join("")))
@@ -173,6 +183,9 @@ document.addEventListener("DOMContentLoaded", function() {
         }
         if(choices.includes(id+"-attribute-filter")) {
             document.getElementById(id+"-attribute-select").value = "{{filter.attribute}}"
+            document.getElementById(id+"-attribute-filter-"+"{{filter.attribute}}"+ "-select1").value = "{{filter.attribute_val1}}"
+            document.getElementById(id+"-attribute-filter-"+"{{filter.attribute}}"+ "-select2").value = "{{filter.attribute_val2}}"
+            changeAttributeVisualization("{{filter.attribute}}", id)
         }
         document.getElementById(id+"-filter-select").value = id+ '-'+ type
         changeVisualization(choices, id)
@@ -225,11 +238,15 @@ $("#{{id}}-sender").click(function() {
             }
             break;
         case '{{id}}-filter_on_attributes':
+            attribute = document.getElementById('{{id}}-attribute-select').value
             data = {
                 type: selected_filter,
                 isFrequency: document.getElementById("{{id}}-frequency-performance").value == "frequency",
-                attribute: document.getElementById('{{id}}-attribute-select').value
+                attribute: attribute,
+                attribute_val1: document.getElementById("{{id}}-attribute-filter-"+attribute+ "-select1").value,
+                attribute_val2: document.getElementById("{{id}}-attribute-filter-"+attribute+ "-select2").value
             }
+            break;
         default:
             return;
     }

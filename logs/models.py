@@ -83,6 +83,11 @@ class Filter(models.Model):
     # frequency / performance
     isFrequency = models.BooleanField(default=True)
 
+    # attribute filter
+    attribute = models.CharField(max_length=500, null=True)
+    attribute_val1 = models.CharField(max_length=500, null=True)
+    attribute_val2 = models.CharField(max_length=500, null=True)
+
     def set_attribute(self, attr, value):
         """set attribute(s) to value"""
         # if a list of keys is given, set each key to the corresponding
@@ -178,9 +183,6 @@ class LogObjectHandler(models.Model):
     def generate_dfg(self, only_extract_filtered_log=False):
         """generates the dfg of the log"""
         log = self.pm4py_log()
-        # default value for pm4py dfg discovery
-        percentage_most_freq_edges = 100
-
         # if a filter was selected
         if self.filter:
             # if something wents wrong while filtering,
@@ -215,8 +217,8 @@ class LogObjectHandler(models.Model):
             # and thus not None, otherwise the filter is ignored
             if filtered_log:
                 log = filtered_log
-                if only_extract_filtered_log:
-                    return filtered_log
+        if only_extract_filtered_log:
+            return log
         from pm4py.algo.discovery.dfg import algorithm as dfg_discovery
         variant = dfg_discovery.Variants.FREQUENCY
         if self.filter and not self.filter.isFrequency:
