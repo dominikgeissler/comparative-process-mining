@@ -211,10 +211,20 @@ class LogObjectHandler(models.Model):
                 from pm4py.algo.filtering.log.attributes import attributes_filter
                 import math
                 if self.filter.operator == "=":
-                    filtered_log = attributes_filter.apply(log, [self.filter.attribute_value],
+                    try:
+                        parsed_val = int(self.filter.attribute_value)
+                        filtered_log = attributes_filter.apply(log, [parsed_val],
+                                          parameters={attributes_filter.Parameters.ATTRIBUTE_KEY: self.filter.attribute, attributes_filter.Parameters.POSITIVE: True})
+                    except:
+                        filtered_log = attributes_filter.apply(log, [self.filter.attribute_value],
                                           parameters={attributes_filter.Parameters.ATTRIBUTE_KEY: self.filter.attribute, attributes_filter.Parameters.POSITIVE: True})
                 elif self.filter.operator == "≠":
-                    filtered_log = attributes_filter.apply(log, [self.filter.attribute_value],
+                    try:
+                        parsed_val = int(self.filter.attribute_value)
+                        filtered_log = attributes_filter.apply(log, [parsed_val],
+                                          parameters={attributes_filter.Parameters.ATTRIBUTE_KEY: self.filter.attribute, attributes_filter.Parameters.POSITIVE: False})
+                    except:
+                        filtered_log = attributes_filter.apply(log, [self.filter.attribute_value],
                                           parameters={attributes_filter.Parameters.ATTRIBUTE_KEY: self.filter.attribute, attributes_filter.Parameters.POSITIVE: False})
                 elif self.filter.operator == "<":
                     filtered_log = attributes_filter.apply_numeric_events(log, -math.inf, float(self.filter.attribute_value),
@@ -240,13 +250,6 @@ class LogObjectHandler(models.Model):
         dfg = dfg_discovery.apply(log, variant=variant)
         return dfg
 
-
-    def create_expression_from_input(self, filter):
-        attribute = filter.attribute
-        attr_val_1 = filter.attribute_val1
-        attr_val_2 = filter.attribute_val2
-
-
     def metrics(self, reference=None):
         """returns the metrics of a log
         or the comparison relative to the reference"""
@@ -261,7 +264,7 @@ class LogObjectHandler(models.Model):
         # and the difference relative to the reference log
 
         # TODO: same log but different filter comparison
-        if reference and reference.log_object != self.log_object:
+        if reference and self.generate_dfg(only_extract_filtered_log=True) != reference.generate_dfg(only_extract_filtered_log=True):
             # if reference is filtered, calculate comparison for filtered 
             metrics2 = LogMetrics(reference.generate_dfg(only_extract_filtered_log=True))
             return vars(Metrics([
