@@ -191,7 +191,7 @@ class LogObjectHandler(models.Model):
                 import math
                 if self.filter.operator == "=":
                     try:
-                        parsed_val = int(self.filter.attribute_value)
+                        parsed_val = float(self.filter.attribute_value)
                         filtered_log = attributes_filter.apply(log, [parsed_val],
                                           parameters={attributes_filter.Parameters.ATTRIBUTE_KEY: self.filter.attribute, attributes_filter.Parameters.POSITIVE: True})
                     except:
@@ -199,7 +199,7 @@ class LogObjectHandler(models.Model):
                                           parameters={attributes_filter.Parameters.ATTRIBUTE_KEY: self.filter.attribute, attributes_filter.Parameters.POSITIVE: True})
                 elif self.filter.operator == "≠":
                     try:
-                        parsed_val = int(self.filter.attribute_value)
+                        parsed_val = float(self.filter.attribute_value)
                         filtered_log = attributes_filter.apply(log, [parsed_val],
                                           parameters={attributes_filter.Parameters.ATTRIBUTE_KEY: self.filter.attribute, attributes_filter.Parameters.POSITIVE: False})
                     except:
