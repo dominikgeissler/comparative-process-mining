@@ -263,7 +263,6 @@ class LogObjectHandler(models.Model):
         # log as well and return the metrics of the linked log
         # and the difference relative to the reference log
 
-        # TODO: same log but different filter comparison
         if reference and self.generate_dfg(only_extract_filtered_log=True) != reference.generate_dfg(only_extract_filtered_log=True):
             # if reference is filtered, calculate comparison for filtered 
             metrics2 = LogMetrics(reference.generate_dfg(only_extract_filtered_log=True))
