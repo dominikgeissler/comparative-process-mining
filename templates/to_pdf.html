@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+    <table class="table table-striped">
+        <thead style="background-color: red;">
+            {% for log in logs %}
+            <th>
+                {{log}}
+            </th>
+            {% endfor %}
+        </thead>
+        {% for item in data %}
+        <tr>
+            <td>
+                {{item}}
+            </td>   
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

@@ -1,5 +1,6 @@
 # URLconf
 from genericpath import isfile
+from django.http import response
 from django.http.response import FileResponse, HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.template.loader import get_template
@@ -42,8 +43,20 @@ class CompareLogs(TemplateView):
                 handler.save()
             handlers.append(handler)
         if request.GET.get("download", ""):
-            pass
-            #return FileResponse(buffer, as_attachment=True, filename="hello.pdf")
+            from .utils import render_pdf_view
+            # context = {
+            #     'handlers': handlers,
+            #     'filters': [handler.filter for handler in handlers],
+            #     'graphs': [handler.graph(handlers[ref]) for handler in handlers],
+            #     'metrics': [handler.metrics(handlers[ref]) for handler in handlers]
+            # }
+            context = {
+                'logs': ["Hallo", "Welt", "Hallo"],
+                'data': ["Nochmal", "Hallo", "Welt"]
+            }
+            path = "to_pdf.html"
+            return render_pdf_view(path, context)
+            
         return render(
             request, self.template_name, {
                 "logs": handlers, 'ref': ref})
