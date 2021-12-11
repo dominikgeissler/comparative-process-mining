@@ -1,23 +1,84 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <title>Comparative Process Mining</title>
+    {% load static %}
+    <link href="{% static '/css/bootstrap.min.css' %}" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="shortcut icon" href="#">
 </head>
 <body>
+    
     <table class="table table-striped">
         <thead style="background-color: red;">
-            {% for log in logs %}
+            {% for handler in handlers %}
             <th>
-                {{log}}
+                {{handler}}
             </th>
             {% endfor %}
         </thead>
-        {% for item in data %}
         <tr>
+        {% for item in filters %}
             <td>
                 {{item}}
             </td>   
-        </tr>
         {% endfor %}
+        </tr>
+        <tr></tr>
+        <tr>
+        {% for graph in graphs %}
+            <td>
+                <script src="https://gw.alipayobjects.com/os/lib/antv/g6/4.3.11/dist/g6.min.js"></script>
+                <script type="module">
+                    import {drawGraph} from '/static/js/drawGraph.js'
+                    drawGraph('{{forloop.counter0}}',{{graph}})
+                </script>
+            <div id="{{forloop.counter0}}">
+            </div>
+            </td> 
+        {% endfor %}
+        </tr>
+    </table>
+    <br>
+        {% load metrics_tags %}
+        <table class="table table-striped">
+            <thead class="thead-dark">
+                    {% for similarity in similiarity_index %}
+                    <th>
+                        Similarity Index: {{similarity}}
+                    </th> 
+                    {% endfor %}
+            </thead>
+            {% for metric in metrics %}
+            <td>
+                {% for key, value in metric.items %}
+                    <table class="table table-striped">
+                    <tr>
+                        <td>
+                        {% if value|is_list %}
+                            {# render difference in color according to its sign #}
+                            {{key|key_resolve}}: {{value.0}} (<span class="{% if '+' in value.1 %} positive {% elif '-' in value.1 %} negative {% endif %}">{{value.1}}</span>)
+                        {% else %}
+                            {{key|key_resolve}}: {{value}}
+                        {% endif %}
+                        </td>
+                    </tr>
+                  </table>
+                {% endfor %}
+            </td> 
+            {% endfor %}
     </table>
 </body>
 </html>
+
+<style type="text/css">
+    span {
+        font-weight: bold;
+    }
+    .positive {
+        color: red;
+    }
+    .negative {
+        color: green;
+    }
+</style>
