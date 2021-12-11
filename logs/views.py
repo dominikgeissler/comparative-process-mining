@@ -44,15 +44,12 @@ class CompareLogs(TemplateView):
             handlers.append(handler)
         if request.GET.get("download", ""):
             from .utils import render_pdf_view
-            # context = {
-            #     'handlers': handlers,
-            #     'filters': [handler.filter for handler in handlers],
-            #     'graphs': [handler.graph(handlers[ref]) for handler in handlers],
-            #     'metrics': [handler.metrics(handlers[ref]) for handler in handlers]
-            # }
             context = {
-                'logs': ["Hallo", "Welt", "Hallo"],
-                'data': ["Nochmal", "Hallo", "Welt"]
+                'handlers': [handler.log_name() for handler in handlers],
+                'filters': [handler.filter for handler in handlers],
+                'graphs': [handler.graph(handlers[ref]) for handler in handlers],
+                'similiarity_index' : [handler.get_similarity_index(handlers[ref]) for handler in handlers],
+                'metrics': [handler.metrics(handlers[ref]) for handler in handlers]
             }
             path = "to_pdf.html"
             return render_pdf_view(path, context)
