@@ -27,28 +27,27 @@
         <tr></tr>
         <tr>
         {% for graph in graphs %}
-            <td>
-                <script src="https://gw.alipayobjects.com/os/lib/antv/g6/4.3.11/dist/g6.min.js"></script>
+        <td>
+        <script src="https://gw.alipayobjects.com/os/lib/antv/g6/4.3.11/dist/g6.min.js"></script>
                 <script type="module">
                     import {drawGraph} from '/static/js/drawGraph.js'
-                    drawGraph('{{forloop.counter0}}',{{graph}})
+                    drawGraph('{{forloop.counter0}}', {{graph}})
                 </script>
             <div id="{{forloop.counter0}}">
             </div>
-            </td> 
+        </td> 
         {% endfor %}
         </tr>
-    </table>
-    <br>
-        {% load metrics_tags %}
-        <table class="table table-striped">
-            <thead class="thead-dark">
-                    {% for similarity in similiarity_index %}
-                    <th>
-                        Similarity Index: {{similarity}}
-                    </th> 
-                    {% endfor %}
-            </thead>
+        <tr></tr>
+            {% load metrics_tags %}
+            <tr>
+            {% for similarity in similiarity_index %}
+            <td>
+                Similarity Index: {{similarity}}
+            </td> 
+            {% endfor %}
+            </tr>
+        <tr></tr>
             {% for metric in metrics %}
             <td>
                 {% for key, value in metric.items %}
