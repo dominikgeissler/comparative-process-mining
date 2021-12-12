@@ -40,7 +40,8 @@
         </tr>
 </table>
 <div class="d-flex justify-content-center">
-    <a href="{{request.get_full_path}}&download=true" class="btn btn-primary">Download</a>
+    <!-- <a href="{{request.get_full_path}}&download=true" class="btn btn-primary">Download</a> -->
+    <button id="download-button" class="btn btn-primary">Download</button>
 </div>
 {% endwith %}
 {% endwith %}
@@ -66,7 +67,20 @@ window.addEventListener('load', function() {
     canvas.forEach(canv => {
         dataURLs.push(canv.toDataURL())
     })
-    console.log(dataURLs)
+})
+$('#download-button').click(function() {
+    var data = {
+        // ...,
+        imageURLs: dataURLs
+    }
+    $.ajax({
+        url: '{% url hier einfügen (in logs/urls.py) %}',
+        data: JSON.stringify(data),
+        dataType: "json",
+        success: function(data) {
+            console.log(data)
+        }
+    })
 })
 </script>
 {% endblock %}
