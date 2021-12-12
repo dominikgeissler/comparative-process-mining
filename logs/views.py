@@ -47,10 +47,20 @@ class CompareLogs(TemplateView):
                 "logs": handlers, 'ref': ref})
     def download(self):
         import json
+        from .utils import render_pdf_view
         # hier hast du schon die URLs als array
-        imageURLs = json.loads(self.POST.get("imageURLs", ""))
-        # ...
-        return JsonResponse({"data": imageURLs})
+        imageURLs = json.loads(self.POST.get("imageURLs", []))
+        ids = json.loads(self.POST.get("ids", []))
+        ref = int(self.POST.get('ref', 0))
+        handlers = [LogObjectHandler.objects.get(pk=int(id)) for id in ids ]
+        context = {
+            'names': [handler.log_name for handler in handlers],
+            'graphs': imageURLs,
+            'metrics': [handler.metrics(handlers[ref]) for handler in handlers],
+            'filters': [handler.filter for handler in handlers]
+        }
+
+        return render_pdf_view('to_pdf.html', context)
     
     def filter(self):
         import json

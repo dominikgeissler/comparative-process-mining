@@ -72,13 +72,12 @@ window.addEventListener('load', function() {
     canvas.forEach(canv => {
         dataURLs.push(canv.toDataURL("image/png"))
     })
-    // hier kannst du dir ggf daten schon definieren
     ref = "{{ref}}"
+
     var logs = "{% for log in logs %} {{log.pk}} {% endfor %}"
     logIDs = logs.split(" ")
+    // remove empty string from array
     logIDs = logIDs.filter(el => el)
-    console.log(logIDs)
-    console.log(ref)
 })
 $("#download-button").click(function() {
     $.ajax({
@@ -86,12 +85,20 @@ $("#download-button").click(function() {
         url: '{% url "download_comparison" %}',
         data: {
             csrfmiddlewaretoken: '{{ csrf_token }}',
-            imageURLs: JSON.stringify(dataURLs)
-            // TODO: hier noch die data ergänzen
+            imageURLs: JSON.stringify(dataURLs),
+            ids: JSON.stringify(logIDs),
+            ref: ref
+        },
+        xhrFields: {
+            responseType: 'blob'
         },
         success: function(data) {
-            //data.data.forEach((val, index) => console.log(val == dataURLs[index]))
-            // do sth
+            var a = document.createElement("a")
+            var url = window.URL.createObjectURL(data);
+            a.href = url;
+            a.download = "test.pdf"
+            document.body.append(a)
+            a.click();
         }
     })
 })
