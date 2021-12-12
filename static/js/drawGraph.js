@@ -103,14 +103,7 @@ export const drawGraph =  (containerID, data)=>{
         },
         'single-node',
     );
-    // set image path in local storage
-    graph.on('afterlayout', () => {
-        graph.toFullDataURL(
-            (res) => {
-                localStorage.setItem('graph'+containerID,res);
-            }
-        )
-    });
+    
     graph.data(data);
     graph.render();
     if (typeof window !== 'undefined'){
