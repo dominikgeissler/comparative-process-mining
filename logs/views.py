@@ -48,7 +48,6 @@ class CompareLogs(TemplateView):
     def download(self):
         import json
         from .utils import render_pdf_view
-        # hier hast du schon die URLs als array
         imageURLs = json.loads(self.POST.get("imageURLs", []))
         ids = json.loads(self.POST.get("ids", []))
         ref = int(self.POST.get('ref', 0))
