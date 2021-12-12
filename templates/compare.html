@@ -59,4 +59,14 @@ table {
   }
 
 </style>
+<script type="text/javascript">
+window.addEventListener('load', function() {
+    var canvas = document.querySelectorAll('canvas')
+    var dataURLs = []
+    canvas.forEach(canv => {
+        dataURLs.push(canv.toDataURL())
+    })
+    console.log(dataURLs)
+})
+</script>
 {% endblock %}
