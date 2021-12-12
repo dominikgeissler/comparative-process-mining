@@ -56,7 +56,8 @@ class CompareLogs(TemplateView):
             'names': [handler.log_name for handler in handlers],
             'graphs': imageURLs,
             'metrics': [handler.metrics(handlers[ref]) for handler in handlers],
-            'filters': [handler.filter for handler in handlers]
+            'filters': [handler.filter for handler in handlers],
+            'similarity': [handler.get_similarity_index(handlers[ref]) for handler in handlers]
         }
 
         return render_pdf_view('to_pdf.html', context)
