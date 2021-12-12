@@ -49,6 +49,7 @@ class CompareLogs(TemplateView):
         import json
         # hier hast du schon die URLs als array
         imageURLs = json.loads(self.POST.get("imageURLs", ""))
+        # ...
         return JsonResponse({"data": imageURLs})
     
     def filter(self):

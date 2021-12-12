@@ -65,12 +65,20 @@ table {
 // definierst hier initialisiert werden müssen, damit du
 // in anderen Funktionen drauf zugreifen kannst
 var dataURLs = []
+var ref = 0
+var logIDs = []
 window.addEventListener('load', function() {
     var canvas = document.querySelectorAll('canvas')
     canvas.forEach(canv => {
         dataURLs.push(canv.toDataURL("image/png"))
     })
     // hier kannst du dir ggf daten schon definieren
+    ref = "{{ref}}"
+    var logs = "{% for log in logs %} {{log.pk}} {% endfor %}"
+    logIDs = logs.split(" ")
+    logIDs = logIDs.filter(el => el)
+    console.log(logIDs)
+    console.log(ref)
 })
 $("#download-button").click(function() {
     $.ajax({
