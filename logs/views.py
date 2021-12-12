@@ -41,22 +41,15 @@ class CompareLogs(TemplateView):
                 # no unique handler exists -> create new one
                 handler = LogObjectHandler.objects.create(log_object=log)
                 handler.save()
-            handlers.append(handler)
-        if request.GET.get("download", ""):
-            from .utils import render_pdf_view
-            context = {
-                'handlers': [handler.log_name() for handler in handlers],
-                'filters': [handler.filter for handler in handlers],
-                'graphs': [handler.graph(handlers[ref]) for handler in handlers],
-                'similiarity_index' : [handler.get_similarity_index(handlers[ref]) for handler in handlers],
-                'metrics': [handler.metrics(handlers[ref]) for handler in handlers]
-            }
-            path = "to_pdf.html"
-            return render_pdf_view(path, context)
-            
+            handlers.append(handler)            
         return render(
             request, self.template_name, {
                 "logs": handlers, 'ref': ref})
+    def download(self):
+        import json
+        imageURLs = json.loads(self.POST.get("imageURLs", ""))
+        return JsonResponse({"data": imageURLs})
+    
     def filter(self):
         import json
         data = json.loads(self.GET.get('data', ''))

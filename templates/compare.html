@@ -43,6 +43,9 @@
     <!-- <a href="{{request.get_full_path}}&download=true" class="btn btn-primary">Download</a> -->
     <button id="download-button" class="btn btn-primary">Download</button>
 </div>
+<div id="image-test">
+
+</div>
 {% endwith %}
 {% endwith %}
 <style type="text/css">
@@ -61,26 +64,26 @@ table {
 
 </style>
 <script type="text/javascript">
+var dataURLs = []
 window.addEventListener('load', function() {
     var canvas = document.querySelectorAll('canvas')
-    var dataURLs = []
     canvas.forEach(canv => {
-        dataURLs.push(canv.toDataURL())
+        dataURLs.push(canv.toDataURL("image/png"))
     })
 })
-$('#download-button').click(function() {
-    var data = {
-        // ...,
-        imageURLs: dataURLs
-    }
+$("#download-button").click(function() {
     $.ajax({
-        url: '{% url hier einfügen (in logs/urls.py) %}',
-        data: JSON.stringify(data),
-        dataType: "json",
+        type: "post",
+        url: '{% url "download_comparison" %}',
+        data: {
+            csrfmiddlewaretoken: '{{ csrf_token }}',
+            imageURLs: JSON.stringify(dataURLs)
+        },
         success: function(data) {
-            console.log(data)
+            data.data.forEach((val, index) => console.log(val == dataURLs[index]))
         }
     })
 })
+
 </script>
 {% endblock %}
