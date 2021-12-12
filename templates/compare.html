@@ -64,12 +64,16 @@ table {
 
 </style>
 <script type="text/javascript">
+// achte drauf, dass die sachen die du innerhalb der funktionen
+// definierst hier initialisiert werden müssen, damit du
+// in anderen Funktionen drauf zugreifen kannst
 var dataURLs = []
 window.addEventListener('load', function() {
     var canvas = document.querySelectorAll('canvas')
     canvas.forEach(canv => {
         dataURLs.push(canv.toDataURL("image/png"))
     })
+    // hier kannst du dir ggf daten schon definieren
 })
 $("#download-button").click(function() {
     $.ajax({
@@ -78,9 +82,11 @@ $("#download-button").click(function() {
         data: {
             csrfmiddlewaretoken: '{{ csrf_token }}',
             imageURLs: JSON.stringify(dataURLs)
+            // TODO: hier noch die data ergänzen
         },
         success: function(data) {
-            data.data.forEach((val, index) => console.log(val == dataURLs[index]))
+            //data.data.forEach((val, index) => console.log(val == dataURLs[index]))
+            // do sth
         }
     })
 })
