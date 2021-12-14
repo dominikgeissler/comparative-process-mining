@@ -309,6 +309,43 @@ class LogObjectHandler(models.Model):
         self.filter.set_attribute(attr, value)
         self.filter.save()
 
+    def get_isFrequency(self):
+        if self.filter is None or self.filter.isFrequency == True:
+            return "Frequency"
+        else:
+            return "Performance"
+
+    def get_filter(self):
+        if self.filter is None:
+            return {"No filter selected": "No attribute(s) selected"}
+        elif self.filter.type == "case_performance":
+            return {"Case Performance": "Between " + str(self.filter.case_performance1) + " and " + str(self.filter.case_performance2)}
+        elif self.filter.type == "between_filter":
+            return {"Between Filter": "Between " + str(self.filter.case1) + " and " + str(self.filter.case2)}
+        elif self.filter.type == "case_size":
+            return {"Case Size": "Between " + str(self.filter.case_size1) + " and " + str(self.filter.case_size2)}
+        elif self.filter.type == "timestamp_filter_contained":
+            from django.utils.timezone import make_naive
+            from pytz import UTC
+            timestamp1, timestamp2 = make_naive(
+                self.filter.timestamp1, UTC), make_naive(self.filter.timestamp2, UTC)
+            return {"Timestamp Filter (contained)": "Between " + str(timestamp1) + " and " + str(timestamp2)}
+        elif self.filter.type == "timestamp_filter_intersecting":
+            from django.utils.timezone import make_naive
+            from pytz import UTC
+            timestamp1, timestamp2 = make_naive(
+                self.filter.timestamp1, UTC), make_naive(self.filter.timestamp2, UTC)
+            return {"Timestamp Filter (intersecting)": "Between " + str(timestamp1) + " and " + str(timestamp2)}
+        elif self.filter.type == "filter_on_attributes":
+            if self.filter.operator == "=":
+                return {"Filter on attributes": str(self.filter.attribute) + " = " + str(self.filter.attribute_value)}
+            elif self.filter.operator == "≠":
+                return {"Filter on attributes": str(self.filter.attribute) + " ≠ " + str(self.filter.attribute_value)}
+            elif self.filter.operator == "<":
+                return {"Filter on attributes": str(self.filter.attribute) + " < " + str(self.filter.attribute_value)}
+            elif self.filter.operator == ">":
+                return {"Filter on attributes": str(self.filter.attribute) + " > " + str(self.filter.attribute_value)}
+
 
 class Metrics():
     """
