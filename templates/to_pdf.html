@@ -27,12 +27,23 @@
         {% endfor %}
         </thead>
         <tr>
-            {% for filter in filters %}
+            <tr>
+            {% for filter in isFrequency %}
             <td>
-            {{filter}}
+            Edge Labeling: {{filter}}
             </td>
             {% endfor %}
-            </tr>
+        </tr>
+        <tr>
+            {% for filter in filters %}
+            <td>
+                {% for key, value in filter.items %}
+                Filter Type: {{key}} <br> 
+                Attribute: {{value}}
+                {% endfor %}
+            </td>
+            {% endfor %}
+        </tr>
         <tr>
         {% for graph in graphs %}
             <td>
