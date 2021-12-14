@@ -54,7 +54,9 @@ class CompareLogs(TemplateView):
         handlers = [LogObjectHandler.objects.get(pk=int(id)) for id in ids ]
         context = {
             'names': [handler.log_name for handler in handlers],
-            'isFrequency': [handler.get_isFrequency() for handler in handlers],
+            # kannst du in das template verlegen (siehe models.py)
+            'isFrequency': ["Frequency" if not handler.filter or handler.filter.isFrequency else "Performance" for handler in handlers],
+            # s.o.
             'filters': [handler.get_filter() for handler in handlers],
             'graphs': imageURLs,
             'metrics': [handler.metrics(handlers[ref]) for handler in handlers],

@@ -35,6 +35,7 @@
         <tr></tr>
         <tr>
             <tr>
+            <!-- siehe models.py -->
             {% for filter in isFrequency %}
             <td>
             Edge Labeling: {{filter}}
@@ -42,6 +43,7 @@
             {% endfor %}
         </tr>
         <tr>
+            <!-- siehe models.py und views.py -->
             {% for filter in filters %}
             <td>
                 {% for key, value in filter.items %}
@@ -66,7 +68,6 @@
         </td>
         {% endfor %}
         </tr>
-        <tr></tr>
         <tr>
         {% block content %}
         {% load metrics_tags %}
@@ -93,7 +94,7 @@
     </table>
 </body>
 </html>
-
+<!-- muss das nicht in den header? -->
 <style type="text/css">
     span {
         font-weight: bold;
