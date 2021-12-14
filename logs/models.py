@@ -134,15 +134,17 @@ class LogObjectHandler(models.Model):
             sum_variants_log = 0
             common_no_variants = 0
             for x in range(0, len(variants_count_reference)-1):
+                sum_variants_reference += variants_count_reference[x]['count']
                 for i in range(0, len(variants_count_log)-1):
                     # if variants_count_reference[x]['variant'] == variants_count_log[i]['variant']:
                     if variants_count_reference[x]['variant'] in variants_count_log[i]['variant']:
                         common_no_variants += min(
                             variants_count_reference[x]['count'], variants_count_log[i]['count'])
-                sum_variants_reference += variants_count_reference[x]['count']
             for i in range(0, len(variants_count_log)-1):
                 sum_variants_log += variants_count_log[i]['count']
             sum = max(sum_variants_reference, sum_variants_log)
+            if(common_no_variants/sum) >= 1:
+                return "100%"
             return str("%.2f" % round(common_no_variants/sum*100, 2))+"%"
         return "100%"
 
