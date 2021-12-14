@@ -36,6 +36,13 @@
         <tr>
             {% for filter in isFrequency %}
             <td>
+            <h3 class="mt-4" style="color:#00529F;">Selected Filters:</h3>    
+            </td>
+            {% endfor %}
+        </tr>
+        <tr>
+            {% for filter in isFrequency %}
+            <td>
             Edge Labeling: {{filter}}
             </td>
             {% endfor %}
@@ -53,6 +60,13 @@
         </tr>
         <tr></tr>
         <tr>
+            {% for filter in isFrequency %}
+            <td>
+            <h3 class="mt-4" style="color:#00529F;">Process Model:</h3> 
+            </td>
+            {% endfor %}
+        </tr>
+        <tr>
         {% for graph in graphs %}
             <td>
             <img src="{{graph}}">
@@ -60,11 +74,25 @@
         {% endfor %}
         </tr>
         <tr>
+            {% for filter in isFrequency %}
+            <td>
+            <h3 class="mt-4" style="color:#00529F;">Similarity Index:</h3> 
+            </td>
+            {% endfor %}
+        </tr>
+        <tr>
         {% for index in similarity %}
         <td>
             Similarity Index: {{index}}
         </td>
         {% endfor %}
+        </tr>
+        <tr>
+            {% for filter in isFrequency %}
+            <td>
+            <h3 class="mt-4" style="color:#00529F;">Metrics:</h3> 
+            </td>
+            {% endfor %}
         </tr>
         <tr>
         {% block content %}
