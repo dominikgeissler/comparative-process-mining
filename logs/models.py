@@ -330,9 +330,9 @@ class LogObjectHandler(models.Model):
             # brauchst du nicht
             timestamp1, timestamp2 = make_naive(
                 self.filter.timestamp1, UTC), make_naive(self.filter.timestamp2, UTC)
-            return {"Timestamp Filter (intersecting)": "Between " + str(timestamp1) + " and " + str(timestamp2)}
+            return {"Timestamp Filter (intersecting)": "Between " + self.filter.timestamp1 + " and " + str(timestamp2)}
         elif self.filter.type == "filter_on_attributes":
-            return {"Filter on attributes": str(self.filter.attribute) + " " + self.filter.operator + " " + str(self.filter.attribute_value)}
+            return {"Filter on attributes": self.filter.attribute + " " + self.filter.operator + " " + str(self.filter.attribute_value)}
 
 
 class Metrics():

@@ -40,7 +40,6 @@
         </tr>
 </table>
 <div class="d-flex justify-content-center">
-    <!-- <a href="{{request.get_full_path}}&download=true" class="btn btn-primary">Download</a> -->
     <button id="download-button" class="btn btn-primary">Download</button>
 </div>
 {% endwith %}
@@ -61,9 +60,6 @@ table {
 
 </style>
 <script type="text/javascript">
-// achte drauf, dass die sachen die du innerhalb der funktionen
-// definierst hier initialisiert werden müssen, damit du
-// in anderen Funktionen drauf zugreifen kannst
 var dataURLs = []
 var ref = 0
 var logIDs = []
@@ -73,7 +69,6 @@ window.addEventListener('load', function() {
         dataURLs.push(canv.toDataURL("image/png"))
     })
     ref = "{{ref}}"
-
     var logs = "{% for log in logs %} {{log.pk}} {% endfor %}"
     logIDs = logs.split(" ")
     // remove empty string from array

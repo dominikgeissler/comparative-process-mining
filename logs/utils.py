@@ -5,6 +5,29 @@ from django.template.loader import get_template
 from xhtml2pdf import pisa
 from django.contrib.staticfiles import finders
 
+import secrets, io
+from base64 import b64decode
+from PIL import Image
+from django.core.files.base import ContentFile
+
+def get_image_from_data_url(data_url, resize=True, base=600):
+        _format, _url = data_url.split(';base64,')
+        _filename = secrets.token_hex(20) 
+        _ext = _format.split('/')[-1]
+        filename = f"{_filename}.{_ext}"
+        file = ContentFile(b64decode(_url), name=filename)
+        
+        if resize:
+                image = Image.open(file)
+                image_io = io.BytesIO()
+                _perc = base/float(image.size[0])
+                _size = int(float(image.size[1])* float(_perc))
+                image = image.resize((base, _size), Image.ANTIALIAS)
+                image.save(image_io, format=_ext)
+                file = ContentFile(image_io.getvalue(), name=filename) 
+
+        
+        return file, filename
 
 def link_callback(uri, rel):
             """

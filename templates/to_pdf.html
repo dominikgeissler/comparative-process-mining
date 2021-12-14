@@ -1,9 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Comparative Process Mining</title>
     {% load static %}
-    <link rel="stylesheet" href="/static/css/xhtml2pdf_bootstrap.css">
     <style type="text/css">
         table {
         table-layout: auto;
@@ -28,16 +26,19 @@
         .negative {
         color: green;
         }
+       h1,h3 {
+            color:#00529F;
+        }
     </style>
 </head>
 <body>
     <img src="static/img/RWTH_logo.png" width="102" height="28" alt="">
-    <h1 class="mt-4" style="color:#00529F;">Comparative Process Mining</h1>
+    <h1 class="mt-4">Comparative Process Mining</h1>
     <table class="table">
         <tr>
             {% for filter in isFrequency %}
             <td>
-            <h3 class="mt-4" style="color:#00529F;">Event Log:</h3>    
+            <h3 class="mt-4">Event Log:</h3>    
             </td>
             {% endfor %}
         </tr>
@@ -51,7 +52,7 @@
         <tr>
             {% for filter in isFrequency %}
             <td>    
-            <h3 class="mt-4" style="color:#00529F;">Selected Filters:</h3>    
+            <h3 class="mt-4">Selected Filters:</h3>    
             </td>
             {% endfor %}
         </tr>
@@ -63,7 +64,6 @@
             {% endfor %}
         </tr>
         <tr>
-            <!-- siehe models.py und views.py -->
             {% for filter in filters %}
             <td>
                 {% for key, value in filter.items %}
@@ -76,7 +76,7 @@
         <tr>
             {% for filter in isFrequency %}
             <td>  
-            <h3 class="mt-4" style="color:#00529F;">Process Model:</h3> 
+            <h3 class="mt-4">Process Model:</h3> 
             </td>
             {% endfor %}
         </tr>
@@ -90,7 +90,7 @@
         <tr>
             {% for filter in isFrequency %}
             <td>  
-            <h3 class="mt-4" style="color:#00529F;">Similarity Index:</h3> 
+            <h3 class="mt-4">Similarity Index:</h3> 
             </td>
             {% endfor %}
         </tr>
@@ -104,7 +104,7 @@
         <tr>
             {% for filter in isFrequency %}
             <td>  
-            <h3 class="mt-4" style="color:#00529F;">Metrics:</h3> 
+            <h3 class="mt-4">Metrics:</h3> 
             </td>
             {% endfor %}
         </tr>
@@ -114,7 +114,7 @@
         {% for metric in metrics %}
         <td>
             {% for key, value in metric.items %}
-                <table class="table">
+                <table>
                     <tr>
                         <td>
                         {% if value|is_list %}

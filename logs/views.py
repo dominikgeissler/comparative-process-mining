@@ -47,16 +47,19 @@ class CompareLogs(TemplateView):
                 "logs": handlers, 'ref': ref})
     def download(self):
         import json
-        from .utils import render_pdf_view
+        from .utils import render_pdf_view, get_image_from_data_url
+        from django.core.files.storage import FileSystemStorage
         imageURLs = json.loads(self.POST.get("imageURLs", []))
+        fs = FileSystemStorage()
+        for url in imageURLs:
+            file, _filename = get_image_from_data_url(url)
+            fs.save(_filename, file)
         ids = json.loads(self.POST.get("ids", []))
         ref = int(self.POST.get('ref', 0))
         handlers = [LogObjectHandler.objects.get(pk=int(id)) for id in ids ]
         context = {
             'names': [handler.log_name for handler in handlers],
-            # kannst du in das template verlegen (siehe models.py)
             'isFrequency': ["Frequency" if not handler.filter or handler.filter.isFrequency else "Performance" for handler in handlers],
-            # s.o.
             'filters': [handler.get_filter() for handler in handlers],
             'graphs': imageURLs,
             'metrics': [handler.metrics(handlers[ref]) for handler in handlers],
