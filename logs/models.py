@@ -20,7 +20,7 @@ order = ["no_cases",
          "no_events",
          "no_variants",
          "no_activities",
-         "avg_case_duration",
+         "average_case_duration",
          "median_case_duration",
          "total_case_duration"]
 
@@ -399,7 +399,7 @@ class LogMetrics():
             avg_case_duration = 0
         else:
             avg_case_duration = (sum(all_case_durations)) / self.no_cases
-        self.avg_case_duration = avg_case_duration
+        self.average_case_duration = avg_case_duration
         """Average Case Duration"""
 
         median_case_duration = (
