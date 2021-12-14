@@ -309,18 +309,6 @@ class LogObjectHandler(models.Model):
         self.filter.set_attribute(attr, value)
         self.filter.save()
 
-    def get_isFrequency(self):
-        # unnötig -> kannst du im template machen mit
-        # {% if not filter or filter.isFrequency  %}
-        # blabla frequency
-        # {% else %}
-        # blabla performance
-        # ...
-        if self.filter is None or self.filter.isFrequency == True:
-            return "Frequency"
-        else:
-            return "Performance"
-
     def get_filter(self):
         # alles ins template verlagern
         if self.filter is None:
@@ -345,16 +333,7 @@ class LogObjectHandler(models.Model):
                 self.filter.timestamp1, UTC), make_naive(self.filter.timestamp2, UTC)
             return {"Timestamp Filter (intersecting)": "Between " + str(timestamp1) + " and " + str(timestamp2)}
         elif self.filter.type == "filter_on_attributes":
-            # warum diese fallunterscheidung und nicht einfach
-            # return str(self.filter.attribute) + self.filter.operator + ...
-            if self.filter.operator == "=":
-                return {"Filter on attributes": str(self.filter.attribute) + " = " + str(self.filter.attribute_value)}
-            elif self.filter.operator == "≠":
-                return {"Filter on attributes": str(self.filter.attribute) + " ≠ " + str(self.filter.attribute_value)}
-            elif self.filter.operator == "<":
-                return {"Filter on attributes": str(self.filter.attribute) + " < " + str(self.filter.attribute_value)}
-            elif self.filter.operator == ">":
-                return {"Filter on attributes": str(self.filter.attribute) + " > " + str(self.filter.attribute_value)}
+            return {"Filter on attributes": str(self.filter.attribute) + " " + self.filter.operator + " " + str(self.filter.attribute_value)}
 
 
 class Metrics():
