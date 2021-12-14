@@ -9,9 +9,7 @@ from pm4py.objects.conversion.log.variants import (
     as log_to_data_frame)
 from pm4py.statistics.traces.generic.log import case_statistics
 import pm4py
-from helpers.dfg_helper import convert_dfg_to_dict
-from helpers.g6_helpers import dfg_dict_to_g6, highlight_nonstandard_activities
-from helpers.metrics_helper import get_difference, get_difference_days_hrs_min, days_hours_minutes
+from .utils import convert_dfg_to_dict, dfg_dict_to_g6, highlight_nonstandard_activities, get_difference, get_difference_days_hrs_min, days_hours_minutes
 from filecmp import cmp
 import json
 

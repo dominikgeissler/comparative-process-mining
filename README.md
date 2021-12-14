@@ -12,7 +12,6 @@
 ````
 ├── cpm         Django settings
 ├── doc         Documentation
-├── helpers     Help functions
 ├── logs        Main project
 ├── media       Saved logs
 ├── static      CSS / JS / Img

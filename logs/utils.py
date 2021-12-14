@@ -10,6 +10,9 @@ from secrets import token_hex
 from base64 import b64decode
 from PIL import Image
 from django.core.files.base import ContentFile
+from datetime import timedelta
+
+# --- PDF ---
 
 def data_url_to_img(data_url, resize=True, base=600):
         # split format from url
@@ -99,3 +102,128 @@ def render_pdf_view(template_path, context ):
     if pisa_status.err:
        return HttpResponse('We had some errors <pre>' + html + '</pre>')
     return response
+
+# --- DFG ---
+
+def convert_dfg_to_dict(dfg):
+    dfg_graph_dict = {}
+    min_frequency = float('inf')
+    max_frequency = 0
+    for (startnode, endnote), frequency in dfg.items():
+        if startnode not in dfg_graph_dict:
+            dfg_graph_dict[startnode] = {}
+        dfg_graph_dict[startnode][endnote] = frequency
+        min_frequency = min(min_frequency, frequency)
+        max_frequency = max(max_frequency, frequency)
+
+    dfg_properties = {
+        'min_frequency': min_frequency,
+        'max_frequency': max_frequency,
+    }
+    return {
+        'properties': dfg_properties,
+        'dfg_graph': dfg_graph_dict
+    }
+
+def dfg_dict_to_g6(dfg_dict):
+    edges = []
+    nodes = []
+    dfg_graph_dict = dfg_dict['dfg_graph']
+    unique_nodes = set()
+    max_frequency = dfg_dict['properties']['max_frequency']
+    min_frequency = dfg_dict['properties']['min_frequency']
+    for startnode in dfg_graph_dict:
+        edges_from_startnode = []
+        unique_nodes.add(startnode)
+        for endnode in dfg_graph_dict[startnode]:
+            unique_nodes.add(endnode)
+            frequency = dfg_graph_dict[startnode][endnode]
+            edges_from_startnode.append(
+                {
+                    'source': startnode,
+                    'target': endnode,
+                    'label': frequency,
+                    'style': {
+                        # 'lineWidth': ((frequency - min_frequency) / (max_frequency - min_frequency)) * (18) + 2,
+                        'endArrow': True
+                    }
+                }
+            )
+        edges.extend(edges_from_startnode)
+
+    nodes = [
+        {
+            'id': node,
+            'name': node,
+            'isUnique': False,
+            'conf': {
+                'label': 'Name',
+                'value': node,
+            }
+
+
+        }
+        for node in unique_nodes
+    ]
+    return {
+        'edges': edges,
+        'nodes': nodes,
+    }
+
+# --- G6 ---
+
+def highlight_nonstandard_activities(g6_graph, reference):
+    """
+    Highlight non-standard activities in dfg/g6-graph
+    """
+    """
+    The log that is chosen first on the manage side or first uploaded
+    will be the reference log for all comparisons
+    """
+
+    for node in g6_graph['nodes']:
+        if find_node_in_g6(node['name'], reference):
+            node['isUnique'] = 'False'
+        else:
+            node['isUnique'] = 'True'
+
+    return g6_graph
+
+
+def find_node_in_g6(node_name, reference):
+    for node in reference['nodes']:
+        if node['name'] == node_name:
+            return True
+    return False
+
+# --- Metrics ---
+
+def days_hours_minutes(total_seconds):
+    """Transfer seconds format in days-hours-minutes-seconds format"""
+    td = timedelta(seconds=total_seconds)
+    days = td.days
+    hours = td.seconds // 3600
+    minutes = (td.seconds // 60) % 60
+    seconds = td.seconds - hours * 3600 - minutes * 60
+    return str(days) + "d "\
+        + str(hours) + "h "\
+        + str(minutes) + "m "\
+        + str(seconds) + "s"
+
+
+def get_difference(res1, res2):
+    return [res1, str(res1 - res2) if res1 - res2 < 0 else "+" +
+            str(res1 - res2) if res1 - res2 > 0 else "0"]
+
+
+def get_difference_days_hrs_min(res1, res2):
+    return [
+        days_hours_minutes(res1),
+        days_hours_minutes(
+            res1 -
+            res2) if res1 -
+        res2 < 0 else "+" +
+        days_hours_minutes(
+            res1 -
+            res2) if res1 -
+        res2 > 0 else "0d"]
