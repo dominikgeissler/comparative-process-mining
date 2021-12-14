@@ -125,11 +125,11 @@ class LogObjectHandler(models.Model):
         """
         Similarity Index based on the number of common variants or (in other words) common traces
         """
-        if reference and reference.log_object != self.log_object:
+        if reference and reference.generate_dfg(only_extract_filtered_log=True) != self.generate_dfg(only_extract_filtered_log=True):
             variants_count_log = case_statistics.get_variant_statistics(
-                self.pm4py_log())
+                self.generate_dfg(only_extract_filtered_log=True))
             variants_count_reference = case_statistics.get_variant_statistics(
-                reference.pm4py_log())
+                reference.generate_dfg(only_extract_filtered_log=True))
             sum_variants_reference = 0
             sum_variants_log = 0
             common_no_variants = 0
