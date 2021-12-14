@@ -36,11 +36,7 @@
         <tr>
             {% for filter in isFrequency %}
             <td>
-            {% if not filter or filter.isFrequency  %}
-            Edge Labeling: Frequency
-            {% else %}
-            Edge Labeling: Performance
-            {% endif %}
+            Edge Labeling: {{filter}}
             </td>
             {% endfor %}
         </tr>
