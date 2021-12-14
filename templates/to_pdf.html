@@ -28,13 +28,14 @@
         <tr>
         {% for name in names %}
             <th>
-                Event Log: {{name}}
+                Event Log: <br> {{name}}
             </th>
         {% endfor %}
         </tr>
         <tr>
             {% for filter in isFrequency %}
             <td>
+            &nbsp; <br>    
             <h3 class="mt-4" style="color:#00529F;">Selected Filters:</h3>    
             </td>
             {% endfor %}
@@ -60,6 +61,7 @@
         <tr>
             {% for filter in isFrequency %}
             <td>
+            &nbsp; <br>  
             <h3 class="mt-4" style="color:#00529F;">Process Model:</h3> 
             </td>
             {% endfor %}
@@ -74,6 +76,7 @@
         <tr>
             {% for filter in isFrequency %}
             <td>
+            &nbsp; <br>  
             <h3 class="mt-4" style="color:#00529F;">Similarity Index:</h3> 
             </td>
             {% endfor %}
@@ -88,6 +91,7 @@
         <tr>
             {% for filter in isFrequency %}
             <td>
+            &nbsp; <br>  
             <h3 class="mt-4" style="color:#00529F;">Metrics:</h3> 
             </td>
             {% endfor %}
