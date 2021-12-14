@@ -47,12 +47,12 @@ class CompareLogs(TemplateView):
                 "logs": handlers, 'ref': ref})
     def download(self):
         import json
-        from .utils import render_pdf_view, get_image_from_data_url
+        from .utils import render_pdf_view, data_url_to_img
         from django.core.files.storage import FileSystemStorage
         imageURLs = json.loads(self.POST.get("imageURLs", []))
         fs = FileSystemStorage()
         for url in imageURLs:
-            file, _filename = get_image_from_data_url(url)
+            file, _filename = data_url_to_img(url)
             fs.save(_filename, file)
         ids = json.loads(self.POST.get("ids", []))
         ref = int(self.POST.get('ref', 0))

@@ -5,28 +5,52 @@ from django.template.loader import get_template
 from xhtml2pdf import pisa
 from django.contrib.staticfiles import finders
 
-import secrets, io
+from io import BytesIO
+from secrets import token_hex
 from base64 import b64decode
 from PIL import Image
 from django.core.files.base import ContentFile
 
-def get_image_from_data_url(data_url, resize=True, base=600):
+def data_url_to_img(data_url, resize=True, base=600):
+        # split format from url
         _format, _url = data_url.split(';base64,')
-        _filename = secrets.token_hex(20) 
+        
+        # create random filename
+        _filename = token_hex(20) 
+        
+        # get extension from format string
         _ext = _format.split('/')[-1]
+
+        # create filename
         filename = f"{_filename}.{_ext}"
+
+        # base file as decoded url contents
         file = ContentFile(b64decode(_url), name=filename)
         
+        # resizing to reduce image memory alloc.
         if resize:
+                
+                # open image file
                 image = Image.open(file)
-                image_io = io.BytesIO()
+
+                # get io to change file without fss
+                image_io = BytesIO()
+
+                # rel. width from base
                 _perc = base/float(image.size[0])
+
+                # rel. height
                 _size = int(float(image.size[1])* float(_perc))
+
+                # resize image
                 image = image.resize((base, _size), Image.ANTIALIAS)
+
+                # save io bytes in image
                 image.save(image_io, format=_ext)
+
+                # change file to resized image
                 file = ContentFile(image_io.getvalue(), name=filename) 
 
-        
         return file, filename
 
 def link_callback(uri, rel):
