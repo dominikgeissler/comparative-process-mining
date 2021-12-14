@@ -51,6 +51,7 @@
             </td>
             {% endfor %}
         </tr>
+        <tr></tr>
         <tr>
         {% for graph in graphs %}
             <td>
@@ -58,11 +59,14 @@
             </td>
         {% endfor %}
         </tr>
+        <tr></tr>
+        <tr>
         {% for index in similarity %}
         <td>
             Similarity Index: {{index}}
         </td>
         {% endfor %}
+        </tr>
         <tr>
         {% block content %}
         {% load metrics_tags %}
