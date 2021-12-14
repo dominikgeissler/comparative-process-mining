@@ -15,17 +15,24 @@
         object-fit: contain;
         display: block;
         }
+        body {
+        font-family: Arial, sans-serif;
+        font-size: 11px;
+        }
     </style>
 </head>
 <body>
+    <img src="static/img/RWTH_logo.png" width="102" height="28" alt="">
+    <h1 class="mt-4" style="color:#00529F;">Comparative Process Mining</h1>
     <table class="table">
-        <thead>
+        <tr>
         {% for name in names %}
             <th>
-                {{name}}
+                Event Log: {{name}}
             </th>
         {% endfor %}
-        </thead>
+        </tr>
+        <tr></tr>
         <tr>
             <tr>
             {% for filter in isFrequency %}
