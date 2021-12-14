@@ -34,11 +34,13 @@
         </tr>
         <tr></tr>
         <tr>
-            <tr>
-            <!-- siehe models.py -->
             {% for filter in isFrequency %}
             <td>
-            Edge Labeling: {{filter}}
+            {% if not filter or filter.isFrequency  %}
+            Edge Labeling: Frequency
+            {% else %}
+            Edge Labeling: Performance
+            {% endif %}
             </td>
             {% endfor %}
         </tr>
