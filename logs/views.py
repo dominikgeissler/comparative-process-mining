@@ -54,9 +54,10 @@ class CompareLogs(TemplateView):
         handlers = [LogObjectHandler.objects.get(pk=int(id)) for id in ids ]
         context = {
             'names': [handler.log_name for handler in handlers],
+            'isFrequency': [handler.get_isFrequency() for handler in handlers],
+            'filters': [handler.get_filter() for handler in handlers],
             'graphs': imageURLs,
             'metrics': [handler.metrics(handlers[ref]) for handler in handlers],
-            'filters': [handler.filter for handler in handlers],
             'similarity': [handler.get_similarity_index(handlers[ref]) for handler in handlers]
         }
 
