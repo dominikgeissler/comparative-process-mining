@@ -19,6 +19,15 @@
         font-family: Arial, sans-serif;
         font-size: 11px;
         }
+        span {
+        font-weight: bold;
+        }
+        .positive {
+        color: red;
+        }
+        .negative {
+        color: green;
+        }
     </style>
 </head>
 <body>
@@ -28,7 +37,6 @@
         <tr>
             {% for filter in isFrequency %}
             <td>
-            &nbsp; <br>    
             <h3 class="mt-4" style="color:#00529F;">Event Log:</h3>    
             </td>
             {% endfor %}
@@ -42,8 +50,7 @@
         </tr>
         <tr>
             {% for filter in isFrequency %}
-            <td>
-            &nbsp; <br>    
+            <td>    
             <h3 class="mt-4" style="color:#00529F;">Selected Filters:</h3>    
             </td>
             {% endfor %}
@@ -68,23 +75,21 @@
         </tr>
         <tr>
             {% for filter in isFrequency %}
-            <td>
-            &nbsp; <br>  
+            <td>  
             <h3 class="mt-4" style="color:#00529F;">Process Model:</h3> 
             </td>
             {% endfor %}
         </tr>
         <tr>
         {% for graph in graphs %}
-            <td>
+            <td style="padding: 15px;">
             <img src="{{graph}}">
             </td>
         {% endfor %}
         </tr>
         <tr>
             {% for filter in isFrequency %}
-            <td>
-            &nbsp; <br>  
+            <td>  
             <h3 class="mt-4" style="color:#00529F;">Similarity Index:</h3> 
             </td>
             {% endfor %}
@@ -98,8 +103,7 @@
         </tr>
         <tr>
             {% for filter in isFrequency %}
-            <td>
-            &nbsp; <br>  
+            <td>  
             <h3 class="mt-4" style="color:#00529F;">Metrics:</h3> 
             </td>
             {% endfor %}
@@ -130,15 +134,3 @@
     </table>
 </body>
 </html>
-<!-- muss das nicht in den header? -->
-<style type="text/css">
-    span {
-        font-weight: bold;
-    }
-    .positive {
-        color: red;
-    }
-    .negative {
-        color: green;
-    }
-</style>
