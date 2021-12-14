@@ -26,10 +26,18 @@
     <h1 class="mt-4" style="color:#00529F;">Comparative Process Mining</h1>
     <table class="table">
         <tr>
+            {% for filter in isFrequency %}
+            <td>
+            &nbsp; <br>    
+            <h3 class="mt-4" style="color:#00529F;">Event Log:</h3>    
+            </td>
+            {% endfor %}
+        </tr>
+        <tr>
         {% for name in names %}
-            <th>
-                Event Log: <br> {{name}}
-            </th>
+            <td>
+               {{name}}
+            </td>
         {% endfor %}
         </tr>
         <tr>
@@ -82,11 +90,11 @@
             {% endfor %}
         </tr>
         <tr>
-        {% for index in similarity %}
-        <td>
-            Similarity Index: {{index}}
-        </td>
-        {% endfor %}
+            {% for index in similarity %}
+            <td>
+                Similarity Index: {{index}}
+            </td>
+            {% endfor %}
         </tr>
         <tr>
             {% for filter in isFrequency %}
