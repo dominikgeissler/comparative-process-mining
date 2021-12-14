@@ -321,7 +321,7 @@ class LogObjectHandler(models.Model):
         elif self.filter.type == "case_performance":
             return {"Case Performance": "Between " + str(self.filter.case_performance1) + " and " + str(self.filter.case_performance2)}
         elif self.filter.type == "between_filter":
-            return {"Between Filter": "Between " + str(self.filter.case1) + " and " + str(self.filter.case2)}
+            return {"Between Filter": "Between '" + str(self.filter.case1) + "' and '" + str(self.filter.case2)+"'"}
         elif self.filter.type == "case_size":
             return {"Case Size": "Between " + str(self.filter.case_size1) + " and " + str(self.filter.case_size2)}
         elif self.filter.type == "timestamp_filter_contained":
