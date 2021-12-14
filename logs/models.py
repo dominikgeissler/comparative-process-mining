@@ -136,7 +136,6 @@ class LogObjectHandler(models.Model):
             for x in range(0, len(variants_count_reference)-1):
                 sum_variants_reference += variants_count_reference[x]['count']
                 for i in range(0, len(variants_count_log)-1):
-                    # if variants_count_reference[x]['variant'] == variants_count_log[i]['variant']:
                     if variants_count_reference[x]['variant'] in variants_count_log[i]['variant']:
                         common_no_variants += min(
                             variants_count_reference[x]['count'], variants_count_log[i]['count'])
