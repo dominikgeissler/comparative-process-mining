@@ -1,9 +1,7 @@
 # URLconf
 from genericpath import isfile
-from django.http import response
-from django.http.response import FileResponse, HttpResponse, JsonResponse
+from django.http.response import JsonResponse
 from django.shortcuts import render
-from django.template.loader import get_template
 from django.views.generic.base import TemplateView, View
 from .models import Filter, Log, LogObjectHandler
 from os import remove
@@ -62,10 +60,19 @@ class CompareLogs(TemplateView):
             file, filename = data_url_to_img(url)
             # save file
             fs.save(filename, file)
+            # get path
+            # (fs.base_url contains a leading '/' which breaks
+            # xhtml2pdf)
             graphs.append(join(fs.base_url[1:], filename))
+        
+        # get other information from request
         ids = json.loads(self.POST.get("ids", []))
         ref = int(self.POST.get('ref', 0))
+
+        # get handlers from ids
         handlers = [LogObjectHandler.objects.get(pk=int(id)) for id in ids ]
+
+        # create context
         context = {
             'names': [handler.log_name for handler in handlers],
             'isFrequency': ["Frequency" if not handler.filter or handler.filter.isFrequency else "Performance" for handler in handlers],
@@ -75,6 +82,7 @@ class CompareLogs(TemplateView):
             'similarity': [handler.get_similarity_index(handlers[ref]) for handler in handlers]
         }
 
+        # create pdf and return it as attachment
         return render_pdf_view('to_pdf.html', context)
     
     def filter(self):
