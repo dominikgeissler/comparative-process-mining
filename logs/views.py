@@ -51,14 +51,13 @@ class CompareLogs(TemplateView):
 
         # get data urls from request 
         imageURLs = json.loads(self.POST.get("imageURLs", []))
-        width = int(self.POST.get('width', 1024))
         
         # create new FSS for saving the images
         fs = FileSystemStorage()
         graphs = []
         for url in imageURLs:
             # create file
-            file, filename = data_url_to_img(url, base=int(width/len(imageURLs)))
+            file, filename = data_url_to_img(url, resize=False)
             # save file
             fs.save(filename, file)
             # get path

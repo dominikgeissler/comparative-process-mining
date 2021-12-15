@@ -101,8 +101,8 @@ def render_pdf_view(template_path, context, image_urls=[]):
        html, dest=response, link_callback=link_callback)
     
     # remove temp images
-    for img in image_urls:
-        os.remove(img)
+    # for img in image_urls:
+    #     os.remove(img)
     
     # if error then show some funy view
     if pisa_status.err:

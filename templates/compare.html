@@ -82,8 +82,7 @@ $("#download-button").click(function() {
             csrfmiddlewaretoken: '{{ csrf_token }}',
             imageURLs: JSON.stringify(dataURLs),
             ids: JSON.stringify(logIDs),
-            ref: ref,
-            width: screen.width
+            ref: ref
         },
         xhrFields: {
             responseType: 'blob'
