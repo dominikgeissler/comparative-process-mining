@@ -100,9 +100,9 @@ def render_pdf_view(template_path, context, image_urls=[]):
     pisa_status = pisa.CreatePDF(
        html, dest=response, link_callback=link_callback)
     
-    # for img in image_urls:
-    #     # remove temp images
-    #     os.remove(img)
+    # remove temp images
+    for img in image_urls:
+        os.remove(img)
     
     # if error then show some funy view
     if pisa_status.err:

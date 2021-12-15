@@ -77,13 +77,13 @@ class CompareLogs(TemplateView):
             'names': [handler.log_name for handler in handlers],
             'isFrequency': ["Frequency" if not handler.filter or handler.filter.isFrequency else "Performance" for handler in handlers],
             'filters': [handler.get_filter() for handler in handlers],
-            'graphs': imageURLs,
+            'graphs': graphs,
             'metrics': [handler.metrics(handlers[ref]) for handler in handlers],
             'similarity': [handler.get_similarity_index(handlers[ref]) for handler in handlers]
         }
 
         # create pdf and return it as attachment
-        return render_pdf_view('to_pdf.html', context)
+        return render_pdf_view('to_pdf.html', context, graphs)
     
     def filter(self):
         import json
