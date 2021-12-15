@@ -51,21 +51,21 @@ class CompareLogs(TemplateView):
 
         # get data urls from request 
         imageURLs = json.loads(self.POST.get("imageURLs", []))
+        width = int(self.POST.get('width', 1024))
         
         # create new FSS for saving the images
         fs = FileSystemStorage()
         graphs = []
         for url in imageURLs:
             # create file
-            file, filename = data_url_to_img(url)
+            file, filename = data_url_to_img(url, base=int(width/len(imageURLs)))
             # save file
             fs.save(filename, file)
             # get path
             # (fs.base_url contains a leading '/' which breaks
             # xhtml2pdf)
             graphs.append(join(fs.base_url[1:], filename))
-        
-        # get other information from request
+        # # get other information from request
         ids = json.loads(self.POST.get("ids", []))
         ref = int(self.POST.get('ref', 0))
 
@@ -77,7 +77,7 @@ class CompareLogs(TemplateView):
             'names': [handler.log_name for handler in handlers],
             'isFrequency': ["Frequency" if not handler.filter or handler.filter.isFrequency else "Performance" for handler in handlers],
             'filters': [handler.get_filter() for handler in handlers],
-            'graphs': graphs,
+            'graphs': imageURLs,
             'metrics': [handler.metrics(handlers[ref]) for handler in handlers],
             'similarity': [handler.get_similarity_index(handlers[ref]) for handler in handlers]
         }

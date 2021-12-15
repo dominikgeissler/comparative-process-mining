@@ -40,13 +40,13 @@ def data_url_to_img(data_url, resize=True, base=600):
                 image_io = BytesIO()
 
                 # rel. width from base
-                _perc = base/float(image.size[0])
+                _width = base/float(image.size[0])
 
                 # rel. height
-                _size = int(float(image.size[1])* float(_perc))
+                _height = int(float(image.size[1])* float(_width))
 
                 # resize image
-                image = image.resize((base, _size), Image.ANTIALIAS)
+                image = image.resize((base, _height), Image.ANTIALIAS)
 
                 # save io bytes in image
                 image.save(image_io, format=_ext)
@@ -85,9 +85,10 @@ def link_callback(uri, rel):
                     raise Exception(
                             'media URI must start with %s or %s' % (sUrl, mUrl)
                     )
+
             return path
 
-def render_pdf_view(template_path, context ):
+def render_pdf_view(template_path, context, image_urls=[]):
     # Create a Django response object, and specify content_type as pdf
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="report.pdf"'
@@ -98,6 +99,11 @@ def render_pdf_view(template_path, context ):
     # create a pdf
     pisa_status = pisa.CreatePDF(
        html, dest=response, link_callback=link_callback)
+    
+    # for img in image_urls:
+    #     # remove temp images
+    #     os.remove(img)
+    
     # if error then show some funy view
     if pisa_status.err:
        return HttpResponse('We had some errors <pre>' + html + '</pre>')
