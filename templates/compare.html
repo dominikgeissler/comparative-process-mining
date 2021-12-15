@@ -63,11 +63,8 @@ table {
 var dataURLs = []
 var ref = 0
 var logIDs = []
+
 window.addEventListener('load', function() {
-    var canvas = document.querySelectorAll('canvas')
-    canvas.forEach(canv => {
-        dataURLs.push(canv.toDataURL("image/png"))
-    })
     ref = "{{ref}}"
     var logs = "{% for log in logs %} {{log.pk}} {% endfor %}"
     logIDs = logs.split(" ")
@@ -75,6 +72,10 @@ window.addEventListener('load', function() {
     logIDs = logIDs.filter(el => el)
 })
 $("#download-button").click(function() {
+    var canvas = document.querySelectorAll('canvas')
+    canvas.forEach(canv => {
+            dataURLs.push(canv.toDataURL("image/png"))
+    })
     $.ajax({
         type: "post",
         url: '{% url "download_comparison" %}',

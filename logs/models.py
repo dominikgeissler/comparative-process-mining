@@ -74,7 +74,7 @@ class Filter(models.Model):
     timestamp2 = models.DateTimeField(null=True)
 
     # frequency / performance
-    isFrequency = models.BooleanField(default=True)
+    is_frequency = models.BooleanField(default=True)
 
     # attribute filter
     attribute = models.CharField(max_length=500, null=True)
@@ -220,7 +220,7 @@ class LogObjectHandler(models.Model):
         from pm4py.algo.discovery.dfg import algorithm as dfg_discovery
 
         variant = dfg_discovery.Variants.FREQUENCY\
-                if not self.filter or self.filter.isFrequency\
+                if not self.filter or self.filter.is_frequency\
                 else dfg_discovery.Variants.PERFORMANCE
         
         dfg = dfg_discovery.apply(log, variant=variant)

@@ -45,25 +45,12 @@ class CompareLogs(TemplateView):
                 "logs": handlers, 'ref': ref})
     def download(self):
         import json
-        from .utils import render_pdf_view, data_url_to_img
-        from django.core.files.storage import FileSystemStorage
-        from os.path import join
+        from .utils import render_pdf_view
 
         # get data urls from request 
         imageURLs = json.loads(self.POST.get("imageURLs", []))
         
         # create new FSS for saving the images
-        fs = FileSystemStorage()
-        graphs = []
-        for url in imageURLs:
-            # create file
-            file, filename = data_url_to_img(url, resize=False)
-            # save file
-            fs.save(filename, file)
-            # get path
-            # (fs.base_url contains a leading '/' which breaks
-            # xhtml2pdf)
-            graphs.append(join(fs.base_url[1:], filename))
         # # get other information from request
         ids = json.loads(self.POST.get("ids", []))
         ref = int(self.POST.get('ref', 0))
@@ -74,15 +61,15 @@ class CompareLogs(TemplateView):
         # create context
         context = {
             'names': [handler.log_name for handler in handlers],
-            'isFrequency': ["Frequency" if not handler.filter or handler.filter.isFrequency else "Performance" for handler in handlers],
+            'isFrequency': ["Frequency" if not handler.filter or handler.filter.is_frequency else "Performance" for handler in handlers],
             'filters': [handler.get_filter() for handler in handlers],
-            'graphs': graphs,
+            'graphs': imageURLs,
             'metrics': [handler.metrics(handlers[ref]) for handler in handlers],
             'similarity': [handler.get_similarity_index(handlers[ref]) for handler in handlers]
         }
 
         # create pdf and return it as attachment
-        return render_pdf_view('to_pdf.html', context, graphs)
+        return render_pdf_view('to_pdf.html', context)
     
     def filter(self):
         import json
@@ -98,11 +85,17 @@ class CompareLogs(TemplateView):
             # delete the filter
             filter.delete()
             return JsonResponse({"success": True})
+        elif "id" in data:
+            id = int(data['id'].split("-")[0])
+            handler= LogObjectHandler.objects.get(pk=id)
+            handler.set_filter('is_frequency', bool(data['is_frequency']))
+            handler.save()
+            return JsonResponse({'success': True})
+        
         # get id (from LogObjectHandler) and filter from body
         id,_,filter = data['type'].split("-")
         # get handler
         handler = LogObjectHandler.objects.get(pk=id)
-
         # remove the <id> from the values to refactor
         values = list(data.values())
         # since the filter given by the template is structured like

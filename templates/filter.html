@@ -7,6 +7,7 @@
     <option value="performance">Performance</option>
 </select><br>
 <select class="form-select form-select-sm" value="{{id}}-{{filter.type}}" id="{{id}}-filter-select" onchange="changeSelect(this.value, '{{id}}')">
+    <option value="{{id}}-select-default" disabled>Select Filter</option>
     <option value="{{id}}-case_performance">Case Performance</option>
     <option value="{{id}}-between_filter">Between Filter</option>
     <option value="{{id}}-case_size">Case Size</option>
@@ -156,7 +157,7 @@ function changeSelect(val, id) {
 document.addEventListener("DOMContentLoaded", function() {
     // if a filter is already existent, set default values
     id = "{{id}}"
-    if("{{filter}}" != "None") {
+    if("{{filter}}" != "None" && "{{filter.type}}" != "None") {
         type = "{{filter.type}}"
         choices = mapChoices(id+ '-'+type, id)
         if(choices.includes(id+"-between-select")) {
@@ -184,14 +185,18 @@ document.addEventListener("DOMContentLoaded", function() {
         }
         document.getElementById(id+"-filter-select").value = id+ '-'+ type
         changeVisualization(choices, id)
-        document.getElementById(id+"-frequency-performance").value = "{{filter.isFrequency}}" === "True" ? "frequency" : "performance"
+        document.getElementById(id+"-frequency-performance").value = "{{filter.is_frequency}}" === "True" ? "frequency" : "performance"
     }   
     else {
         // set default view
-        document.getElementById(id+"-filter-select").value = id + "-case_performance"
-        changeVisualization([id+"-case-performance"], id)
-        document.getElementById(id+"-frequency-performance").value = "frequency"
+        document.getElementById(id+"-filter-select").value = id + "-select-default"
+        if("{{filter}}" != "None" ){
+            document.getElementById(id+"-frequency-performance").value = "{{filter.is_frequency}}" === "True" ? "frequency" : "performance"
+        } else {
+            document.getElementById(id+"-frequency-performance").value = "frequency"
+        }
     }
+    
 })
 
 // sends a request to FilterView in order to set the filter
@@ -202,7 +207,7 @@ $("#{{id}}-sender").click(function() {
         case '{{id}}-case_performance':
             data = {
                 type: selected_filter,
-                isFrequency: document.getElementById("{{id}}-frequency-performance").value == "frequency",
+                is_frequency: document.getElementById("{{id}}-frequency-performance").value == "frequency",
                 case_performance1: document.getElementById('{{id}}-case-performance1').value,
                 case_performance2: document.getElementById('{{id}}-case-performance2').value
             }
@@ -210,7 +215,7 @@ $("#{{id}}-sender").click(function() {
         case '{{id}}-between_filter':
             data = {
                 type: selected_filter,
-                isFrequency: document.getElementById("{{id}}-frequency-performance").value == "frequency",
+                is_frequency: document.getElementById("{{id}}-frequency-performance").value == "frequency",
                 case1: document.getElementById('{{id}}-between-select1').value,
                 case2: document.getElementById('{{id}}-between-select2').value
             }
@@ -218,7 +223,7 @@ $("#{{id}}-sender").click(function() {
         case '{{id}}-case_size':
             data = {
                 type: selected_filter,
-                isFrequency: document.getElementById("{{id}}-frequency-performance").value == "frequency",
+                is_frequency: document.getElementById("{{id}}-frequency-performance").value == "frequency",
                 case_size1: document.getElementById('{{id}}-case-size1').value,
                 case_size2: document.getElementById('{{id}}-case-size2').value
             }
@@ -227,7 +232,7 @@ $("#{{id}}-sender").click(function() {
         case '{{id}}-timestamp_filter_intersecting':
             data = {
                 type: selected_filter,
-                isFrequency: document.getElementById("{{id}}-frequency-performance").value == "frequency",
+                is_frequency: document.getElementById("{{id}}-frequency-performance").value == "frequency",
                 timestamp1: document.getElementById('{{id}}-timestamp-select1').value,
                 timestamp2: document.getElementById('{{id}}-timestamp-select2').value
             }
@@ -236,14 +241,18 @@ $("#{{id}}-sender").click(function() {
             attribute = document.getElementById('{{id}}-attribute-select').value
             data = {
                 type: selected_filter,
-                isFrequency: document.getElementById("{{id}}-frequency-performance").value == "frequency",
+                is_frequency: document.getElementById("{{id}}-frequency-performance").value == "frequency",
                 attribute: attribute,
                 attribute_value: document.getElementById("{{id}}-attribute-filter-"+attribute+ "-select1").value,
                 operator: document.getElementById("{{id}}-attribute-filter-"+attribute+ "-select2").value
             }
-            break;
+            break;            
         default:
-            return;
+            data = {
+                id: "{{id}}",
+                is_frequency: document.getElementById("{{id}}-frequency-performance").value == "frequency"
+                }
+            break;
     }
     $.ajax( {
         url: "{% url 'update_filter' %}",
