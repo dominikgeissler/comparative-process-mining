@@ -95,14 +95,14 @@ def dfg_dict_to_g6(dfg_dict):
         unique_nodes.add(startnode)
         for endnode in dfg_graph_dict[startnode]:
             unique_nodes.add(endnode)
-            frequency = dfg_graph_dict[startnode][endnode]
+            frequency = dfg_graph_dict[startnode][endnode] 
             edges_from_startnode.append(
                 {
                     'source': startnode,
                     'target': endnode,
                     'label': frequency,
                     'style': {
-                        # 'lineWidth': ((frequency - min_frequency) / (max_frequency - min_frequency)) * (18) + 2,
+                        'lineWidth': ((frequency - min_frequency) / (max_frequency - min_frequency)) * (18) + 2,
                         'endArrow': True
                     }
                 }
