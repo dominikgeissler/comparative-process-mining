@@ -49,11 +49,20 @@ class CompareLogs(TemplateView):
         import json
         from .utils import render_pdf_view, data_url_to_img
         from django.core.files.storage import FileSystemStorage
+        from os.path import join
+
+        # get data urls from request 
         imageURLs = json.loads(self.POST.get("imageURLs", []))
+        
+        # create new FSS for saving the images
         fs = FileSystemStorage()
+        graphs = []
         for url in imageURLs:
-            file, _filename = data_url_to_img(url)
-            fs.save(_filename, file)
+            # create file
+            file, filename = data_url_to_img(url)
+            # save file
+            fs.save(filename, file)
+            graphs.append(join(fs.base_url[1:], filename))
         ids = json.loads(self.POST.get("ids", []))
         ref = int(self.POST.get('ref', 0))
         handlers = [LogObjectHandler.objects.get(pk=int(id)) for id in ids ]
@@ -61,7 +70,7 @@ class CompareLogs(TemplateView):
             'names': [handler.log_name for handler in handlers],
             'isFrequency': ["Frequency" if not handler.filter or handler.filter.isFrequency else "Performance" for handler in handlers],
             'filters': [handler.get_filter() for handler in handlers],
-            'graphs': imageURLs,
+            'graphs': graphs,
             'metrics': [handler.metrics(handlers[ref]) for handler in handlers],
             'similarity': [handler.get_similarity_index(handlers[ref]) for handler in handlers]
         }
