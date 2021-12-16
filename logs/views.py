@@ -8,6 +8,9 @@ from os import remove
 import errno
 from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator
+import json
+from .utils import render_pdf_view
+		
 
 
 class CompareLogs(TemplateView):
@@ -44,8 +47,6 @@ class CompareLogs(TemplateView):
             request, self.template_name, {
                 "logs": handlers, 'ref': ref})
     def download(self):
-        import json
-        from .utils import render_pdf_view
 
         # get data urls from request 
         imageURLs = json.loads(self.POST.get("imageURLs", []))
@@ -72,7 +73,6 @@ class CompareLogs(TemplateView):
         return render_pdf_view('to_pdf.html', context)
     
     def filter(self):
-        import json
         data = json.loads(self.GET.get('data', ''))
         # check if the delete button was pressed
         if "delete" in data:
@@ -84,30 +84,30 @@ class CompareLogs(TemplateView):
             filter = Filter.objects.get(id=handler.filter_id)
             # delete the filter
             filter.delete()
-            return JsonResponse({"success": True})
+        # check if just frequency / performance change
         elif "id" in data:
             id = int(data['id'].split("-")[0])
             handler= LogObjectHandler.objects.get(pk=id)
             handler.set_filter('is_frequency', bool(data['is_frequency']))
             handler.save()
-            return JsonResponse({'success': True})
-        
-        # get id (from LogObjectHandler) and filter from body
-        id,_,filter = data['type'].split("-")
-        # get handler
-        handler = LogObjectHandler.objects.get(pk=id)
-        # remove the <id> from the values to refactor
-        values = list(data.values())
-        # since the filter given by the template is structured like
-        # <id>-filtername
-        # reset it to just the filtername
-        values[0] = filter
+        # more than one attribute of the filter is set
+        else:
+            # get id (from LogObjectHandler) and filter from body
+            id,_,filter = data['type'].split("-")
+            # get handler
+            handler = LogObjectHandler.objects.get(pk=id)
+            # remove the <id> from the values to refactor
+            values = list(data.values())
+            # since the filter given by the template is structured like
+            # <id>-filtername
+            # reset it to just the filtername
+            values[0] = filter
 
-        # set the filter
-        handler.set_filter(list(data.keys()), values)
+            # set the filter
+            handler.set_filter(list(data.keys()), values)
 
-        # save the handler
-        handler.save()
+            # save the handler
+            handler.save()
         return JsonResponse({'success': True})
 
 class SelectLogs(TemplateView):

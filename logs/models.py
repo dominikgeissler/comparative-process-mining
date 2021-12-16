@@ -1,6 +1,13 @@
+from os.path import splitext
 from django.db import models
-from os.path import basename, splitext
+from django.utils.timezone import make_naive
+from math import inf
 import pandas as pd
+import pm4py
+from pm4py.algo.filtering.log.cases import case_filter
+from pm4py.algo.filtering.log.timestamp import timestamp_filter
+from pm4py.algo.filtering.log.attributes import attributes_filter
+from pm4py.algo.discovery.dfg import algorithm as dfg_discovery
 from pm4py.objects.log.util import dataframe_utils
 from pm4py.objects.conversion.log import converter as log_converter
 from pm4py.objects.log.importer.xes import importer as xes_importer_factory
@@ -8,10 +15,11 @@ from pm4py.objects.conversion.log.variants import (
     to_data_frame
     as log_to_data_frame)
 from pm4py.statistics.traces.generic.log import case_statistics
-import pm4py
-from .utils import convert_dfg_to_dict, dfg_dict_to_g6, highlight_nonstandard_activities, get_difference, get_difference_days_hrs_min, days_hours_minutes
 from filecmp import cmp
 import json
+from .utils import convert_dfg_to_dict, dfg_dict_to_g6, highlight_nonstandard_activities, get_difference, get_difference_days_hrs_min, days_hours_minutes
+from pytz import UTC
+
 
 # Attributes for metrics
 order = ["no_cases",
@@ -25,11 +33,11 @@ order = ["no_cases",
 
 class Log(models.Model):
     """A log with linked file"""
+    # the file itself
     log_file = models.FileField(upload_to='logs')
-    log_name = models.CharField(max_length=500)
 
-    def filename(self):
-        return basename(self.log_file.name)
+    # the name of the file
+    log_name = models.CharField(max_length=500)
 
     def pm4py_log(self):
         """parse log"""
@@ -84,7 +92,7 @@ class Filter(models.Model):
     def set_attribute(self, attr, value):
         """set attribute(s) to value"""
         # if a list of keys is given, set each key to the corresponding
-        # value key with index(key) = index(value)
+        # value key with key[index] = value[index]
         if isinstance(attr,list):
             for i, at in enumerate(attr):
                 setattr(self, at, value[i])
@@ -95,8 +103,12 @@ class Filter(models.Model):
 
 class LogObjectHandler(models.Model):
     """Handler for log object in comparison page"""
+
+    # a log model
     log_object = models.ForeignKey(Log,
                                    on_delete=models.CASCADE)
+
+    # a filter (default or on delete None)
     filter = models.OneToOneField(Filter, null=True, on_delete=models.SET_NULL)
 
     def to_df(self):
@@ -152,40 +164,39 @@ class LogObjectHandler(models.Model):
         return self.log_object.log_name
 
     def generate_dfg(self, only_extract_filtered_log=False):
-        """generates the dfg of the log"""
+        """
+        generates the dfg of the log
+        if only_extract_filtered_log=True:
+            returns self.pm4py_log() if no filter is set
+            returns filtered log if filter is set
+        
+        otherwise:
+            returns the dfg of the log with applied filter (if it exists)
+        """
         log = self.pm4py_log()
         # if a filter was selected
         if self.filter:
-            # if something wents wrong while filtering,
+            # if something goes wrong while filtering,
+            # (or there is a type error in the filter)
             # the filter is ignored
             filtered_log = None
             # 'switch' over implemeneted filters
             if self.filter.type == "case_performance":
-                from pm4py.algo.filtering.log.cases import case_filter
                 filtered_log = case_filter.filter_case_performance(log, self.filter.case_performance1, self.filter.case_performance2)
             elif self.filter.type == "between_filter"  :
-                import pm4py
                 filtered_log = pm4py.filter_between(log, self.filter.case1, self.filter.case2)    
             elif self.filter.type == "case_size":
-                import pm4py
                 filtered_log = pm4py.filter_case_size(log, self.filter.case_size1, self.filter.case_size2)
             elif self.filter.type == "timestamp_filter_contained":
-                from pm4py.algo.filtering.log.timestamp import timestamp_filter
-                from django.utils.timezone import make_naive
-                from pytz import UTC
                 # normalize timestamps
                 timestamp1, timestamp2 = make_naive(self.filter.timestamp1, UTC), make_naive(self.filter.timestamp2, UTC)
                 filtered_log = timestamp_filter.filter_traces_contained(log, timestamp1,timestamp2) 
             elif self.filter.type == "timestamp_filter_intersecting":
-                from django.utils.timezone import make_naive
-                from pm4py.algo.filtering.log.timestamp import timestamp_filter
-                from pytz import UTC
                 # normalize timestamps
                 timestamp1, timestamp2 = make_naive(self.filter.timestamp1, UTC), make_naive(self.filter.timestamp2, UTC)
                 filtered_log = timestamp_filter.filter_traces_intersecting(log, timestamp1,timestamp2)
             elif self.filter.type == "filter_on_attributes":
-                from pm4py.algo.filtering.log.attributes import attributes_filter
-                import math
+                
                 if self.filter.operator == "=":
                     try:
                         parsed_val = float(self.filter.attribute_value)
@@ -203,10 +214,10 @@ class LogObjectHandler(models.Model):
                         filtered_log = attributes_filter.apply(log, [self.filter.attribute_value],
                                           parameters={attributes_filter.Parameters.ATTRIBUTE_KEY: self.filter.attribute, attributes_filter.Parameters.POSITIVE: False})
                 elif self.filter.operator == "<":
-                    filtered_log = attributes_filter.apply_numeric_events(log, -math.inf, float(self.filter.attribute_value),
+                    filtered_log = attributes_filter.apply_numeric_events(log, -inf, float(self.filter.attribute_value),
                                              parameters={attributes_filter.Parameters.ATTRIBUTE_KEY: self.filter.attribute})
                 elif self.filter.operator == ">":
-                    filtered_log = attributes_filter.apply_numeric_events(log, float(self.filter.attribute_value), math.inf,
+                    filtered_log = attributes_filter.apply_numeric_events(log, float(self.filter.attribute_value), inf,
                                              parameters={attributes_filter.Parameters.ATTRIBUTE_KEY: self.filter.attribute})
 
             
@@ -217,7 +228,7 @@ class LogObjectHandler(models.Model):
         if only_extract_filtered_log:
             return log
 
-        from pm4py.algo.discovery.dfg import algorithm as dfg_discovery
+        
 
         variant = dfg_discovery.Variants.FREQUENCY\
                 if not self.filter or self.filter.is_frequency\
@@ -317,14 +328,10 @@ class LogObjectHandler(models.Model):
         elif self.filter.type == "case_size":
             return {"Case Size": "Between " + str(self.filter.case_size1) + " and " + str(self.filter.case_size2)}
         elif self.filter.type == "timestamp_filter_contained":
-            from django.utils.timezone import make_naive
-            from pytz import UTC
             timestamp1, timestamp2 = make_naive(
                 self.filter.timestamp1, UTC), make_naive(self.filter.timestamp2, UTC)
             return {"Timestamp Filter (contained)": "Between " + str(timestamp1) + " and " + str(timestamp2)}
         elif self.filter.type == "timestamp_filter_intersecting":
-            from django.utils.timezone import make_naive
-            from pytz import UTC
             # brauchst du nicht
             timestamp1, timestamp2 = make_naive(
                 self.filter.timestamp1, UTC), make_naive(self.filter.timestamp2, UTC)
