@@ -79,10 +79,8 @@ class CompareLogs(TemplateView):
             id = data["delete"].split("-")[0]
             # get the handler
             handler = LogObjectHandler.objects.get(pk=id)
-            # get the filter associated with the handler
-            filter = Filter.objects.get(id=handler.filter_id)
-            # delete the filter
-            filter.delete()
+            # get the filter associated with the handler and delete it
+            Filter.objects.get(pk=handler.filter_id).delete()
         # check if just frequency / performance change
         elif "id" in data:
             id = int(data['id'].split("-")[0])
