@@ -6,8 +6,8 @@
     <option value="frequency">Frequency</option>
     <option value="performance">Performance</option>
 </select><br>
-<select class="form-select form-select-sm" value="{{id}}-{{filter.type}}" id="{{id}}-filter-select" onchange="changeSelect(this.value, '{{id}}')">
-    <option value="{{id}}-select-default" disabled>Select Filter</option>
+<select class="form-select form-select-sm" value="" id="{{id}}-filter-select" onchange="changeSelect('{{id}}', this.value)">
+    <option value="" disabled>Select Filter</option>
     <option value="{{id}}-case_performance">Case Performance</option>
     <option value="{{id}}-between_filter">Between Filter</option>
     <option value="{{id}}-case_size">Case Size</option>
@@ -27,13 +27,9 @@
     {% endfor %}
 </select>
 </div>
-<div id="{{id}}-case-size" style="display: none;">
-    <input type="number" id="{{id}}-case-size1">
-    <input type="number" id="{{id}}-case-size2">
-</div>
-<div id="{{id}}-case-performance" style="display: none;">
-    <input type="number" id="{{id}}-case-performance1">
-    <input type="number" id="{{id}}-case-performance2">
+<div id="{{id}}-case-number" style="display: none;">
+    <input type="number" id="{{id}}-number1">
+    <input type="number" id="{{id}}-number2">
 </div>
 <div id="{{id}}-timestamp" style="display: none;">
 <select id="{{id}}-timestamp-select1">
@@ -48,7 +44,7 @@
 </select>
 </div>
 <div id="{{id}}-attribute-filter" style="display: none;">
-<select id="{{id}}-attribute-select" onchange="changeAttributeVisualization(this.value,'{{id}}')">
+<select id="{{id}}-attribute-select" onchange="changeAttributeVisualization('{{id}}', this.value)">
     {% for attribute in log.get_properties %}
     <option value="{{attribute}}">{{attribute}}</option>
     {% endfor %}
@@ -74,7 +70,7 @@
             <option value="{{operation}}">{{operation}}</option>          
             {% endfor %}
         </select>
-</div>
+    </div>
     {% endif %}
 {% endfor %}
 </div>
@@ -84,120 +80,124 @@
 {% endif %}
 
 <script type="text/javascript">
-function changeAttributeVisualization(attribute, id) {
+// set up the page once the page is loaded
+window.onload = setUpPage;
+
+// change the visualization of the 'filter_on_attribute' div
+// to only display the selected attribute select
+function changeAttributeVisualization(id, attribute) {
     var attr_divs = []
     var attributes = {{ log|get_attributes | safe }}
     attributes.forEach(x => attr_divs.push(["-attribute-filter-",x].join("")))
-    changeVisualization([id+"-attribute-filter-"+attribute], id, attr_divs)
+    changeVisualization(id, !attribute ? [id + attr_divs[0]] : [id+"-attribute-filter-"+attribute], attr_divs)
 }
-// get all divs which should be toggled
+
+// all hideable divs
 divs = [
     "-between-select",
-    "-case-size",
-    "-case-performance",
+    "-case-number",
     "-timestamp",
     "-attribute-filter"
 ]
 
 // maps a choice to the divs that need to be visible in order to
 // select the required attributes for the filter
-function mapChoices(choice, id) {
+function mapChoices(id, choice) {
     switch(choice) {
         case id+"-case_performance":
-            return [id+"-case-performance"]
-            break;
+        case id+"-case_size":
+            return [id+"-case-number"]
         
         case id+"-between_filter":
             return [id+"-between-select"]
-            break;
-
-        case id+"-case_size":
-            return [id+"-case-size"]
-            break;
 
         case id+"-timestamp_filter_contained":
         case id+"-timestamp_filter_intersecting":
             return [id+"-timestamp"]
-            break;
         
         case id+"-filter_on_attributes":
             return [id+"-attribute-filter"]
-            break;
     }
 }
 
 // arr: array of div ids
+// id: id of the filter
+// div_arr: overwrites default array
 // sets all divs in arr to visible and those not in arr to not visible 
-function changeVisualization(arr, id, div_arr=null) {
-    if(!div_arr) {
-        arr.forEach(el => document.getElementById(el).style.display = "block")
-        divs.forEach(el => {
-        if(arr.includes(id+el)) {
-            return;
-        }
-        document.getElementById(id+el).style.display = "none"
-    })
-    } else {
-        arr.forEach(el => document.getElementById(el).style.display = "block")
+function changeVisualization(id, arr, div_arr=null) {
+    // if no div_arr was given, use the default div array
+    div_arr = !div_arr ? divs : div_arr
+
+    // set all divs in arr to visible
+    arr.forEach(el => document.getElementById(el).style.display = "block")
+
+    // set all divs in div_arr not in arr to not visible 
     div_arr.forEach(el => {
         if(arr.includes(id+el)) {
             return;
         }
         document.getElementById(id+el).style.display = "none"
-    })
-    }
-    
+    })    
+}
+
+// set values of given fields to corresponding values
+// id: the id of the filter-html element
+// keys: list of select ids
+// values: values to be set
+function setStartValues(id, keys, values) {
+keys.forEach((el, index) => {
+    document.getElementById(id+el).value = values[index]
+})
 }
 
 // changes the display of input divs for a givens selection
-function changeSelect(val, id) {
-    changeVisualization(mapChoices(val, id),id);
+function changeSelect(id, val) {
+    changeVisualization(id, mapChoices(id, val));
 }
 
-document.addEventListener("DOMContentLoaded", function() {
+// gets called on page load
+// sets the filter if its present or sets default values
+function setUpPage() {
     // if a filter is already existent, set default values
     id = "{{id}}"
-    if("{{filter}}" != "None" && "{{filter.type}}" != "None") {
-        type = "{{filter.type}}"
-        choices = mapChoices(id+ '-'+type, id)
-        if(choices.includes(id+"-between-select")) {
-            document.getElementById(id+'-between-select1').value = "{{filter.case1}}"
-            document.getElementById(id+'-between-select2').value = "{{filter.case2}}"
+    // check if filter exists
+    // also check, if the filter exists but only frequency/performance
+    // is set and toggle accordingly
+    if("{{filter}}" != "None") {
+        keys, values = ["-frequency-performance"], ["{{filter.is_frequency}}" === "True" ? "frequency" : "performance"]
+        switch("{{filter.type}}") {
+            case "between_select":
+                keys.push("-between-select1","-between-select2", "-filter-select")
+                values.push("{{filter.case1}}", "{{filter.case2}}", "-between_select")
+                break;
+            case "case_performance":
+            case "case_size":
+                keys.push("-number1","-number2", "-filter-select")
+                values = values.concat("{{filter.type}}" === "case_size" ? 
+                ["{{filter.case_size1}}","{{filter.case_size2}}", "-case_size"] :
+                ["{{filter.case_performance1}}", "{{filter.case_performance2}}", "-case_performance"])
+                break;
+            case "timestamp_filter_intersecting":
+            case "timestamp_filter_contained":
+                keys.push("-timestamp-select1", "-timestamp-select2", "-filter-select")
+                values.push("{{filter.timestamp1|convert_timestamp}}","{{filter.timestamp2|convert_timestamp}}", "-{{filter.type}}")
+                break;
+            case "filter_on_attributes":
+                keys.push("-attribute-select", "-attribute-filter-{{filter.attribute}}-select1", "-attribute-filter-{{filter.attribute}}-select2", "-filter-select")
+                values.push("{{filter.attribute}}", "{{filter.attribute_value}}", "{{filter.operator}}", "-filter_on_attributes")
+                break;
+            default:
+                break;
         }
-        if(choices.includes(id+"-case-size")) {
-            document.getElementById(id+'-case-size1').value ="{{filter.case_size1}}"
-            document.getElementById(id+'-case-size2').value = "{{filter.case_size2}}"
-            
+        setStartValues(id, keys, values)
+        changeVisualization(id, mapChoices(id, id+"-{{filter.type}}"))
+        if("{{filter.type}}" === "filter_on_attributes") {
+            changeAttributeVisualization(id, "{{filter.attribute}}")
         }
-        if(choices.includes(id+"-case-performance")) {
-            document.getElementById(id+'-case-performance1').value = "{{filter.case_performance1}}"
-            document.getElementById(id+'-case-performance2').value = "{{filter.case_performance2}}"
-        }
-        if(choices.includes(id+"-timestamp")) {
-            document.getElementById(id+'-timestamp-select1').value ="{{filter.timestamp1|convert_timestamp}}"
-            document.getElementById(id+'-timestamp-select2').value ="{{filter.timestamp2|convert_timestamp}}"
-        }
-        if(choices.includes(id+"-attribute-filter")) {
-            document.getElementById(id+"-attribute-select").value = "{{filter.attribute}}"
-            document.getElementById(id+"-attribute-filter-"+"{{filter.attribute}}"+ "-select1").value = "{{filter.attribute_value}}"
-            document.getElementById(id+"-attribute-filter-"+"{{filter.attribute}}"+ "-select2").value = "{{filter.operator}}"
-            changeAttributeVisualization("{{filter.attribute}}", id)
-        }
-        document.getElementById(id+"-filter-select").value = id+ '-'+ type
-        changeVisualization(choices, id)
-        document.getElementById(id+"-frequency-performance").value = "{{filter.is_frequency}}" === "True" ? "frequency" : "performance"
-    }   
-    else {
-        // set default view
-        document.getElementById(id+"-filter-select").value = id + "-select-default"
-        if("{{filter}}" != "None" ){
-            document.getElementById(id+"-frequency-performance").value = "{{filter.is_frequency}}" === "True" ? "frequency" : "performance"
-        } else {
-            document.getElementById(id+"-frequency-performance").value = "frequency"
-        }
-    }
-    
-})
+    } else {
+        setStartValues(id, ["-filter-select", "-frequency-performance"], ["", "frequency"])
+    }    
+}
 
 // sends a request to FilterView in order to set the filter
 // values are taken from the respected fields the user omits from
@@ -208,8 +208,8 @@ $("#{{id}}-sender").click(function() {
             data = {
                 type: selected_filter,
                 is_frequency: document.getElementById("{{id}}-frequency-performance").value == "frequency",
-                case_performance1: document.getElementById('{{id}}-case-performance1').value,
-                case_performance2: document.getElementById('{{id}}-case-performance2').value
+                case_performance1: document.getElementById('{{id}}-number1').value,
+                case_performance2: document.getElementById('{{id}}-number2').value
             }
             break;
         case '{{id}}-between_filter':
@@ -224,8 +224,8 @@ $("#{{id}}-sender").click(function() {
             data = {
                 type: selected_filter,
                 is_frequency: document.getElementById("{{id}}-frequency-performance").value == "frequency",
-                case_size1: document.getElementById('{{id}}-case-size1').value,
-                case_size2: document.getElementById('{{id}}-case-size2').value
+                case_size1: document.getElementById('{{id}}-number1').value,
+                case_size2: document.getElementById('{{id}}-number2').value
             }
             break;
         case '{{id}}-timestamp_filter_contained':
@@ -251,7 +251,7 @@ $("#{{id}}-sender").click(function() {
             data = {
                 id: "{{id}}",
                 is_frequency: document.getElementById("{{id}}-frequency-performance").value == "frequency"
-                }
+            }
             break;
     }
     $.ajax( {

@@ -1,6 +1,8 @@
 from django import template
 from pandas import Timestamp
 from datetime import datetime
+from numbers import Number
+from json import dumps
 
 register = template.Library()
 formatstring = "%Y-%m-%d %H:%M:%S"
@@ -14,14 +16,12 @@ def convert_timestamp(timestamp):
 
 @register.filter
 def get_attributes(log):
-    import json
-    return json.dumps(list(log.get_properties().keys()))
+    return dumps(list(log.get_properties().keys()))
 
 @register.filter
 def get_operations(attribute_list):
-    import numbers
     for attribute in attribute_list:
-        if isinstance(attribute, numbers.Number):
+        if isinstance(attribute, Number):
             continue
         else:
             return ['=', '≠']

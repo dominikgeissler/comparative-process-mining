@@ -1,14 +1,13 @@
-# URLconf
 from genericpath import isfile
 from django.http.response import JsonResponse
 from django.shortcuts import render
 from django.views.generic.base import TemplateView, View
-from .models import Filter, Log, LogObjectHandler
 from os import remove
 import errno
 from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator
 import json
+from .models import Filter, Log, LogObjectHandler
 from .utils import render_pdf_view
 		
 
