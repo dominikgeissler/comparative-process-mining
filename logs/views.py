@@ -186,7 +186,7 @@ class ManageLogs(View):
             except ValidationError:
                 return render(
                     request, self.template_name, {
-                        'logs': Log.objects.all(), 'error': 'file extension not supported'})
+                        'logs': Log.objects.all(), 'error': 'File extension not supported'})
             # create a new Log object
             log = Log(
                 log_file=file,
