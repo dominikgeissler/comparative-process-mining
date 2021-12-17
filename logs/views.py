@@ -14,8 +14,7 @@ from .utils import render_pdf_view
 
 class CompareLogs(TemplateView):
     """
-    Comparison page
-    used to compare different event logs
+    View for the comparison page
     """
 
     template_name = 'compare.html'
@@ -46,7 +45,7 @@ class CompareLogs(TemplateView):
             request, self.template_name, {
                 "logs": handlers, 'ref': ref})
     def download(self):
-
+        """creates a PDF of the comparison and returns it as attachment"""
         # get data urls from request 
         imageURLs = json.loads(self.POST.get("imageURLs", []))
         
@@ -72,6 +71,7 @@ class CompareLogs(TemplateView):
         return render_pdf_view('to_pdf.html', context)
     
     def filter(self):
+        """either applies a filter or deletes the current filter"""
         data = json.loads(self.GET.get('data', ''))
         # check if the delete button was pressed
         if "delete" in data:
@@ -109,8 +109,7 @@ class CompareLogs(TemplateView):
 
 class SelectLogs(TemplateView):
     """
-    Select Logs from
-    used to select the logs for comparison
+    View for selecting the logs the user wants to compare
     """
     template_name = 'select_logs.html'
 
@@ -122,13 +121,12 @@ class SelectLogs(TemplateView):
 
 class ManageLogs(View):
     """
-    Manage Logs page
-    used for uploading and deleting logs
+    View for the page used to manage logs by uploading or deleting them
     """
     template_name = 'manage_logs.html'
 
     def get(self, request, *args, **kwars):
-        """returns all uploaded log files"""
+        """returns all uploaded log files and deletes shadow objects"""
         # get logs from database
         logs = Log.objects.all()
 
