@@ -80,18 +80,6 @@
 {% endif %}
 
 <script type="text/javascript">
-// set up the page once the page is loaded
-window.onload = setUpPage;
-
-// change the visualization of the 'filter_on_attribute' div
-// to only display the selected attribute select
-function changeAttributeVisualization(id, attribute) {
-    var attr_divs = []
-    var attributes = {{ log|get_attributes | safe }}
-    attributes.forEach(x => attr_divs.push(["-attribute-filter-",x].join("")))
-    changeVisualization(id, !attribute ? [id + attr_divs[0]] : [id+"-attribute-filter-"+attribute], attr_divs)
-}
-
 // all hideable divs
 divs = [
     "-between-select",
@@ -100,8 +88,32 @@ divs = [
     "-attribute-filter"
 ]
 
+// set up the page once the page is loaded
+window.onload = setUpPage;
+
+// change the visualization of the 'filter_on_attribute' div
+// to only display the selected attribute select
+// ---
+// Arguments:
+// id: the id of the filter.html component created by compare.html
+// attribute: a string description of an attribute selected by the user
+function changeAttributeVisualization(id, attribute) {
+    var attr_divs = []
+    var attributes = {{ log|get_attributes | safe }}
+    attributes.forEach(x => attr_divs.push(["-attribute-filter-",x].join("")))
+    changeVisualization(id, !attribute ? [id + attr_divs[0]] : [id+"-attribute-filter-"+attribute], attr_divs)
+}
+
+
 // maps a choice to the divs that need to be visible in order to
 // select the required attributes for the filter
+// ---
+// Arguments:
+// id: the id of the filter.html component created by compare.html
+// choice: a string description of the filter selected by the user
+// ---
+// Returns:
+// the div-ids that need to be visible in order to select options for this filter
 function mapChoices(id, choice) {
     switch(choice) {
         case id+"-case_performance":
@@ -120,10 +132,13 @@ function mapChoices(id, choice) {
     }
 }
 
-// arr: array of div ids
-// id: id of the filter
-// div_arr: overwrites default array
 // sets all divs in arr to visible and those not in arr to not visible 
+// ---
+// Arguments:
+// id: the id of the filter.html component created by compare.html
+// arr: an array containing all elements that should be visible (subset of div_arr)
+// div_arr: an array containing all divs that can be toggled in this context
+//          default: divs
 function changeVisualization(id, arr, div_arr=null) {
     // if no div_arr was given, use the default div array
     div_arr = !div_arr ? divs : div_arr
@@ -141,9 +156,11 @@ function changeVisualization(id, arr, div_arr=null) {
 }
 
 // set values of given fields to corresponding values
-// id: the id of the filter-html element
-// keys: list of select ids
-// values: values to be set
+// ---
+// Arguments:
+// id: the id of the filter.html component created by compare.html
+// keys: list of ids from HTML input elements
+// values: list of values for each HTML input element
 function setStartValues(id, keys, values) {
 keys.forEach((el, index) => {
     document.getElementById(id+el).value = values[index]
@@ -151,6 +168,10 @@ keys.forEach((el, index) => {
 }
 
 // changes the display of input divs for a givens selection
+// ---
+// Arguments:
+// id: the id of the filter.html component created by compare.html
+// val: filter descriptor
 function changeSelect(id, val) {
     changeVisualization(id, mapChoices(id, val));
 }
@@ -195,6 +216,7 @@ function setUpPage() {
             changeAttributeVisualization(id, "{{filter.attribute}}")
         }
     } else {
+        // default values
         setStartValues(id, ["-filter-select", "-frequency-performance"], ["", "frequency"])
     }    
 }
@@ -203,6 +225,7 @@ function setUpPage() {
 // values are taken from the respected fields the user omits from
 $("#{{id}}-sender").click(function() {
     selected_filter = document.getElementById("{{id}}-filter-select").value
+    // construct request data
     switch(selected_filter) {
         case '{{id}}-case_performance':
             data = {
@@ -254,6 +277,7 @@ $("#{{id}}-sender").click(function() {
             }
             break;
     }
+    // send ajax request
     $.ajax( {
         url: "{% url 'update_filter' %}",
         data: {
@@ -261,6 +285,7 @@ $("#{{id}}-sender").click(function() {
         },
         dataType: 'json',
         success: function() {
+            // reload window to redraw the graph with filter
             location.reload(true)
         }
     })
@@ -277,6 +302,7 @@ $("#{{id}}-sender-delete").click(function() {
         },
         dataType: 'json',
         success: function() {
+            // reload window to redraw the graph without filter
             location.reload(true)
         }
     })
