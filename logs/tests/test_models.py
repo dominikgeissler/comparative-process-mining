@@ -4,7 +4,7 @@ from logs.models import Log, LogObjectHandler, LogMetrics, Filter
 from django.core.files.base import ContentFile
 from secrets import token_bytes, token_hex
 
-class LogTestCase(TestCase):
+class ModelsLogTests(TestCase):
     def setUp(self):
         sample_log = ContentFile(token_bytes(5), token_hex(5))
         Log.objects.create(log_file=sample_log, log_name="test1")
@@ -17,7 +17,7 @@ class LogTestCase(TestCase):
         self.assertNotEqual(log1.log_name, log2.log_name)
         self.assertEqual(log1, log2)
         
-class LogObjectHandlerTestCase(TestCase):
+class ModelsLogObjectHandlerTests(TestCase):
     def setUp(self):
         sample_log = ContentFile(token_bytes(5), "test_log_name")
         log = Log.objects.create(log_file=sample_log, log_name=sample_log.name)
@@ -37,7 +37,3 @@ class LogObjectHandlerTestCase(TestCase):
         self.assertIsNotNone(handler.filter)
 
     # ...
-
-class LogMetricsTestCase(TestCase):
-    pass
-
