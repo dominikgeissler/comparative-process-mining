@@ -40,7 +40,16 @@ def link_callback(uri, rel):
 
             return path
 
-def render_pdf_view(template_path, context, image_urls=[]):
+def render_pdf_view(template_path, context):
+    """
+    creates a pdf from a html-template and a context
+
+    Args:
+        template_path (str): 
+            the relative path to the template the context is rendered into
+        context (dict):
+            a dictionary with values to be set in the template
+    """
     # Create a Django response object, and specify content_type as pdf
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="report.pdf"'
@@ -52,11 +61,7 @@ def render_pdf_view(template_path, context, image_urls=[]):
     pisa_status = pisa.CreatePDF(
        html, dest=response, link_callback=link_callback)
     
-    # remove temp images
-    for img in image_urls:
-        os.remove(img)
-    
-    # if error then show some funy view
+    # if error then show some funny view
     if pisa_status.err:
        return HttpResponse('We had some errors <pre>' + html + '</pre>')
     return response
@@ -64,6 +69,7 @@ def render_pdf_view(template_path, context, image_urls=[]):
 # --- DFG ---
 
 def convert_dfg_to_dict(dfg):
+    """converts a dfg to dictionary"""
     dfg_graph_dict = {}
     min_frequency = float('inf')
     max_frequency = 0
@@ -84,6 +90,7 @@ def convert_dfg_to_dict(dfg):
     }
 
 def dfg_dict_to_g6(dfg_dict):
+    """converts a dict to a g6 graph"""
     edges = []
     nodes = []
     dfg_graph_dict = dfg_dict['dfg_graph']
@@ -131,13 +138,7 @@ def dfg_dict_to_g6(dfg_dict):
 # --- G6 ---
 
 def highlight_nonstandard_activities(g6_graph, reference):
-    """
-    Highlight non-standard activities in dfg/g6-graph
-    """
-    """
-    The log that is chosen first on the manage side or first uploaded
-    will be the reference log for all comparisons
-    """
+    """Highlights all activites that are not in reference"""
 
     for node in g6_graph['nodes']:
         if find_node_in_g6(node['name'], reference):
@@ -170,11 +171,13 @@ def days_hours_minutes(total_seconds):
 
 
 def get_difference(res1, res2):
+    """returns formatted difference for metrics"""
     return [res1, str(res1 - res2) if res1 - res2 < 0 else "+" +
             str(res1 - res2) if res1 - res2 > 0 else "0"]
 
 
 def get_difference_days_hrs_min(res1, res2):
+    """returns formatted difference (for dates) for metrics"""
     return [
         days_hours_minutes(res1),
         days_hours_minutes(
