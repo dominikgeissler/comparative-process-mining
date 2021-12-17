@@ -32,7 +32,25 @@ order = ["no_cases",
 
 
 class Log(models.Model):
-    """A log with linked file"""
+    """
+    A model to represent an uploaded eventlog
+
+    ---
+    Arguments:
+        log_file:
+            the eventlog file
+        log_name:
+            the name of the eventlog (default: log_file.name)
+    ---
+    Properties:
+        log_file:
+            the eventlog file
+        log_name:
+            the name of the eventlog
+    ---
+    Methods:
+        pm4py_log(): returns EventLog object of log
+    """
     # the file itself
     log_file = models.FileField(upload_to='logs')
 
@@ -40,7 +58,7 @@ class Log(models.Model):
     log_name = models.CharField(max_length=500)
 
     def pm4py_log(self):
-        """parse log"""
+        """returns an EventLog object of the log file linked to the model"""
         _, extension = splitext(self.log_file.path)
         if extension == ".csv":
             log = pd.read_csv(self.log_file.path, sep=",")
@@ -61,7 +79,42 @@ class Log(models.Model):
         return super().__hash__()
 
 class Filter(models.Model):
-    """Filter for a log"""
+    """
+    A model to represent a filter for a log
+
+    ---
+    Properties:
+        type (str, opt): 
+            a representation of the selected filter
+        case_performance1 (int, opt):
+            lower bound for the case performance filter
+        case_performance2 (int, opt):
+            upper bound for the case performance filter
+        case1 (str, opt):
+            start case for the between filter
+        case2 (str, opt):
+            end case for the between filter
+        case_size1 (int, opt):
+            lower bound for the case size filter
+        case_size2 (int, opt):
+            upper bound for the case size filter
+        timestamp1 (timestamp, opt):
+            start datetime for timestamp (intersecting / contained) filter
+        timestamp2 (timestamp, opt):
+            end datetime for timestamp (intersecting / contained) filter
+        is_frequency(bool, opt, default=True):
+            indicating if the frequency or performance visualization is selected
+        attribute (str, opt):
+            name of the attribute the attribute filter is applied on
+        attribute_value (str, opt):
+            the attribute value that is selected by the user
+        operator (str, opt):
+            a string operator sign out of [<,>,=,≠]
+
+    ---
+    Methods:
+        set_attribute(): sets the attribute(s) of the filter
+    """
     # string description of the filter type
     type = models.CharField(max_length=500, null=True, default=None)
     
@@ -90,7 +143,16 @@ class Filter(models.Model):
     operator = models.CharField(max_length=500, null=True)
 
     def set_attribute(self, attr, value):
-        """set attribute(s) to value"""
+        """
+        setter for filter attributes
+
+        ---
+        Params:
+            attr:
+                either a single string or a list of strings representing the attribute names
+            value:
+                either a single value or a list of values for each attribute
+        """
         # if a list of keys is given, set each key to the corresponding
         # value key with key[index] = value[index]
         if isinstance(attr,list):
@@ -102,7 +164,16 @@ class Filter(models.Model):
 
 
 class LogObjectHandler(models.Model):
-    """Handler for log object in comparison page"""
+    """
+    Handler for log object in comparison page
+    
+    ---
+    Attributes:
+        log_object:
+            A :obj:`Log`
+        filter (opt):
+            The filter for the log
+    """
 
     # a log model
     log_object = models.ForeignKey(Log,
@@ -116,6 +187,7 @@ class LogObjectHandler(models.Model):
         return log_to_data_frame.apply(self.pm4py_log())
 
     def get_activities(self):
+        """returns all activites"""
         return pm4py.get_attribute_values(self.pm4py_log(), "concept:name")
 
     def get_properties(self):
@@ -129,6 +201,7 @@ class LogObjectHandler(models.Model):
         return results
 
     def get_timestamps(self):
+        """returns all timestamps"""
         return sorted(pm4py.get_attribute_values(self.pm4py_log(), "time:timestamp"))
 
     def get_similarity_index(self, reference):
@@ -166,12 +239,18 @@ class LogObjectHandler(models.Model):
     def generate_dfg(self, only_extract_filtered_log=False):
         """
         generates the dfg of the log
-        if only_extract_filtered_log=True:
-            returns self.pm4py_log() if no filter is set
-            returns filtered log if filter is set
         
-        otherwise:
-            returns the dfg of the log with applied filter (if it exists)
+        ---
+        Params:
+            only_extract_filtered_log (bool, opt):
+                optional bool to return the (filtered) log
+
+        ---
+        Returns:
+            (filtered) dfg 
+                (if only_extract_filtered_log=False)
+            (filtered) log
+                 (if only_extract_filtered_log=True)
         """
         log = self.pm4py_log()
         # if a filter was selected
@@ -238,8 +317,7 @@ class LogObjectHandler(models.Model):
         return dfg
 
     def metrics(self, reference=None):
-        """returns the metrics of a log
-        or the comparison relative to the reference"""
+        """returns the metrics of a log or the comparison relative to the reference"""
         # get the global list of attributes
         global order
         # calculate the metrics for linked log
@@ -318,7 +396,6 @@ class LogObjectHandler(models.Model):
         self.filter.save()
 
     def get_filter(self):
-        # alles ins template verlagern
         if self.filter is None:
             return {"No filter selected": "No attribute(s) selected"}
         elif self.filter.type == "case_performance":
