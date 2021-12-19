@@ -5,6 +5,12 @@
 <select value="frequency" id="{{id}}-frequency-performance">
     <option value="frequency">Frequency</option>
     <option value="performance">Performance</option>
+</select>
+<select value="" id="{{id}}-edge-label" style="display: none;">
+    <option value="seconds">Seconds</option>
+    <option value="minutes">Minutes</option>
+    <option value="hours">Hours</option>
+    <option value="days">Days</option>
 </select><br>
 <select class="form-select form-select-sm" value="" id="{{id}}-filter-select" onchange="changeSelect('{{id}}', this.value)">
     <option value="" selected disabled>Select Filter</option>
@@ -186,8 +192,8 @@ function setUpPage(id) {
     // also check, if the filter exists but only frequency/performance
     // is set and toggle accordingly
     if("{{filter}}" != "None") {
-        keys = ["-frequency-performance"]
-        values =  ["{{filter.is_frequency}}" === "True" ? "frequency" : "performance"]
+        keys = ["-frequency-performance", "-edge-label"]
+        values =  ["{{filter.is_frequency}}" === "True" ? "frequency" : "performance", "{{filter.edge_label}}"]
         switch("{{filter.type}}") {
             case "between_select":
                 keys.push("-between-select1","-between-select2", "-filter-select")
@@ -222,12 +228,17 @@ function setUpPage(id) {
             changeVisualization(id, mapChoices(id, id+"-{{filter.type}}"))
             if("{{filter.type}}" === "filter_on_attributes") {
                 changeAttributeVisualization(id, "{{filter.attribute}}")
-            }   
+            }
         }
+        if("{{filter.is_frequency}}" === "False") {
+            document.getElementById(id+"-edge-label").style.display = "block"
+        } else {
+            document.getElementById(id+"-edge-label").style.display = "none"
+        }   
     } else {
         // default values
         setStartValues(id, ["-filter-select", "-frequency-performance"], ["", "frequency"])
-    }    
+    }   
 }
 
 // sends a request to FilterView in order to set the filter
@@ -240,6 +251,7 @@ $("#{{id}}-sender").click(function() {
             data = {
                 type: selected_filter,
                 is_frequency: document.getElementById("{{id}}-frequency-performance").value == "frequency",
+                edge_label: document.getElementById('{{id}}-edge-label').value,
                 case_performance1: document.getElementById('{{id}}-number1').value,
                 case_performance2: document.getElementById('{{id}}-number2').value
             }
@@ -248,6 +260,7 @@ $("#{{id}}-sender").click(function() {
             data = {
                 type: selected_filter,
                 is_frequency: document.getElementById("{{id}}-frequency-performance").value == "frequency",
+                edge_label: document.getElementById('{{id}}-edge-label').value,
                 case1: document.getElementById('{{id}}-between-select1').value,
                 case2: document.getElementById('{{id}}-between-select2').value
             }
@@ -256,6 +269,7 @@ $("#{{id}}-sender").click(function() {
             data = {
                 type: selected_filter,
                 is_frequency: document.getElementById("{{id}}-frequency-performance").value == "frequency",
+                edge_label: document.getElementById('{{id}}-edge-label').value,
                 case_size1: document.getElementById('{{id}}-number1').value,
                 case_size2: document.getElementById('{{id}}-number2').value
             }
@@ -265,6 +279,7 @@ $("#{{id}}-sender").click(function() {
             data = {
                 type: selected_filter,
                 is_frequency: document.getElementById("{{id}}-frequency-performance").value == "frequency",
+                edge_label: document.getElementById('{{id}}-edge-label').value,
                 timestamp1: document.getElementById('{{id}}-timestamp-select1').value,
                 timestamp2: document.getElementById('{{id}}-timestamp-select2').value
             }
@@ -274,6 +289,7 @@ $("#{{id}}-sender").click(function() {
             data = {
                 type: selected_filter,
                 is_frequency: document.getElementById("{{id}}-frequency-performance").value == "frequency",
+                edge_label: document.getElementById('{{id}}-edge-label').value,
                 attribute: attribute,
                 attribute_value: document.getElementById("{{id}}-attribute-filter-"+attribute+ "-select1").value,
                 operator: document.getElementById("{{id}}-attribute-filter-"+attribute+ "-select2").value
@@ -282,7 +298,8 @@ $("#{{id}}-sender").click(function() {
         default:
             data = {
                 id: "{{id}}",
-                is_frequency: document.getElementById("{{id}}-frequency-performance").value == "frequency"
+                is_frequency: document.getElementById("{{id}}-frequency-performance").value == "frequency",
+                edge_label: document.getElementById('{{id}}-edge-label').value
             }
             break;
     }
