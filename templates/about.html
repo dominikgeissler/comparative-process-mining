@@ -68,21 +68,54 @@ If your deletion was successful, you will see the following "Successfully delete
 
 <h4 class="mt-4" style="color:#00529F;">5. Pick Reference Log</h4>
 
-<h4 class="mt-4" style="color:#00529F;">6. Choose Edge Labeling</h4>
+As a default implementation the first log is the reference log.<br>
+The reference log can be recognized by the green font of the event log title.<br>
+By clicking on the title of another event log, this log will be selected as the new reference log.<br>
+Consequently, the new reference log can be recognized by the green writing of its title.
 
-<h4 class="mt-4" style="color:#00529F;">7. Select Filter</h4>
+<h4 class="mt-4" style="color:#00529F;">6. Select Filter</h4>
 
-<h4 class="mt-4" style="color:#00529F;">8. Apply Filter</h4>
+1. Choose Edge Labeling:<br>
+For the graphical depiction of the edge in the Directly-Follows Graph (DFG), you can select either "Frequency" or "Performance". <br>
+In addition, if "Performance" is choosen as edge labeling, <br>
+there will be an further option to select between a visualization in "Seconds", "Minutes", "Hours" or "Days".<br>
+<br>
+2. Selected Filter Type:<br>
+The filters "Case Performance", "Between Filter", "Case Size", "Timestamp (Contained)", "Timestamp (Intersecting)" or "Filter on attributes" can be selected.<br>
+<br>
+3. Filter Values or Attributes:<br>
+For each of the filter types there are several attributes to choose from or options to type in a value for filtering.
 
-<h4 class="mt-4" style="color:#00529F;">9. Reset Filter</h4>
+<h4 class="mt-4" style="color:#00529F;">7. Apply Filter</h4>
 
-<h4 class="mt-4" style="color:#00529F;">10. Directly-Follows Graph (DFG)</h4>
+The selected filters can be applied by clicking on the button "Apply Filter".
 
-<h4 class="mt-4" style="color:#00529F;">11. Metrics</h4>
+<h4 class="mt-4" style="color:#00529F;">8. Reset Filter</h4>
 
-<h4 class="mt-4" style="color:#00529F;">12. PDF Download</h4>
+The applied filters can be reseted by clicking on the "Reset Filter" button.
 
-<h4 class="mt-4" style="color:#00529F;">13. New Comparison</h4>
+<h4 class="mt-4" style="color:#00529F;">9. Directly-Follows Graph (DFG)</h4>
+
+First of all, Directly-Follows Graphs (DFGs) show all the event logs based on the previously selected filters.<br>
+According to this fact, the edges for example will be either labeled with "Frequency" or "Performance" values.<br>
+Plus, in the case of "Performance" labels either in "Seconds", "Minutes", "Hours" or "Days".<br>
+Second, the DFGs display all uploaded event logs and compare them with the picked reference log.<br>
+Nodes that are similar to the reference log, will be highlighted in blue.<br>
+On the other hand, the nodes that are different to the reference log, will be highlighted in red.
+
+<h4 class="mt-4" style="color:#00529F;">10. Metrics</h4>
+
+The metrics of all event logs will be displayed.
+In addition, for all event logs that are different to the reference log, the difference between the logs will be displayed.<br>
+Hereby, a filtered log that is the same log as the event log, but with choosen filters that lead to a different DFG,<br>
+will be counted as a different log.
+
+<h4 class="mt-4" style="color:#00529F;">11. PDF Download</h4>
+
+After the appropriate event logs and filtes have been selected as well as the representation of the DFGs and metrics made,<br>
+it is now possible to export the gathered information in PDF format by clicking on the "Download" button.
+
+<h4 class="mt-4" style="color:#00529F;">12. New Comparison</h4>
 
 Either click on "Compare" or on "Manage" on the bar menu.<br>
 "Compare" is the correct option, if you don't want to upload an additional event log prior to the new comparison.<br>
