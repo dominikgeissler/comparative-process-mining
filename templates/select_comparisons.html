@@ -2,11 +2,29 @@
 
 {% block content %}
 <form method="get" action='select_logs'>
+    <h3 class="mt-4" style="color:#00529F;">Choose Number of Comparisons:</h3>
+    <p>Please select a number of comparisons between 2 and 8.</p>
     <div class="form-group">
-        <h3 class="mt-4" style="color:#00529F;">Choose Number of Models:</h3>
         <input type="number" class="form-control" id="nr_of_comparisons" value=2 min=2 max=8 name='nr_of_comparisons'>
         </select>
     </div>
     <button class="btn btn-primary" type="submit">Continue</button>
 </form>
+<style type="text/css">
+    button, h3 {
+    position: relative;
+    left: 1px;
+    }
+    p {
+    position: relative;
+    left: 1px;
+    font-family: Arial, sans-serif;
+    font-size: 18px;
+    }
+    form {
+    width: 30%;
+    position: relative;
+    left: 20px;
+    }
+</style>
 {% endblock %}
