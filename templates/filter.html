@@ -189,23 +189,23 @@ function setUpPage(id) {
         switch("{{filter.type}}") {
             case "between_select":
                 keys.push("-between-select1","-between-select2", "-filter-select")
-                values.push("{{filter.case1}}", "{{filter.case2}}", "-between_select")
+                values.push("{{filter.case1}}", "{{filter.case2}}", id+"-between_select")
                 break;
             case "case_performance":
             case "case_size":
                 keys.push("-number1","-number2", "-filter-select")
                 values = values.concat("{{filter.type}}" === "case_size" ? 
-                ["{{filter.case_size1}}","{{filter.case_size2}}", "-case_size"] :
-                ["{{filter.case_performance1}}", "{{filter.case_performance2}}", "-case_performance"])
+                ["{{filter.case_size1}}","{{filter.case_size2}}", id+"-case_size"] :
+                ["{{filter.case_performance1}}", "{{filter.case_performance2}}", id+"-case_performance"])
                 break;
             case "timestamp_filter_intersecting":
             case "timestamp_filter_contained":
                 keys.push("-timestamp-select1", "-timestamp-select2", "-filter-select")
-                values.push("{{filter.timestamp1|convert_timestamp}}","{{filter.timestamp2|convert_timestamp}}", "-{{filter.type}}")
+                values.push("{{filter.timestamp1|convert_timestamp}}","{{filter.timestamp2|convert_timestamp}}", id+"-{{filter.type}}")
                 break;
             case "filter_on_attributes":
                 keys.push("-attribute-select", "-attribute-filter-{{filter.attribute}}-select1", "-attribute-filter-{{filter.attribute}}-select2", "-filter-select")
-                values.push("{{filter.attribute}}", "{{filter.attribute_value}}", "{{filter.operator}}", "-filter_on_attributes")
+                values.push("{{filter.attribute}}", "{{filter.attribute_value}}", "{{filter.operator}}", id+"-filter_on_attributes")
                 break;
             default:
                 break;
