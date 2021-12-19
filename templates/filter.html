@@ -167,7 +167,7 @@ keys.forEach((el, index) => {
 })
 }
 
-// changes the display of input divs for a givens selection
+// changes the display of input divs for a given selection
 // ---
 // Arguments:
 // id: the id of the filter.html component created by compare.html
@@ -218,7 +218,6 @@ function setUpPage(id) {
         if("{{filter.type}}" != "None") {
 
             changeVisualization(id, mapChoices(id, id+"-{{filter.type}}"))
-
             if("{{filter.type}}" === "filter_on_attributes") {
                 changeAttributeVisualization(id, "{{filter.attribute}}")
             }   

@@ -275,31 +275,36 @@ class LogObjectHandler(models.Model):
                 timestamp1, timestamp2 = make_naive(self.filter.timestamp1, UTC), make_naive(self.filter.timestamp2, UTC)
                 filtered_log = timestamp_filter.filter_traces_intersecting(log, timestamp1,timestamp2)
             elif self.filter.type == "filter_on_attributes":
-                
-                if self.filter.operator == "=":
+                if self.filter.operator in ["<", ">"]:
+                    # if '<' look at the range -inf to float(attribute_value)
+                    # if '>' look at the range float(attribute_value) to inf
+                    filtered_log = attributes_filter.apply_numeric_events(
+                        log,
+                        -inf if self.filter.operator == "<" 
+                        else float(self.filter.attribute_value), 
+                        float(self.filter.attribute_value) if self.filter.operator == "<" 
+                        else inf,
+                        parameters={
+                            attributes_filter.Parameters.ATTRIBUTE_KEY:
+                             self.filter.attribute})
+                else:
+                    # operator is either '=' or '≠'
+                    # check if the attribute value is a number
                     try:
                         parsed_val = float(self.filter.attribute_value)
                         filtered_log = attributes_filter.apply(log, [parsed_val],
-                                          parameters={attributes_filter.Parameters.ATTRIBUTE_KEY: self.filter.attribute, attributes_filter.Parameters.POSITIVE: True})
+                                          parameters={
+                                                attributes_filter.Parameters.ATTRIBUTE_KEY:
+                                                self.filter.attribute, 
+                                                attributes_filter.Parameters.POSITIVE: 
+                                                self.operator == "="})
                     except:
                         filtered_log = attributes_filter.apply(log, [self.filter.attribute_value],
-                                          parameters={attributes_filter.Parameters.ATTRIBUTE_KEY: self.filter.attribute, attributes_filter.Parameters.POSITIVE: True})
-                elif self.filter.operator == "≠":
-                    try:
-                        parsed_val = float(self.filter.attribute_value)
-                        filtered_log = attributes_filter.apply(log, [parsed_val],
-                                          parameters={attributes_filter.Parameters.ATTRIBUTE_KEY: self.filter.attribute, attributes_filter.Parameters.POSITIVE: False})
-                    except:
-                        filtered_log = attributes_filter.apply(log, [self.filter.attribute_value],
-                                          parameters={attributes_filter.Parameters.ATTRIBUTE_KEY: self.filter.attribute, attributes_filter.Parameters.POSITIVE: False})
-                elif self.filter.operator == "<":
-                    filtered_log = attributes_filter.apply_numeric_events(log, -inf, float(self.filter.attribute_value),
-                                             parameters={attributes_filter.Parameters.ATTRIBUTE_KEY: self.filter.attribute})
-                elif self.filter.operator == ">":
-                    filtered_log = attributes_filter.apply_numeric_events(log, float(self.filter.attribute_value), inf,
-                                             parameters={attributes_filter.Parameters.ATTRIBUTE_KEY: self.filter.attribute})
-
-            
+                                          parameters={
+                                                attributes_filter.Parameters.ATTRIBUTE_KEY: 
+                                                self.filter.attribute, 
+                                                attributes_filter.Parameters.POSITIVE: 
+                                                self.operator == "="})
             # since the filtered log is only set if a filter was applied,
             # and thus not None, otherwise the filter is ignored
             if filtered_log:
