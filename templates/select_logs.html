@@ -3,6 +3,8 @@
 {% block content %}
 {% if logs %}
     <form method="get" action="compare">
+        <h3 class="mt-4" style="color:#00529F;">Select Uploaded Event Logs:</h3>
+        <p>Please choose the uploaded event logs you want to compare.</p>
         <input type="hidden" name="nr_of_comparisons"value="{{request.GET.nr_of_comparisons}}">
         <div class="form-group">
             {# this is equivalent to: for i in range(1,request.GET.nr_of_comparsions) #}
@@ -17,11 +19,37 @@
                 {# set the reference log to be the left-most log by default #}
                 <input type="hidden" name="ref" value="0">
             {% endwith %}
-            <button class="btn btn-primary" type="submit">Continue</button>
         </div>
-
+        <button class="btn btn-primary" type="submit">Continue</button>
     </form>
 {% else %}
 <p>Please upload at least one log before comparing</p>
 {% endif %}
+<style type="text/css">
+    form {
+    width: 40%;
+    position: relative;
+    left: 20px;
+    }
+    select {
+    width: 70%;
+    top: 10px;
+    height: 30px;
+    margin: 5px
+    }
+    button {
+    position: relative;
+    left: 5px;
+    }
+    h3 {
+    position: relative;
+    left: 7px;
+    }
+    p {
+    position: relative;
+    left: 7px;
+    font-family: Arial, sans-serif;
+    font-size: 18px;
+    }
+</style>
 {% endblock %}
