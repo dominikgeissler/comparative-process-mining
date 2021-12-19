@@ -278,6 +278,9 @@ class LogObjectHandler(models.Model):
                 if self.filter.operator in ["<", ">"]:
                     # if '<' look at the range -inf to float(attribute_value)
                     # if '>' look at the range float(attribute_value) to inf
+
+                    # since '<' and '>' can only be selected for numeric attribute
+                    # values, float(attribute_value) does not need to be try-catched
                     filtered_log = attributes_filter.apply_numeric_events(
                         log,
                         -inf if self.filter.operator == "<" 
