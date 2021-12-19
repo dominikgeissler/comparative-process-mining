@@ -243,11 +243,12 @@ function setUpPage(id) {
 // sends a request to FilterView in order to set the filter
 // values are taken from the respected fields the user omits from
 $("#{{id}}-sender").click(function() {
+    data = {}
     selected_filter = document.getElementById("{{id}}-filter-select").value
-    data = {
-        type: selected_filter,
-        is_frequency: document.getElementById("{{id}}-frequency-performance").value === "frequency"
+    if(selected_filter) {
+        data.type =selected_filter
     }
+    data.is_frequency= document.getElementById("{{id}}-frequency-performance").value === "frequency"
     if(!data.is_frequency) {
         data.edge_label = document.getElementById('{{id}}-edge-label').value;
     }
