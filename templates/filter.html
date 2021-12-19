@@ -2,11 +2,11 @@
 {% load filter_tags %}
 {% block content %}
 <div class="form-group">
-<select value="frequency" id="{{id}}-frequency-performance">
+<select value="frequency" id="{{id}}-frequency-performance" onchange="document.getElementById('{{id}}-edge-label').style.display = this.value === 'performance'? 'block' : 'none'; ">
     <option value="frequency">Frequency</option>
     <option value="performance">Performance</option>
 </select>
-<select value="" id="{{id}}-edge-label" style="display: none;">
+<select value="seconds" id="{{id}}-edge-label" style="display: none;">
     <option value="seconds">Seconds</option>
     <option value="minutes">Minutes</option>
     <option value="hours">Hours</option>
@@ -192,8 +192,13 @@ function setUpPage(id) {
     // also check, if the filter exists but only frequency/performance
     // is set and toggle accordingly
     if("{{filter}}" != "None") {
-        keys = ["-frequency-performance", "-edge-label"]
-        values =  ["{{filter.is_frequency}}" === "True" ? "frequency" : "performance", "{{filter.edge_label}}"]
+        keys = ["-frequency-performance"]
+        values =  ["{{filter.is_frequency}}" === "True" ? "frequency" : "performance"]
+        if(values[0] === "performance") {
+            document.getElementById(id+"-edge-label").style.display = "block"
+            keys.push("-edge-label")
+            values.push("{{filter.edge_label}}")
+        }
         switch("{{filter.type}}") {
             case "between_select":
                 keys.push("-between-select1","-between-select2", "-filter-select")
@@ -224,17 +229,11 @@ function setUpPage(id) {
         }
         setStartValues(id, keys, values)
         if("{{filter.type}}" != "None") {
-
             changeVisualization(id, mapChoices(id, id+"-{{filter.type}}"))
             if("{{filter.type}}" === "filter_on_attributes") {
                 changeAttributeVisualization(id, "{{filter.attribute}}")
             }
-        }
-        if("{{filter.is_frequency}}" === "False") {
-            document.getElementById(id+"-edge-label").style.display = "block"
-        } else {
-            document.getElementById(id+"-edge-label").style.display = "none"
-        }   
+        }  
     } else {
         // default values
         setStartValues(id, ["-filter-select", "-frequency-performance"], ["", "frequency"])
@@ -245,62 +244,40 @@ function setUpPage(id) {
 // values are taken from the respected fields the user omits from
 $("#{{id}}-sender").click(function() {
     selected_filter = document.getElementById("{{id}}-filter-select").value
+    data = {
+        type: selected_filter,
+        is_frequency: document.getElementById("{{id}}-frequency-performance").value === "frequency"
+    }
+    if(!data.is_frequency) {
+        data.edge_label = document.getElementById('{{id}}-edge-label').value;
+    }
     // construct request data
     switch(selected_filter) {
         case '{{id}}-case_performance':
-            data = {
-                type: selected_filter,
-                is_frequency: document.getElementById("{{id}}-frequency-performance").value == "frequency",
-                edge_label: document.getElementById('{{id}}-edge-label').value,
-                case_performance1: document.getElementById('{{id}}-number1').value,
-                case_performance2: document.getElementById('{{id}}-number2').value
-            }
+            data.case_performance1 = document.getElementById('{{id}}-number1').value
+            data.case_performance2 = document.getElementById('{{id}}-number2').value
             break;
         case '{{id}}-between_filter':
-            data = {
-                type: selected_filter,
-                is_frequency: document.getElementById("{{id}}-frequency-performance").value == "frequency",
-                edge_label: document.getElementById('{{id}}-edge-label').value,
-                case1: document.getElementById('{{id}}-between-select1').value,
-                case2: document.getElementById('{{id}}-between-select2').value
-            }
+                data.case1 = document.getElementById('{{id}}-between-select1').value
+                data.case2 = document.getElementById('{{id}}-between-select2').value
             break;
         case '{{id}}-case_size':
-            data = {
-                type: selected_filter,
-                is_frequency: document.getElementById("{{id}}-frequency-performance").value == "frequency",
-                edge_label: document.getElementById('{{id}}-edge-label').value,
-                case_size1: document.getElementById('{{id}}-number1').value,
-                case_size2: document.getElementById('{{id}}-number2').value
-            }
+                data.case_size1 = document.getElementById('{{id}}-number1').value
+                data.case_size2 = document.getElementById('{{id}}-number2').value
             break;
         case '{{id}}-timestamp_filter_contained':
         case '{{id}}-timestamp_filter_intersecting':
-            data = {
-                type: selected_filter,
-                is_frequency: document.getElementById("{{id}}-frequency-performance").value == "frequency",
-                edge_label: document.getElementById('{{id}}-edge-label').value,
-                timestamp1: document.getElementById('{{id}}-timestamp-select1').value,
-                timestamp2: document.getElementById('{{id}}-timestamp-select2').value
-            }
+                data.timestamp1 = document.getElementById('{{id}}-timestamp-select1').value,
+                data.timestamp2 = document.getElementById('{{id}}-timestamp-select2').value
+            
             break;
         case '{{id}}-filter_on_attributes':
-            attribute = document.getElementById('{{id}}-attribute-select').value
-            data = {
-                type: selected_filter,
-                is_frequency: document.getElementById("{{id}}-frequency-performance").value == "frequency",
-                edge_label: document.getElementById('{{id}}-edge-label').value,
-                attribute: attribute,
-                attribute_value: document.getElementById("{{id}}-attribute-filter-"+attribute+ "-select1").value,
-                operator: document.getElementById("{{id}}-attribute-filter-"+attribute+ "-select2").value
-            }
+            data.attribute = document.getElementById('{{id}}-attribute-select').value
+            data.attribute_value = document.getElementById("{{id}}-attribute-filter-"+data.attribute+ "-select1").value
+            data.operator = document.getElementById("{{id}}-attribute-filter-"+data.attribute+ "-select2").value
             break;            
         default:
-            data = {
-                id: "{{id}}",
-                is_frequency: document.getElementById("{{id}}-frequency-performance").value == "frequency",
-                edge_label: document.getElementById('{{id}}-edge-label').value
-            }
+            data.id = "{{id}}"
             break;
     }
     // send ajax request
