@@ -84,7 +84,7 @@ class CompareLogs(TemplateView):
         elif "id" in data:
             id = int(data['id'].split("-")[0])
             handler= LogObjectHandler.objects.get(pk=id)
-            handler.set_filter('is_frequency', bool(data['is_frequency']))
+            handler.set_filter('is_frequency', bool(data['is_frequency'] == "true"))
             handler.save()
         # more than one attribute of the filter is set
         else:

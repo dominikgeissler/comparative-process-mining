@@ -7,7 +7,7 @@
     <option value="performance">Performance</option>
 </select><br>
 <select class="form-select form-select-sm" value="" id="{{id}}-filter-select" onchange="changeSelect('{{id}}', this.value)">
-    <option value="" disabled>Select Filter</option>
+    <option value="" selected disabled>Select Filter</option>
     <option value="{{id}}-case_performance">Case Performance</option>
     <option value="{{id}}-between_filter">Between Filter</option>
     <option value="{{id}}-case_size">Case Size</option>
@@ -89,7 +89,7 @@ divs = [
 ]
 
 // set up the page once the page is loaded
-window.onload = setUpPage;
+window.onload = setUpPage("{{id}}");
 
 // change the visualization of the 'filter_on_attribute' div
 // to only display the selected attribute select
@@ -178,14 +178,14 @@ function changeSelect(id, val) {
 
 // gets called on page load
 // sets the filter if its present or sets default values
-function setUpPage() {
+function setUpPage(id) {
     // if a filter is already existent, set default values
-    id = "{{id}}"
     // check if filter exists
     // also check, if the filter exists but only frequency/performance
     // is set and toggle accordingly
     if("{{filter}}" != "None") {
-        keys, values = ["-frequency-performance"], ["{{filter.is_frequency}}" === "True" ? "frequency" : "performance"]
+        keys = ["-frequency-performance"]
+        values =  ["{{filter.is_frequency}}" === "True" ? "frequency" : "performance"]
         switch("{{filter.type}}") {
             case "between_select":
                 keys.push("-between-select1","-between-select2", "-filter-select")
@@ -210,10 +210,18 @@ function setUpPage() {
             default:
                 break;
         }
+        if(keys.length == 1) {
+            keys.push("-filter-select")
+            values.push("")
+        }
         setStartValues(id, keys, values)
-        changeVisualization(id, mapChoices(id, id+"-{{filter.type}}"))
-        if("{{filter.type}}" === "filter_on_attributes") {
-            changeAttributeVisualization(id, "{{filter.attribute}}")
+        if("{{filter.type}}" != "None") {
+
+            changeVisualization(id, mapChoices(id, id+"-{{filter.type}}"))
+
+            if("{{filter.type}}" === "filter_on_attributes") {
+                changeAttributeVisualization(id, "{{filter.attribute}}")
+            }   
         }
     } else {
         // default values
