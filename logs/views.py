@@ -49,8 +49,7 @@ class CompareLogs(TemplateView):
         # get data urls from request 
         imageURLs = json.loads(self.POST.get("imageURLs", []))
         
-        # create new FSS for saving the images
-        # # get other information from request
+        # get other information from request
         ids = json.loads(self.POST.get("ids", []))
         ref = int(self.POST.get('ref', 0))
 
