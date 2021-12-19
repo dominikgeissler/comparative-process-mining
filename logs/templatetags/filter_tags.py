@@ -11,8 +11,10 @@ formatstring = "%Y-%m-%d %H:%M:%S"
 def convert_timestamp(timestamp):
     """converts the timestamp to a format django can handle"""
     if type(timestamp) is Timestamp or type(timestamp) is datetime:
+        # timestamp is not formatted yet
         return timestamp.strftime(formatstring)
     else:
+        # timestamp is already formatted
         return timestamp
 
 @register.filter
