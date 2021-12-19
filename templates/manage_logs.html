@@ -2,6 +2,7 @@
 {% load static %}
 {% block content %}
 <h3 class="mt-4" style="color:#00529F;">Event Logs</h3>
+<p id="one">Please upload at least one event log before comparing.</p>
 <br>
 {% if message %}
 <div class="alert alert-success" role="alert">
@@ -43,5 +44,37 @@
 {% else %}
         <p>No logs uploaded</p>
 {% endif %}
-
+<style type="text/css">
+    form {
+    width: 50%;
+    position: relative;
+    left: 20px;
+    }
+    select {
+    width: 90%;
+    top: 10px;
+    height: 30px;
+    margin: 5px
+    }
+    button {
+    position: relative;
+    left: 5px;
+    }
+    h3 {
+    position: relative;
+    left: 27px;
+    }
+    p {
+    position: relative;
+    left: 7px;
+    font-family: Arial, sans-serif;
+    font-size: 18px;
+    }
+    #one {
+    position: relative;
+    left: 27px;
+    font-family: Arial, sans-serif;
+    font-size: 18px;
+    }
+</style>
 {% endblock %}
