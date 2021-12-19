@@ -3,7 +3,105 @@
 
 {% block content %}
 
-<h1>This is the about page.</h1>
-<h2>The user manual and further information will be stored here</h2>
+<center>
+<h1 class="mt-4" style="color:#00529F;">Comparative Process Mining</h1>
+<h2 class="mt-4" style="color:#00529F;">User Manual</h2>
+<h4 class="mt-4" style="color:#00529F;">1. Uploading event logs</h4>
 
+<div>
+<br>
+Please click on the button "Manage" on the menu bar to get to the page where you are able to upload a new event log.
+<br><br>
+<img style="border: 1px solid #000000" src="static/img/1_1_manage_page.png" width="900" height="600">
+<br><br><br>
+After you are on the "Manage" page, please click on the button "Choose file".
+<br><br>
+<img style="border: 1px solid #000000" src="static/img/1_1_select_log.png" width="900" height="600">
+<br><br><br>
+Now, you can choose a .xes/.csv file.<br>
+Please click on the .xes/.csv file you want to upload (1.) and afterwards click on the button "Open" (2.).
+<br><br>
+<img style="border: 1px solid #000000" src="static/img/1_2_select_log.png" width="900" height="600">
+<br><br><br>
+After the .xes/.csv file is choosen and the last step is to click on the button "Upload EventLog" to upload it.
+<br><br>
+<img style="border: 1px solid #000000" src="static/img/1_3_select_log.png" width="900" height="600">
+<br><br><br>
+If your upload was successful, you will see the following "Upload successful" message.
+<br><br>
+<img style="border: 1px solid #000000" src="static/img/1_4_select_log.png" width="900" height="600">
+<br><br>
+</div>
+
+<h4 class="mt-4" style="color:#00529F;">2. Deleting event logs</h4>
+<br>
+Please pick the uploaded event log you would like to delete by clicking on it (1.).<br>
+Thereafter, click on the button "Delete" (2.) to erase the selected event log.
+<br><br>
+<img style="border: 1px solid #000000" src="static/img/2_1_deleting_event_log.png" width="900" height="600">
+<br><br><br>
+If your deletion was successful, you will see the following "Successfully deleted" message.
+<br><br>
+<img style="border: 1px solid #000000" src="static/img/2_2_deleting_event_log.png" width="900" height="600">
+<br><br>
+
+<h4 class="mt-4" style="color:#00529F;">3. Choose Number of Comparisons</h4>
+
+<br><br>
+<img style="border: 1px solid #000000" src="static/img/3_1_no_comparisons.png" width="900" height="600">
+<br><br>
+<br><br>
+<img style="border: 1px solid #000000" src="static/img/3_2_no_comparisons.png" width="900" height="600">
+<br><br>
+
+<h4 class="mt-4" style="color:#00529F;">4. Select Uploaded Event Logs</h4>
+
+<br><br>
+<img style="border: 1px solid #000000" src="static/img/4_1_select_uploaded_event_logs.png" width="900" height="600">
+<br><br>
+<br><br>
+<img style="border: 1px solid #000000" src="static/img/4_2_select_uploaded_event_logs.png" width="900" height="600">
+<br><br>
+<br><br>
+<img style="border: 1px solid #000000" src="static/img/4_3_select_uploaded_event_logs.png" width="900" height="600">
+<br><br>
+
+<h4 class="mt-4" style="color:#00529F;">5. Pick Reference Log</h4>
+
+<h4 class="mt-4" style="color:#00529F;">6. Choose Edge Labeling</h4>
+
+<h4 class="mt-4" style="color:#00529F;">7. Select Filter</h4>
+
+<h4 class="mt-4" style="color:#00529F;">8. Apply Filter</h4>
+
+<h4 class="mt-4" style="color:#00529F;">9. Reset Filter</h4>
+
+<h4 class="mt-4" style="color:#00529F;">10. Directly-Follows Graph (DFG)</h4>
+
+<h4 class="mt-4" style="color:#00529F;">11. Metrics</h4>
+
+<h4 class="mt-4" style="color:#00529F;">12. PDF Download</h4>
+
+<h4 class="mt-4" style="color:#00529F;">13. New Comparison</h4>
+
+Either click on "Compare" or on "Manage" on the bar menu.<br>
+"Compare" is the correct option, if you don't want to upload an additional event log prior to the new comparison.<br>
+But, if you want to upload a new event log, please go to the "Manage" page first and upload it.<br>
+In accordance, either move on to 1. Uploading event logs or 3. Choose Number of Comparisons in the User Manual to continue.<br>
+
+<h2 class="mt-4" style="color:#00529F;">Further Informations</h2>
+
+<h4 class="mt-4" style="color:#00529F;">For further informations, we recommend you:</h4>
+
+PM4Py Process Mining Library (<a href="https://pm4py.fit.fraunhofer.de/documentation">https://pm4py.fit.fraunhofer.de/documentation</a>)<br>
+Process Mining in Practice (<a href="https://fluxicon.com/book/read/">https://fluxicon.com/book/read/</a>)<br>
+<br>
+
+</center>
+<style type="text/css">
+    div {
+    font-family: Arial, sans-serif;
+    font-size: 18px;
+    }
+</style>
 {% endblock %}
