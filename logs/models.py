@@ -139,7 +139,7 @@ class Filter(models.Model):
     is_frequency = models.BooleanField(default=True)
 
     # performance edge label
-    edge_label = models.CharField(max_length=500, null=True, default=None)
+    edge_label = models.IntegerField(null=True)
 
     # attribute filter
     attribute = models.CharField(max_length=500, null=True)
@@ -386,12 +386,12 @@ class LogObjectHandler(models.Model):
                     dfg_dict_to_g6(
                         convert_dfg_to_dict(
                             self.generate_dfg()
-                        ), "" if self.filter is None else self.filter.edge_label
+                        ), 1 if not self.filter or not self.filter.edge_label else self.filter.edge_label
                     ),
                     dfg_dict_to_g6(
                         convert_dfg_to_dict(
                             reference.generate_dfg()
-                        ), "" if self.filter is None else self.filter.edge_label
+                        ), 1 if not self.filter or not self.filter.edge_label else self.filter.edge_label
                     )
                 )
             )
@@ -399,7 +399,7 @@ class LogObjectHandler(models.Model):
             dfg_dict_to_g6(
                 convert_dfg_to_dict(
                     self.generate_dfg()
-                ), "" if self.filter is None else self.filter.edge_label
+                ), 1 if not self.filter or not self.filter.edge_label else self.filter.edge_label
             )
         )
 

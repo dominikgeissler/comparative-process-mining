@@ -6,11 +6,11 @@
     <option value="frequency">Frequency</option>
     <option value="performance">Performance</option>
 </select>
-<select value="seconds" id="{{id}}-edge-label" style="display: none;">
-    <option value="seconds">Seconds</option>
-    <option value="minutes">Minutes</option>
-    <option value="hours">Hours</option>
-    <option value="days">Days</option>
+<select value=1 id="{{id}}-edge-label" style="display: none;">
+    <option value=1>Seconds</option>
+    <option value=60>Minutes</option>
+    <option value=3600>Hours</option>
+    <option value=86400>Days</option>
 </select><br>
 <select class="form-select form-select-sm" value="" id="{{id}}-filter-select" onchange="changeSelect('{{id}}', this.value)">
     <option value="" selected disabled>Select Filter</option>

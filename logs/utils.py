@@ -89,7 +89,7 @@ def convert_dfg_to_dict(dfg):
         'dfg_graph': dfg_graph_dict
     }
 
-def dfg_dict_to_g6(dfg_dict, edge_label=""):
+def dfg_dict_to_g6(dfg_dict, edge_label_divisor=1):
     """converts a dict to a g6 graph"""
     edges = []
     nodes = []
@@ -102,20 +102,12 @@ def dfg_dict_to_g6(dfg_dict, edge_label=""):
         unique_nodes.add(startnode)
         for endnode in dfg_graph_dict[startnode]:
             unique_nodes.add(endnode)
-            if(edge_label == "min"):
-                edge_label_divider = 60
-            elif(edge_label == "hrs"):
-                edge_label_divider = 3600
-            elif(edge_label == "days"):
-                edge_label_divider = 24*3600
-            else:
-                edge_label_divider = 1
             frequency = dfg_graph_dict[startnode][endnode] 
             edges_from_startnode.append(
                 {
                     'source': startnode,
                     'target': endnode,
-                    'label': str("%.0f" % round(frequency/edge_label_divider, 0)),
+                    'label': str(int(frequency/edge_label_divisor)),
                     'style': {
                         'lineWidth': ((frequency - min_frequency) / (max_frequency - min_frequency)) * (18) + 2 if max_frequency != min_frequency else 1,
                         'endArrow': True
