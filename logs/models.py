@@ -78,6 +78,7 @@ class Log(models.Model):
         # (Django overwrites it)
         return super().__hash__()
 
+
 class Filter(models.Model):
     """
     A model to represent a filter for a log
@@ -117,18 +118,18 @@ class Filter(models.Model):
     """
     # string description of the filter type
     type = models.CharField(max_length=500, null=True, default=None)
-    
+
     # for case-performance filter
-    case_performance1 = models.IntegerField(null=True,default=None)
-    case_performance2 = models.IntegerField(null=True,default=None)
+    case_performance1 = models.IntegerField(null=True, default=None)
+    case_performance2 = models.IntegerField(null=True, default=None)
 
     # for between filter
-    case1 = models.CharField(max_length=500, null=True,default=None)
-    case2 = models.CharField(max_length=500, null=True,default=None)
+    case1 = models.CharField(max_length=500, null=True, default=None)
+    case2 = models.CharField(max_length=500, null=True, default=None)
 
     # for case-size filter
-    case_size1 = models.IntegerField(null=True,default=None)
-    case_size2 = models.IntegerField(null=True,default=None)
+    case_size1 = models.IntegerField(null=True, default=None)
+    case_size2 = models.IntegerField(null=True, default=None)
 
     # for timestamp
     timestamp1 = models.DateTimeField(null=True)
@@ -136,6 +137,9 @@ class Filter(models.Model):
 
     # frequency / performance
     is_frequency = models.BooleanField(default=True)
+
+    # performance edge label
+    edge_label = models.CharField(max_length=500, null=True, default=None)
 
     # attribute filter
     attribute = models.CharField(max_length=500, null=True)
@@ -155,7 +159,7 @@ class Filter(models.Model):
         """
         # if a list of keys is given, set each key to the corresponding
         # value key with key[index] = value[index]
-        if isinstance(attr,list):
+        if isinstance(attr, list):
             for i, at in enumerate(attr):
                 setattr(self, at, value[i])
         else:
@@ -166,7 +170,7 @@ class Filter(models.Model):
 class LogObjectHandler(models.Model):
     """
     Handler for log object in comparison page
-    
+
     ---
     Attributes:
         log_object:
@@ -239,7 +243,7 @@ class LogObjectHandler(models.Model):
     def generate_dfg(self, only_extract_filtered_log=False):
         """
         generates the dfg of the log
-        
+
         ---
         Params:
             only_extract_filtered_log (bool, opt):
@@ -261,19 +265,26 @@ class LogObjectHandler(models.Model):
             filtered_log = None
             # 'switch' over implemeneted filters
             if self.filter.type == "case_performance":
-                filtered_log = case_filter.filter_case_performance(log, self.filter.case_performance1, self.filter.case_performance2)
-            elif self.filter.type == "between_filter"  :
-                filtered_log = pm4py.filter_between(log, self.filter.case1, self.filter.case2)    
+                filtered_log = case_filter.filter_case_performance(
+                    log, self.filter.case_performance1, self.filter.case_performance2)
+            elif self.filter.type == "between_filter":
+                filtered_log = pm4py.filter_between(
+                    log, self.filter.case1, self.filter.case2)
             elif self.filter.type == "case_size":
-                filtered_log = pm4py.filter_case_size(log, self.filter.case_size1, self.filter.case_size2)
+                filtered_log = pm4py.filter_case_size(
+                    log, self.filter.case_size1, self.filter.case_size2)
             elif self.filter.type == "timestamp_filter_contained":
                 # normalize timestamps
-                timestamp1, timestamp2 = make_naive(self.filter.timestamp1, UTC), make_naive(self.filter.timestamp2, UTC)
-                filtered_log = timestamp_filter.filter_traces_contained(log, timestamp1,timestamp2) 
+                timestamp1, timestamp2 = make_naive(
+                    self.filter.timestamp1, UTC), make_naive(self.filter.timestamp2, UTC)
+                filtered_log = timestamp_filter.filter_traces_contained(
+                    log, timestamp1, timestamp2)
             elif self.filter.type == "timestamp_filter_intersecting":
                 # normalize timestamps
-                timestamp1, timestamp2 = make_naive(self.filter.timestamp1, UTC), make_naive(self.filter.timestamp2, UTC)
-                filtered_log = timestamp_filter.filter_traces_intersecting(log, timestamp1,timestamp2)
+                timestamp1, timestamp2 = make_naive(
+                    self.filter.timestamp1, UTC), make_naive(self.filter.timestamp2, UTC)
+                filtered_log = timestamp_filter.filter_traces_intersecting(
+                    log, timestamp1, timestamp2)
             elif self.filter.type == "filter_on_attributes":
                 if self.filter.operator in ["<", ">"]:
                     # if '<' look at the range -inf to float(attribute_value)
@@ -283,31 +294,31 @@ class LogObjectHandler(models.Model):
                     # values, float(attribute_value) does not need to be try-catched
                     filtered_log = attributes_filter.apply_numeric_events(
                         log,
-                        -inf if self.filter.operator == "<" 
-                        else float(self.filter.attribute_value), 
-                        float(self.filter.attribute_value) if self.filter.operator == "<" 
+                        -inf if self.filter.operator == "<"
+                        else float(self.filter.attribute_value),
+                        float(self.filter.attribute_value) if self.filter.operator == "<"
                         else inf,
                         parameters={
                             attributes_filter.Parameters.ATTRIBUTE_KEY:
-                             self.filter.attribute})
+                            self.filter.attribute})
                 else:
                     # operator is either '=' or '≠'
                     # check if the attribute value is a number
                     try:
                         parsed_val = float(self.filter.attribute_value)
                         filtered_log = attributes_filter.apply(log, [parsed_val],
-                                          parameters={
-                                                attributes_filter.Parameters.ATTRIBUTE_KEY:
-                                                self.filter.attribute, 
-                                                attributes_filter.Parameters.POSITIVE: 
-                                                self.operator == "="})
+                                                               parameters={
+                            attributes_filter.Parameters.ATTRIBUTE_KEY:
+                            self.filter.attribute,
+                            attributes_filter.Parameters.POSITIVE:
+                            self.operator == "="})
                     except:
                         filtered_log = attributes_filter.apply(log, [self.filter.attribute_value],
-                                          parameters={
-                                                attributes_filter.Parameters.ATTRIBUTE_KEY: 
-                                                self.filter.attribute, 
-                                                attributes_filter.Parameters.POSITIVE: 
-                                                self.operator == "="})
+                                                               parameters={
+                            attributes_filter.Parameters.ATTRIBUTE_KEY:
+                            self.filter.attribute,
+                            attributes_filter.Parameters.POSITIVE:
+                            self.operator == "="})
             # since the filtered log is only set if a filter was applied,
             # and thus not None, otherwise the filter is ignored
             if filtered_log:
@@ -315,12 +326,10 @@ class LogObjectHandler(models.Model):
         if only_extract_filtered_log:
             return log
 
-        
-
         variant = dfg_discovery.Variants.FREQUENCY\
-                if not self.filter or self.filter.is_frequency\
-                else dfg_discovery.Variants.PERFORMANCE
-        
+            if not self.filter or self.filter.is_frequency\
+            else dfg_discovery.Variants.PERFORMANCE
+
         dfg = dfg_discovery.apply(log, variant=variant)
         return dfg
 
@@ -330,15 +339,17 @@ class LogObjectHandler(models.Model):
         global order
         # calculate the metrics for linked log
         # if a filter is applied, calculate the metrics for the filtered log
-        metrics1 = LogMetrics(self.generate_dfg(only_extract_filtered_log=True))
+        metrics1 = LogMetrics(self.generate_dfg(
+            only_extract_filtered_log=True))
         # if a reference was selected and the reference is different
         # to linked log, calulate the metrics for the reference
         # log as well and return the metrics of the linked log
         # and the difference relative to the reference log
 
         if reference and self.generate_dfg(only_extract_filtered_log=True) != reference.generate_dfg(only_extract_filtered_log=True):
-            # if reference is filtered, calculate comparison for filtered 
-            metrics2 = LogMetrics(reference.generate_dfg(only_extract_filtered_log=True))
+            # if reference is filtered, calculate comparison for filtered
+            metrics2 = LogMetrics(reference.generate_dfg(
+                only_extract_filtered_log=True))
             return vars(Metrics([
                 get_difference(
                     getattr(metrics1, attr),
@@ -375,12 +386,12 @@ class LogObjectHandler(models.Model):
                     dfg_dict_to_g6(
                         convert_dfg_to_dict(
                             self.generate_dfg()
-                        )
+                        ), "" if self.filter is None else self.filter.edge_label
                     ),
                     dfg_dict_to_g6(
                         convert_dfg_to_dict(
                             reference.generate_dfg()
-                        )
+                        ), "" if self.filter is None else self.filter.edge_label
                     )
                 )
             )
@@ -388,7 +399,7 @@ class LogObjectHandler(models.Model):
             dfg_dict_to_g6(
                 convert_dfg_to_dict(
                     self.generate_dfg()
-                )
+                ), "" if self.filter is None else self.filter.edge_label
             )
         )
 
@@ -399,7 +410,7 @@ class LogObjectHandler(models.Model):
         if not self.filter:
             # create filter
             self.filter = Filter.objects.create()
-        # set the attribute(s) of the filter and save it 
+        # set the attribute(s) of the filter and save it
         self.filter.set_attribute(attr, value)
         self.filter.save()
 
