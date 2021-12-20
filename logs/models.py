@@ -386,12 +386,12 @@ class LogObjectHandler(models.Model):
                     dfg_dict_to_g6(
                         convert_dfg_to_dict(
                             self.generate_dfg()
-                        ), 1 if self.filter.is_frequency else self.filter.edge_label
+                        ), 1 if not self.filter or self.filter.is_frequency else self.filter.edge_label
                     ),
                     dfg_dict_to_g6(
                         convert_dfg_to_dict(
                             reference.generate_dfg()
-                        ), 1 if self.filter.is_frequency else self.filter.edge_label
+                        ), 1 if not self.filter or self.filter.is_frequency else self.filter.edge_label
                     )
                 )
             )
