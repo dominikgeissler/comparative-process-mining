@@ -9,10 +9,11 @@
  <table class="table">
     <thead>
     {% for log in logs %}
-       <th>
+        <th>
+            <br>
             {% unique_id_for_filter log.pk forloop.counter0 as id %}
             {% include 'filter.html' with log=log id=id filter=log|filter%}
-       </th>
+        </th>
     {% endfor %}
     </thead>
     <tr>
@@ -27,6 +28,7 @@
     <tr>
     {% for log in logs %}
         <td>
+            <br>
             {% include 'graph.html' with div_id=forloop.counter0 data=log|get_graph:reference %}
         </td>
     {% endfor %}
@@ -34,6 +36,7 @@
     <tr>
         {% for log in logs %}
             <td>
+            <br>
             {% include 'metrics.html' with name=log.log_name data=log|get_metrics:reference similarity=log|similarity:reference %}
             </td>
         {% endfor %}
@@ -42,22 +45,29 @@
 <div class="d-flex justify-content-center">
     <button id="download-button" class="btn btn-primary">Download</button>
 </div>
+<br>
+    <p>Please click on the download button to export your results as a PDF.</p>
+
 {% endwith %}
 {% endwith %}
 <style type="text/css">
 table {
     table-layout: fixed;
     width: 100%;
-  }
-
-  .selected {
-      color: rgb(137, 184, 45);
-
-  }
-  .not-selected {
-      color: #00529F;
-  }
-
+}
+p {
+    position: relative;
+    bottom: 20px;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    font-size: 18px;
+}
+.selected {
+    color: rgb(137, 184, 45);
+}
+.not-selected {
+    color: #00529F;
+}
 </style>
 <script type="text/javascript">
 var dataURLs = []
