@@ -209,9 +209,9 @@ function setUpPage(id) {
             values.push("{{filter.edge_label}}")
         }
         switch("{{filter.type}}") {
-            case "between_select":
+            case "between_filter":
                 keys.push("-between-select1","-between-select2", "-filter-select")
-                values.push("{{filter.case1}}", "{{filter.case2}}", id+"-between_select")
+                values.push("{{filter.case1}}", "{{filter.case2}}", id+"-between_filter")
                 break;
             case "case_performance":
             case "case_size":
