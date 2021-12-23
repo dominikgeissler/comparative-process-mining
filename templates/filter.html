@@ -2,7 +2,8 @@
 {% load filter_tags %}
 {% block content %}
 <div class="form-group">
-<select value="frequency" id="{{id}}-frequency-performance" onchange="document.getElementById('{{id}}-edge-label').style.display = this.value === 'performance'? 'block' : 'none'; ">
+
+<select value="frequency" id="{{id}}-frequency-performance" onchange="document.getElementById('{{id}}-edge-label').style.display = this.value === 'performance'? 'inline-block' : 'none'; ">
     <option value="frequency">Frequency</option>
     <option value="performance">Performance</option>
 </select>
@@ -11,7 +12,8 @@
     <option value=60>Minutes</option>
     <option value=3600>Hours</option>
     <option value=86400>Days</option>
-</select><br>
+</select>
+<br>
 <select class="form-select form-select-sm" value="" id="{{id}}-filter-select" onchange="changeSelect('{{id}}', this.value)">
     <option value="" selected disabled>Select Filter</option>
     <option value="{{id}}-case_performance">Case Performance</option>
@@ -80,10 +82,17 @@
     {% endif %}
 {% endfor %}
 </div>
-<button id="{{id}}-sender"class ="btn btn-success">Apply Filter</button>
+<br>
+<button id="{{id}}-sender"class ="btn btn-primary">Apply Filter</button>
 {% if filter %}
 <button id="{{id}}-sender-delete" class="btn btn-danger">Reset Filter</button>
 {% endif %}
+
+<style type="text/css">
+    select, input, button {
+        margin: 3px 0px;
+    }
+</style>
 
 <script type="text/javascript">
 // all hideable divs
@@ -152,7 +161,7 @@ function changeVisualization(id, arr, div_arr=null) {
     div_arr = !div_arr ? divs : div_arr
 
     // set all divs in arr to visible
-    arr.forEach(el => document.getElementById(el).style.display = "block")
+    arr.forEach(el => document.getElementById(el).style.display = "inline-block")
 
     // set all divs in div_arr not in arr to not visible 
     div_arr.forEach(el => {
@@ -195,7 +204,7 @@ function setUpPage(id) {
         keys = ["-frequency-performance"]
         values =  ["{{filter.is_frequency}}" === "True" ? "frequency" : "performance"]
         if(values[0] === "performance") {
-            document.getElementById(id+"-edge-label").style.display = "block"
+            document.getElementById(id+"-edge-label").style.display = 'inline-block'
             keys.push("-edge-label")
             values.push("{{filter.edge_label}}")
         }
