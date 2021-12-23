@@ -1,6 +1,6 @@
 {% with request.path as url %}
 {% load static %}
-{% url 'about_view' as about %}
+{% url 'user_manual_view' as usermanual %}
 {% url 'manage_view' as manage %}
 {% url 'select_comp_view' as compare %}
 <nav class="nav nav-pills navbar navbar-expand-lg navbar-light bg-light">
@@ -19,7 +19,7 @@
           <a class="nav-link {% if url == compare %}active{% endif %}" href="{{ compare }}">Compare</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link {% if url == about %}active{% endif %}" href="{{ about }}">About</a>
+          <a class="nav-link {% if url == usermanual %}active{% endif %}" href="{{ usermanual }}">User Manual</a>
         </li>
       </ul>
     </div>
