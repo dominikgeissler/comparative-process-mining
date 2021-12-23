@@ -23,7 +23,7 @@
         <button class="btn btn-primary" type="submit">Continue</button>
     </form>
 {% else %}
-<p>Please upload at least one log before comparing</p>
+<p id="paragraph_no_log_selected">Please upload at least one log before comparing.</p>
 {% endif %}
 <style type="text/css">
     form {
@@ -32,22 +32,19 @@
     left: 20px;
     }
     select {
-    width: 70%;
-    top: 10px;
+    width: 60%;
+    top: 5px;
     height: 30px;
-    margin: 5px
-    }
-    button {
-    position: relative;
-    left: 5px;
-    }
-    h3 {
-    position: relative;
-    left: 7px;
+    margin: 5px 0px;
     }
     p {
+    font-family: Arial, sans-serif;
+    font-size: 18px;
+    }
+    #paragraph_no_log_selected {
+    top: 20px;
     position: relative;
-    left: 7px;
+    left: 20px;
     font-family: Arial, sans-serif;
     font-size: 18px;
     }
