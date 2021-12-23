@@ -4,9 +4,9 @@ from .views import ManageLogs, SelectLogs, CompareLogs
 
 urlpatterns = [
     path('', ManageLogs.as_view(), name="manage_view"),
-    path('about', TemplateView.as_view(
-        template_name="about.html"
-    ), name="about_view"),
+    path('user_manual', TemplateView.as_view(
+        template_name="user_manual.html"
+    ), name="user_manual_view"),
     path('comp', TemplateView.as_view(
         template_name='select_comparisons.html'), name="select_comp_view"),
     path('select_logs', SelectLogs.as_view(), name="select_log_view"),
