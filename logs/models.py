@@ -311,14 +311,14 @@ class LogObjectHandler(models.Model):
                             attributes_filter.Parameters.ATTRIBUTE_KEY:
                             self.filter.attribute,
                             attributes_filter.Parameters.POSITIVE:
-                            self.operator == "="})
+                            self.filter.operator == "="})
                     except:
                         filtered_log = attributes_filter.apply(log, [self.filter.attribute_value],
                                                                parameters={
                             attributes_filter.Parameters.ATTRIBUTE_KEY:
                             self.filter.attribute,
                             attributes_filter.Parameters.POSITIVE:
-                            self.operator == "="})
+                            self.filter.operator == "="})
             # since the filtered log is only set if a filter was applied,
             # and thus not None, otherwise the filter is ignored
             if filtered_log:
