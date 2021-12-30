@@ -4,8 +4,8 @@
 
 <center>
     <h3>User Manual</h3>
-
     <h5 id="overview">Overview</h5>
+    <div class="overview_space_below">
     <a href="#section1">
         <h6>1. Uploading event logs</h6>
     </a>
@@ -42,7 +42,7 @@
     <a href="#section12">
         <h6>Further Informations</h6>
     </a>
-    <br><br>
+    </div>
 
     <h5 id="section1">1. Uploading event logs</h5>
     <p>
@@ -172,7 +172,7 @@
         <li><a href="#section6.3.2.">6.3.2. Filter on Attributes</a></li>
     </ul>
     </p>
-    <br>
+    
 
     <p id="section6.3.1."><b>6.3.1. Between Filter:</b></p>
     <p>
@@ -302,10 +302,11 @@
         <li><a href="https://fluxicon.com/book/read/">Process Mining in Practice</a></li>
         <li><a href="https://github.com/dominikgeissler/comparative-process-mining">GitHub</a></li>
     </ul>
+    <div class="end_space_below">
     <p>
         Back to <a href="#overview">overview</a>.
     </p>
-    <br>
+    </div>
 
 </center>
 
@@ -346,7 +347,23 @@
         margin-bottom: 3em;
     }
 
-    p,
+    p {
+        font-family: Arial, sans-serif;
+        font-size: 18px;
+        width: 100%;
+        position: relative;
+        text-align: left;
+        left: 50px;
+    }
+
+    .overview_space_below {
+        margin-bottom: 4em;
+    }
+
+    .end_space_below {
+        margin-bottom: 2em;
+    }
+
     ul {
         font-family: Arial, sans-serif;
         font-size: 18px;
@@ -354,6 +371,7 @@
         position: relative;
         text-align: left;
         left: 50px;
+        margin-bottom: 2em;
     }
 </style>
 {% endblock %}
