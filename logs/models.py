@@ -293,7 +293,7 @@ class LogObjectHandler(models.Model):
                     # values, float(attribute_value) does not need to be try-catched
                     filtered_log = attributes_filter.apply_numeric_events(
                         log,
-                        -float("inf") if self.filter.operator == "<"
+                        float("-inf") if self.filter.operator == "<"
                         else float(self.filter.attribute_value),
                         float(self.filter.attribute_value) if self.filter.operator == "<"
                         else float("inf"),
