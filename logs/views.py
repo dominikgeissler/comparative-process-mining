@@ -93,6 +93,8 @@ class CompareLogs(TemplateView):
             id,_,filter = data['type'].split("-")
             # get handler
             handler = LogObjectHandler.objects.get(pk=id)
+            # reset filter
+            handler.reset_filter()
             # remove the <id> from the values to refactor
             values = list(data.values())
             # since the filter given by the template is structured like

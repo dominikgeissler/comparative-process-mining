@@ -403,6 +403,11 @@ class LogObjectHandler(models.Model):
             )
         )
 
+    def reset_filter(self):
+        if self.filter:
+            Filter.objects.get(pk=self.filter_id).delete()
+            self.filter = Filter.objects.create()
+
     def set_filter(self, attr, value):
         """set filter of log (or create and then
         set if, if it doesnt exist)"""
@@ -413,7 +418,7 @@ class LogObjectHandler(models.Model):
         # set the attribute(s) of the filter and save it
         self.filter.set_attribute(attr, value)
         self.filter.save()
-
+    
     def get_filter(self):
         if self.filter is None:
             return {"No filter selected": "No attribute(s) selected"}
