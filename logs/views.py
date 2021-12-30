@@ -193,5 +193,5 @@ class ManageLogs(View):
             log.save()
         # return all uploaded logs and message depending on action taken
         context['logs'] = Log.objects.all()
-        context['message'] = 'Upload successful' if request.POST['action'] == 'upload' else 'Successfuly deleted'
+        context['message'] = 'Upload successful' if request.POST['action'] == 'upload' else 'Successfully deleted'
         return render(request, self.template_name, context)
