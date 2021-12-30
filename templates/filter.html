@@ -74,8 +74,8 @@
         </select>
         {% endif %}
         <select id="{{id}}-attribute-filter-{{attribute}}-select2">
-            {% for operation in value_list|get_operations %}
-            <option value="{{operation}}">{{operation}}</option>          
+            {% for operator in value_list|get_operations %}
+            <option value="{{operator | safe}}">{{operator}}</option>          
             {% endfor %}
         </select>
     </div>
@@ -227,7 +227,7 @@ function setUpPage(id) {
                 break;
             case "filter_on_attributes":
                 keys.push("-attribute-select", "-attribute-filter-{{filter.attribute}}-select1", "-attribute-filter-{{filter.attribute}}-select2", "-filter-select")
-                values.push("{{filter.attribute}}", "{{filter.attribute_value}}", "{{filter.operator}}", id+"-filter_on_attributes")
+                values.push("{{filter.attribute}}", "{{filter.attribute_value}}", "{{filter.operator | safe}}", id+"-filter_on_attributes")
                 break;
             default:
                 break;
