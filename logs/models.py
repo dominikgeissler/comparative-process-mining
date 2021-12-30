@@ -1,7 +1,6 @@
 from os.path import splitext
 from django.db import models
 from django.utils.timezone import make_naive
-from math import inf
 import pandas as pd
 import pm4py
 from pm4py.algo.filtering.log.cases import case_filter
@@ -294,10 +293,10 @@ class LogObjectHandler(models.Model):
                     # values, float(attribute_value) does not need to be try-catched
                     filtered_log = attributes_filter.apply_numeric_events(
                         log,
-                        -inf if self.filter.operator == "<"
+                        -float("inf") if self.filter.operator == "<"
                         else float(self.filter.attribute_value),
                         float(self.filter.attribute_value) if self.filter.operator == "<"
-                        else inf,
+                        else float("inf"),
                         parameters={
                             attributes_filter.Parameters.ATTRIBUTE_KEY:
                             self.filter.attribute})
