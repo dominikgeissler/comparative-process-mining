@@ -200,7 +200,7 @@ class LogObjectHandler(models.Model):
 
         for columName, columValue in log_df.iteritems():
             values_w_o_na = columValue.dropna()
-            results[columName] = list(set(values_w_o_na))
+            results[columName] = sorted(list(set(values_w_o_na)))
         return results
 
     def get_timestamps(self):
@@ -291,12 +291,12 @@ class LogObjectHandler(models.Model):
 
                     # since '<' and '>' can only be selected for numeric attribute
                     # values, float(attribute_value) does not need to be try-catched
-                    filtered_log = attributes_filter.apply_numeric_events(
+                    filtered_log = attributes_filter.apply_numeric(
                         log,
-                        float("-inf") if self.filter.operator == "<"
+                        float('-inf') if self.filter.operator == "<"
                         else float(self.filter.attribute_value),
                         float(self.filter.attribute_value) if self.filter.operator == "<"
-                        else float("inf"),
+                        else float('inf'),
                         parameters={
                             attributes_filter.Parameters.ATTRIBUTE_KEY:
                             self.filter.attribute})
