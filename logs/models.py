@@ -84,7 +84,7 @@ class Filter(models.Model):
 
     ---
     Properties:
-        type (str, opt): 
+        type (str, opt):
             a representation of the selected filter
         case_performance1 (int, opt):
             lower bound for the case performance filter
@@ -205,13 +205,18 @@ class LogObjectHandler(models.Model):
 
     def get_timestamps(self):
         """returns all timestamps"""
-        return sorted(pm4py.get_attribute_values(self.pm4py_log(), "time:timestamp"))
+        return sorted(
+            pm4py.get_attribute_values(
+                self.pm4py_log(),
+                "time:timestamp"))
 
     def get_similarity_index(self, reference):
         """
         Similarity Index based on the number of common variants or (in other words) common traces
         """
-        if reference and reference.generate_dfg(only_extract_filtered_log=True) != self.generate_dfg(only_extract_filtered_log=True):
+        if reference and reference.generate_dfg(
+                only_extract_filtered_log=True) != self.generate_dfg(
+                only_extract_filtered_log=True):
             variants_count_log = case_statistics.get_variant_statistics(
                 self.generate_dfg(only_extract_filtered_log=True))
             variants_count_reference = case_statistics.get_variant_statistics(
@@ -219,16 +224,17 @@ class LogObjectHandler(models.Model):
             sum_variants_reference = 0
             sum_variants_log = 0
             common_no_variants = 0
-            for x in range(0, len(variants_count_reference)-1):
+            for x in range(0, len(variants_count_reference) - 1):
                 sum_variants_reference += variants_count_reference[x]['count']
-                for i in range(0, len(variants_count_log)-1):
+                for i in range(0, len(variants_count_log) - 1):
                     if variants_count_reference[x]['variant'] == variants_count_log[i]['variant']:
                         common_no_variants += min(
-                            variants_count_reference[x]['count'], variants_count_log[i]['count'])
-            for i in range(0, len(variants_count_log)-1):
+                            variants_count_reference[x]['count'],
+                            variants_count_log[i]['count'])
+            for i in range(0, len(variants_count_log) - 1):
                 sum_variants_log += variants_count_log[i]['count']
             sum = max(sum_variants_reference, sum_variants_log)
-            return str("%.2f" % round(common_no_variants/sum*100, 2))+"%"
+            return str("%.2f" % round(common_no_variants / sum * 100, 2)) + "%"
         return "100%"
 
     def pm4py_log(self):
@@ -250,7 +256,7 @@ class LogObjectHandler(models.Model):
 
         ---
         Returns:
-            (filtered) dfg 
+            (filtered) dfg
                 (if only_extract_filtered_log=False)
             (filtered) log
                  (if only_extract_filtered_log=True)
@@ -275,13 +281,15 @@ class LogObjectHandler(models.Model):
             elif self.filter.type == "timestamp_filter_contained":
                 # normalize timestamps
                 timestamp1, timestamp2 = make_naive(
-                    self.filter.timestamp1, UTC), make_naive(self.filter.timestamp2, UTC)
+                    self.filter.timestamp1, UTC), make_naive(
+                    self.filter.timestamp2, UTC)
                 filtered_log = timestamp_filter.filter_traces_contained(
                     log, timestamp1, timestamp2)
             elif self.filter.type == "timestamp_filter_intersecting":
                 # normalize timestamps
                 timestamp1, timestamp2 = make_naive(
-                    self.filter.timestamp1, UTC), make_naive(self.filter.timestamp2, UTC)
+                    self.filter.timestamp1, UTC), make_naive(
+                    self.filter.timestamp2, UTC)
                 filtered_log = timestamp_filter.filter_traces_intersecting(
                     log, timestamp1, timestamp2)
             elif self.filter.type == "filter_on_attributes":
@@ -290,7 +298,8 @@ class LogObjectHandler(models.Model):
                     # if '>' look at the range float(attribute_value) to inf
 
                     # since '<' and '>' can only be selected for numeric attribute
-                    # values, float(attribute_value) does not need to be try-catched
+                    # values, float(attribute_value) does not need to be
+                    # try-catched
                     filtered_log = attributes_filter.apply_numeric(
                         log,
                         float('-inf') if self.filter.operator == "<"
@@ -305,19 +314,20 @@ class LogObjectHandler(models.Model):
                     # check if the attribute value is a number
                     try:
                         parsed_val = float(self.filter.attribute_value)
-                        filtered_log = attributes_filter.apply(log, [parsed_val],
-                                                               parameters={
-                            attributes_filter.Parameters.ATTRIBUTE_KEY:
-                            self.filter.attribute,
-                            attributes_filter.Parameters.POSITIVE:
-                            self.filter.operator == "="})
-                    except:
-                        filtered_log = attributes_filter.apply(log, [self.filter.attribute_value],
-                                                               parameters={
-                            attributes_filter.Parameters.ATTRIBUTE_KEY:
-                            self.filter.attribute,
-                            attributes_filter.Parameters.POSITIVE:
-                            self.filter.operator == "="})
+                        filtered_log = attributes_filter.apply(
+                            log,
+                            [parsed_val],
+                            parameters={
+                                attributes_filter.Parameters.ATTRIBUTE_KEY: self.filter.attribute,
+                                attributes_filter.Parameters.POSITIVE: self.filter.operator == "="})
+                    except BaseException:
+                        filtered_log = attributes_filter.apply(
+                            log,
+                            [
+                                self.filter.attribute_value],
+                            parameters={
+                                attributes_filter.Parameters.ATTRIBUTE_KEY: self.filter.attribute,
+                                attributes_filter.Parameters.POSITIVE: self.filter.operator == "="})
             # since the filtered log is only set if a filter was applied,
             # and thus not None, otherwise the filter is ignored
             if filtered_log:
@@ -345,7 +355,9 @@ class LogObjectHandler(models.Model):
         # log as well and return the metrics of the linked log
         # and the difference relative to the reference log
 
-        if reference and self.generate_dfg(only_extract_filtered_log=True) != reference.generate_dfg(only_extract_filtered_log=True):
+        if reference and self.generate_dfg(
+                only_extract_filtered_log=True) != reference.generate_dfg(
+                only_extract_filtered_log=True):
             # if reference is filtered, calculate comparison for filtered
             metrics2 = LogMetrics(reference.generate_dfg(
                 only_extract_filtered_log=True))
@@ -417,27 +429,48 @@ class LogObjectHandler(models.Model):
         # set the attribute(s) of the filter and save it
         self.filter.set_attribute(attr, value)
         self.filter.save()
-    
+
     def get_filter(self):
         if self.filter is None:
             return {"No filter selected": "No attribute(s) selected"}
         elif self.filter.type == "case_performance":
-            return {"Case Performance": "Between " + str(self.filter.case_performance1) + " and " + str(self.filter.case_performance2)}
+            return {"Case Performance": "Between " +
+                    str(self.filter.case_performance1) +
+                    " and " +
+                    str(self.filter.case_performance2)}
         elif self.filter.type == "between_filter":
-            return {"Between Filter": "Between '" + str(self.filter.case1) + "' and '" + str(self.filter.case2)+"'"}
+            return {"Between Filter": "Between '" +
+                    str(self.filter.case1) +
+                    "' and '" +
+                    str(self.filter.case2) +
+                    "'"}
         elif self.filter.type == "case_size":
-            return {"Case Size": "Between " + str(self.filter.case_size1) + " and " + str(self.filter.case_size2)}
+            return {"Case Size": "Between " +
+                    str(self.filter.case_size1) +
+                    " and " +
+                    str(self.filter.case_size2)}
         elif self.filter.type == "timestamp_filter_contained":
             timestamp1, timestamp2 = make_naive(
-                self.filter.timestamp1, UTC), make_naive(self.filter.timestamp2, UTC)
-            return {"Timestamp Filter (contained)": "Between " + str(timestamp1) + " and " + str(timestamp2)}
+                self.filter.timestamp1, UTC), make_naive(
+                self.filter.timestamp2, UTC)
+            return {
+                "Timestamp Filter (contained)": "Between " +
+                str(timestamp1) +
+                " and " +
+                str(timestamp2)}
         elif self.filter.type == "timestamp_filter_intersecting":
             # brauchst du nicht
             timestamp1, timestamp2 = make_naive(
-                self.filter.timestamp1, UTC), make_naive(self.filter.timestamp2, UTC)
-            return {"Timestamp Filter (intersecting)": "Between " + self.filter.timestamp1 + " and " + str(timestamp2)}
+                self.filter.timestamp1, UTC), make_naive(
+                self.filter.timestamp2, UTC)
+            return {
+                "Timestamp Filter (intersecting)": "Between " +
+                self.filter.timestamp1 +
+                " and " +
+                str(timestamp2)}
         elif self.filter.type == "filter_on_attributes":
-            return {"Filter on attributes": self.filter.attribute + " " + self.filter.operator + " " + str(self.filter.attribute_value)}
+            return {"Filter on attributes": self.filter.attribute + " " +
+                    self.filter.operator + " " + str(self.filter.attribute_value)}
 
 
 class Metrics():

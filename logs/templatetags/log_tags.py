@@ -14,10 +14,12 @@ def index(indexable, index):
     """returns the 'index'-th element of a list"""
     return indexable[index]
 
+
 @register.filter
 def filter(log):
     """returns the filter of the log"""
     return log.filter
+
 
 @register.filter
 def create_ref_url(url, ref):
@@ -35,6 +37,7 @@ def get_graph(log, reference):
 def get_metrics(log, reference):
     """return the metrics of a log relative to its reference"""
     return log.metrics(reference)
+
 
 @register.filter
 def similarity(log, reference):

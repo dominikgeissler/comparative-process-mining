@@ -13,5 +13,5 @@ urlpatterns = [
     path('compare', CompareLogs.as_view(), name="compare_log_view"),
     path(r"^ajax/responsefilter/$", CompareLogs.filter, name="update_filter"),
     path(r"^ajax/blabla/$", CompareLogs.download, name="download_comparison")
-    
+
 ]

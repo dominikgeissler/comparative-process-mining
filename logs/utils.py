@@ -8,44 +8,46 @@ from datetime import timedelta
 
 # --- PDF ---
 
+
 def link_callback(uri, rel):
-            """
-            Convert HTML URIs to absolute system paths so xhtml2pdf can access those
-            resources
-            """
-            result = finders.find(uri)
-            if result:
-                    if not isinstance(result, (list, tuple)):
-                            result = [result]
-                    result = list(os.path.realpath(path) for path in result)
-                    path=result[0]
-            else:
-                    sUrl = settings.STATIC_URL        # Typically /static/
-                    sRoot = settings.STATIC_ROOT      # Typically /home/userX/project_static/
-                    mUrl = settings.MEDIA_URL         # Typically /media/
-                    mRoot = settings.MEDIA_ROOT       # Typically /home/userX/project_static/media/
+    """
+    Convert HTML URIs to absolute system paths so xhtml2pdf can access those
+    resources
+    """
+    result = finders.find(uri)
+    if result:
+        if not isinstance(result, (list, tuple)):
+            result = [result]
+        result = list(os.path.realpath(path) for path in result)
+        path = result[0]
+    else:
+        sUrl = settings.STATIC_URL        # Typically /static/
+        sRoot = settings.STATIC_ROOT      # Typically /home/userX/project_static/
+        mUrl = settings.MEDIA_URL         # Typically /media/
+        mRoot = settings.MEDIA_ROOT       # Typically /home/userX/project_static/media/
 
-                    if uri.startswith(mUrl):
-                            path = os.path.join(mRoot, uri.replace(mUrl, ""))
-                    elif uri.startswith(sUrl):
-                            path = os.path.join(sRoot, uri.replace(sUrl, ""))
-                    else:
-                            return uri
+        if uri.startswith(mUrl):
+            path = os.path.join(mRoot, uri.replace(mUrl, ""))
+        elif uri.startswith(sUrl):
+            path = os.path.join(sRoot, uri.replace(sUrl, ""))
+        else:
+            return uri
 
-            # make sure that file exists
-            if not os.path.isfile(path):
-                    raise Exception(
-                            'media URI must start with %s or %s' % (sUrl, mUrl)
-                    )
+    # make sure that file exists
+    if not os.path.isfile(path):
+        raise Exception(
+            'media URI must start with %s or %s' % (sUrl, mUrl)
+        )
 
-            return path
+    return path
+
 
 def render_pdf_view(template_path, context):
     """
     creates a pdf from a html-template and a context
 
     Args:
-        template_path (str): 
+        template_path (str):
             the relative path to the template the context is rendered into
         context (dict):
             a dictionary with values to be set in the template
@@ -59,14 +61,15 @@ def render_pdf_view(template_path, context):
 
     # create a pdf
     pisa_status = pisa.CreatePDF(
-       html, dest=response, link_callback=link_callback)
-    
+        html, dest=response, link_callback=link_callback)
+
     # if error then show some funny view
     if pisa_status.err:
-       return HttpResponse('We had some errors <pre>' + html + '</pre>')
+        return HttpResponse('We had some errors <pre>' + html + '</pre>')
     return response
 
 # --- DFG ---
+
 
 def convert_dfg_to_dict(dfg):
     """converts a dfg to dictionary"""
@@ -89,6 +92,7 @@ def convert_dfg_to_dict(dfg):
         'dfg_graph': dfg_graph_dict
     }
 
+
 def dfg_dict_to_g6(dfg_dict, edge_label_divisor=1):
     """converts a dict to a g6 graph"""
     edges = []
@@ -102,18 +106,25 @@ def dfg_dict_to_g6(dfg_dict, edge_label_divisor=1):
         unique_nodes.add(startnode)
         for endnode in dfg_graph_dict[startnode]:
             unique_nodes.add(endnode)
-            frequency = dfg_graph_dict[startnode][endnode] 
+            frequency = dfg_graph_dict[startnode][endnode]
             edges_from_startnode.append(
                 {
                     'source': startnode,
                     'target': endnode,
-                    'label': str(int(frequency/edge_label_divisor)),
+                    'label': str(
+                        int(
+                            frequency /
+                            edge_label_divisor)),
                     'style': {
-                        'lineWidth': ((frequency - min_frequency) / (max_frequency - min_frequency)) * (18) + 2 if max_frequency != min_frequency else 1,
-                        'endArrow': True
-                    }
-                }
-            )
+                        'lineWidth': (
+                            (frequency -
+                             min_frequency) /
+                            (
+                                max_frequency -
+                                min_frequency)) *
+                        (18) +
+                        2 if max_frequency != min_frequency else 1,
+                        'endArrow': True}})
         edges.extend(edges_from_startnode)
 
     nodes = [
@@ -137,6 +148,7 @@ def dfg_dict_to_g6(dfg_dict, edge_label_divisor=1):
 
 # --- G6 ---
 
+
 def highlight_nonstandard_activities(g6_graph, reference):
     """Highlights all activites that are not in reference"""
 
@@ -156,6 +168,7 @@ def find_node_in_g6(node_name, reference):
     return False
 
 # --- Metrics ---
+
 
 def days_hours_minutes(total_seconds):
     """Transfer seconds format in days-hours-minutes-seconds format"""

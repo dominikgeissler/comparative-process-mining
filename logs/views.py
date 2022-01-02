@@ -9,7 +9,6 @@ from django.core.validators import FileExtensionValidator
 import json
 from .models import Filter, Log, LogObjectHandler
 from .utils import render_pdf_view
-		
 
 
 class CompareLogs(TemplateView):
@@ -32,7 +31,9 @@ class CompareLogs(TemplateView):
             # get handler for log that aren't in the handler array
             # (refresh consistency and comparison between two
             # instances of same log)
-            unique_handler_for_log = [handler for handler in LogObjectHandler.objects.filter(log_object=log) if handler not in handlers]
+            unique_handler_for_log = [
+                handler for handler in LogObjectHandler.objects.filter(
+                    log_object=log) if handler not in handlers]
             # if a unique handler exists, select it
             if unique_handler_for_log:
                 handler = unique_handler_for_log[0]
@@ -40,35 +41,37 @@ class CompareLogs(TemplateView):
                 # no unique handler exists -> create new one
                 handler = LogObjectHandler.objects.create(log_object=log)
                 handler.save()
-            handlers.append(handler)            
+            handlers.append(handler)
         return render(
             request, self.template_name, {
                 "logs": handlers, 'ref': ref})
+
     def download(self):
         """creates a PDF of the comparison and returns it as attachment"""
-        # get data urls from request 
+        # get data urls from request
         imageURLs = json.loads(self.POST.get("imageURLs", []))
-        
+
         # get other information from request
         ids = json.loads(self.POST.get("ids", []))
         ref = int(self.POST.get('ref', 0))
 
         # get handlers from ids
-        handlers = [LogObjectHandler.objects.get(pk=int(id)) for id in ids ]
+        handlers = [LogObjectHandler.objects.get(pk=int(id)) for id in ids]
 
         # create context
         context = {
-            'names': [handler.log_name for handler in handlers],
-            'isFrequency': ["Frequency" if not handler.filter or handler.filter.is_frequency else "Performance" for handler in handlers],
-            'filters': [handler.get_filter() for handler in handlers],
-            'graphs': imageURLs,
-            'metrics': [handler.metrics(handlers[ref]) for handler in handlers],
-            'similarity': [handler.get_similarity_index(handlers[ref]) for handler in handlers]
-        }
+            'names': [
+                handler.log_name for handler in handlers], 'isFrequency': [
+                "Frequency" if not handler.filter or handler.filter.is_frequency else "Performance" for handler in handlers], 'filters': [
+                handler.get_filter() for handler in handlers], 'graphs': imageURLs, 'metrics': [
+                    handler.metrics(
+                        handlers[ref]) for handler in handlers], 'similarity': [
+                            handler.get_similarity_index(
+                                handlers[ref]) for handler in handlers]}
 
         # create pdf and return it as attachment
         return render_pdf_view('to_pdf.html', context)
-    
+
     def filter(self):
         """either applies a filter or deletes the current filter"""
         data = json.loads(self.GET.get('data', ''))
@@ -83,14 +86,16 @@ class CompareLogs(TemplateView):
         # check if just frequency / performance change
         elif "id" in data:
             id = int(data['id'].split("-")[0])
-            handler= LogObjectHandler.objects.get(pk=id)
+            handler = LogObjectHandler.objects.get(pk=id)
             handler.set_filter('is_frequency', data['is_frequency'])
-            handler.set_filter('edge_label', None if data['is_frequency'] else data['edge_label'])
+            handler.set_filter(
+                'edge_label',
+                None if data['is_frequency'] else data['edge_label'])
             handler.save()
         # more than one attribute of the filter is set
         else:
             # get id (from LogObjectHandler) and filter from body
-            id,_,filter = data['type'].split("-")
+            id, _, filter = data['type'].split("-")
             # get handler
             handler = LogObjectHandler.objects.get(pk=id)
             # reset filter
@@ -108,6 +113,7 @@ class CompareLogs(TemplateView):
             # save the handler
             handler.save()
         return JsonResponse({'success': True})
+
 
 class SelectLogs(TemplateView):
     """
@@ -143,7 +149,6 @@ class ManageLogs(View):
             not_local_logs.delete()
             logs = Log.objects.all()
 
-        
         return render(
             request, self.template_name, {
                 'logs': logs})

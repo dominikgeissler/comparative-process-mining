@@ -4,6 +4,7 @@ from logs.models import Log, LogObjectHandler, LogMetrics, Filter
 from django.core.files.base import ContentFile
 from secrets import token_bytes, token_hex
 
+
 class ModelsLogTests(TestCase):
     def setUp(self):
         sample_log = ContentFile(token_bytes(5), token_hex(5))
@@ -16,7 +17,8 @@ class ModelsLogTests(TestCase):
         self.assertNotEqual(log1.pk, log2.pk)
         self.assertNotEqual(log1.log_name, log2.log_name)
         self.assertEqual(log1, log2)
-        
+
+
 class ModelsLogObjectHandlerTests(TestCase):
     def setUp(self):
         sample_log = ContentFile(token_bytes(5), "test_log_name")
