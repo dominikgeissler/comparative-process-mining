@@ -313,18 +313,12 @@ class LogObjectHandler(models.Model):
                     # operator is either '=' or '≠'
                     # check if the attribute value is a number
                     try:
-                        parsed_val = float(self.filter.attribute_value)
-                        filtered_log = attributes_filter.apply(
+                        value = float(self.filter.attribute_value)
+                    except BaseException or ValueError:
+                        value = self.filter.attribute_value
+                    filtered_log = attributes_filter.apply(
                             log,
-                            [parsed_val],
-                            parameters={
-                                attributes_filter.Parameters.ATTRIBUTE_KEY: self.filter.attribute,
-                                attributes_filter.Parameters.POSITIVE: self.filter.operator == "="})
-                    except BaseException:
-                        filtered_log = attributes_filter.apply(
-                            log,
-                            [
-                                self.filter.attribute_value],
+                            [value],
                             parameters={
                                 attributes_filter.Parameters.ATTRIBUTE_KEY: self.filter.attribute,
                                 attributes_filter.Parameters.POSITIVE: self.filter.operator == "="})
