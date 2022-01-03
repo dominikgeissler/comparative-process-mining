@@ -18,5 +18,6 @@ COPY --from=builder /install /usr/local/lib/python3.9
 RUN mkdir /app
 # copy project
 COPY . /app
+WORKDIR /app
 # run project
-CMD ["python3", "/app/manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["python3", "manage.py", "runserver", "0.0.0.0:8000"]

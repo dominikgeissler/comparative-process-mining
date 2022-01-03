@@ -348,7 +348,6 @@ class LogObjectHandler(models.Model):
         # to linked log, calulate the metrics for the reference
         # log as well and return the metrics of the linked log
         # and the difference relative to the reference log
-
         if reference and self.generate_dfg(
                 only_extract_filtered_log=True) != reference.generate_dfg(
                 only_extract_filtered_log=True):
