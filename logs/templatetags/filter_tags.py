@@ -33,4 +33,4 @@ def get_operations(attribute_list):
             # for strings only equal and not equal are supported
             return ['=', '≠']
     # for numbers we also add greater / smaller than
-    return ['<', '>', '=', '≠']
+    return ['<=', '>=', '=', '≠']

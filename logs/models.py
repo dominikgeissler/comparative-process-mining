@@ -109,7 +109,7 @@ class Filter(models.Model):
         attribute_value (str, opt):
             the attribute value that is selected by the user
         operator (str, opt):
-            a string operator sign out of [<,>,=,≠]
+            a string operator sign out of [<=,>=,=,≠]
 
     ---
     Methods:
@@ -293,18 +293,18 @@ class LogObjectHandler(models.Model):
                 filtered_log = timestamp_filter.filter_traces_intersecting(
                     log, timestamp1, timestamp2)
             elif self.filter.type == "filter_on_attributes":
-                if self.filter.operator in ["<", ">"]:
-                    # if '<' look at the range -inf to float(attribute_value)
-                    # if '>' look at the range float(attribute_value) to inf
+                if self.filter.operator in ["<=", ">="]:
+                    # if '<=' look at the range -inf to float(attribute_value)
+                    # if '>=' look at the range float(attribute_value) to inf
 
-                    # since '<' and '>' can only be selected for numeric attribute
+                    # since '<=' and '>=' can only be selected for numeric attribute
                     # values, float(attribute_value) does not need to be
                     # try-catched
                     filtered_log = attributes_filter.apply_numeric(
                         log,
-                        float('-inf') if self.filter.operator == "<"
+                        float('-inf') if self.filter.operator == "<="
                         else float(self.filter.attribute_value),
-                        float(self.filter.attribute_value) if self.filter.operator == "<"
+                        float(self.filter.attribute_value) if self.filter.operator == "<="
                         else float('inf'),
                         parameters={
                             attributes_filter.Parameters.ATTRIBUTE_KEY:
