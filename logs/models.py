@@ -212,29 +212,41 @@ class LogObjectHandler(models.Model):
 
     def get_similarity_index(self, reference):
         """
-        Similarity Index based on the number of common variants or (in other words) common traces
+        Similarity Index based on the number of common variants between log and reference log
         """
         if reference and reference.generate_dfg(
                 only_extract_filtered_log=True) != self.generate_dfg(
                 only_extract_filtered_log=True):
-            variants_count_log = case_statistics.get_variant_statistics(
+            # Dictionary ('variant': 'count')of the log to be analyzed
+            # 'count': number of occurrences per variant
+            dict_variants_log = case_statistics.get_variant_statistics(
                 self.generate_dfg(only_extract_filtered_log=True))
-            variants_count_reference = case_statistics.get_variant_statistics(
+            # Dictionary of the reference log
+            dict_variants_reference = case_statistics.get_variant_statistics(
                 reference.generate_dfg(only_extract_filtered_log=True))
-            sum_variants_reference = 0
-            sum_variants_log = 0
-            common_no_variants = 0
-            for x in range(0, len(variants_count_reference) - 1):
-                sum_variants_reference += variants_count_reference[x]['count']
-                for i in range(0, len(variants_count_log) - 1):
-                    if variants_count_reference[x]['variant'] == variants_count_log[i]['variant']:
-                        common_no_variants += min(
-                            variants_count_reference[x]['count'],
-                            variants_count_log[i]['count'])
-            for i in range(0, len(variants_count_log) - 1):
-                sum_variants_log += variants_count_log[i]['count']
-            sum = max(sum_variants_reference, sum_variants_log)
-            return str("%.2f" % round(common_no_variants / sum * 100, 2)) + "%"
+
+            # Total number of counts if both dictionaries have the similar variants
+            sum_count_similar = 0
+            # Iterate through the variants of the reference log dictionary
+            for entry_reference in dict_variants_reference:
+                # Iterate through the variants of the log dictionary
+                for entry_log in dict_variants_log:
+                    # Compare whether both dictionaries have the same variants
+                    if entry_log['variant'] == entry_reference['variant']:
+                        # Add the minimum number of identical variants (the intersection) to sum_count_similar
+                        sum_count_similar += min(entry_log['count'],
+                                                 entry_reference['count'])
+
+            # Add the number of count values for each variant of the log
+            sum_count_log = sum([entry_log['count']
+                                for entry_log in dict_variants_log])
+            # Add the number of count values for each variant of the reference log
+            sum_count_reference = sum(
+                [entry_reference['count'] for entry_reference in dict_variants_reference])
+
+            # Return of the Similarity Index rounded to two decimal places
+            return str("%.2f" % round(sum_count_similar/max(sum_count_log, sum_count_reference) * 100, 2)) + "%"
+        # If log = reference log
         return "100%"
 
     def pm4py_log(self):
