@@ -424,43 +424,61 @@ class LogObjectHandler(models.Model):
         self.filter.save()
 
     def get_filter(self):
+        """
+        returns the filters applied to each log for the output within the PDF document
+        """
+        # if no filter is applied on the log
+        # returns key "No filter selected"
+        # returns value "No attribute(s) selected"
         if self.filter is None:
             return {"No filter selected": "No attribute(s) selected"}
+        # if Case Performance Filter is applied on the log
+        # returns key "Case Performance"
+        # returns value concerning applied lower and upper limit 
         elif self.filter.type == "case_performance":
             return {"Case Performance": "Between " +
                     str(self.filter.case_performance1) +
                     " and " +
                     str(self.filter.case_performance2)}
+        # if Between Filter is applied on the log
+        # returns key "Between Filter"
+        # returns value in terms of applied start and end activity 
+        # the characters ' are used to highlight the two selected activities within the returned String
         elif self.filter.type == "between_filter":
             return {"Between Filter": "Between '" +
                     str(self.filter.case1) +
                     "' and '" +
                     str(self.filter.case2) +
                     "'"}
+        # if Case Size Filter is applied on the log
+        # returns key "Case Size"
+        # returns value regarding applied lower and upper limit
         elif self.filter.type == "case_size":
             return {"Case Size": "Between " +
                     str(self.filter.case_size1) +
                     " and " +
                     str(self.filter.case_size2)}
+        # if Timestamp Filter (Contanins) is applied on the log
+        # returns key "Timestamp Filter (Contanins)"
+        # returns value concerning applied start and end timestamp
         elif self.filter.type == "timestamp_filter_contained":
-            timestamp1, timestamp2 = make_naive(
-                self.filter.timestamp1, UTC), make_naive(
-                self.filter.timestamp2, UTC)
             return {
                 "Timestamp Filter (contained)": "Between " +
-                str(timestamp1) +
+                str(self.filter.timestamp1) +
                 " and " +
-                str(timestamp2)}
+                str(self.filter.timestamp2)}
+        # if Timestamp Filter (Intersecting) is applied on the log
+        # returns key "Timestamp Filter (Intersecting)"
+        # returns value concerning applied start and end timestamp
         elif self.filter.type == "timestamp_filter_intersecting":
-            # brauchst du nicht
-            timestamp1, timestamp2 = make_naive(
-                self.filter.timestamp1, UTC), make_naive(
-                self.filter.timestamp2, UTC)
             return {
                 "Timestamp Filter (intersecting)": "Between " +
                 self.filter.timestamp1 +
                 " and " +
-                str(timestamp2)}
+                str(self.filter.timestamp2)}
+        # if Filter on Attrbiutes is applied on the log
+        # returns key "Filter on attributes"
+        # returns value in terms of applied attribute filter type, operator and numeric attribute value
         elif self.filter.type == "filter_on_attributes":
             return {"Filter on attributes": self.filter.attribute + " " +
                     self.filter.operator + " " + str(self.filter.attribute_value)}
@@ -484,47 +502,45 @@ class LogMetrics():
 
     def __init__(self, log):
         self.log = log
+
+        # Number of Cases
         self.no_cases = len(self.log)
-        """Number of Cases"""
 
+        # Number of Events
         self.no_events = sum([len(trace) for trace in self.log])
-        """Number of Events"""
-        """
-        Explanation of the calculation:
-        First, with "for trace in self.log" get the different traces in the event log.
-        Second, with "len(trace)" calculated the number of events
-        (via the length of the trace) in every trace.
-        Third, with "sum(...)" sum up all the number of events of all traces.
-        """
 
+        # PM4Py library function
         variants_count = case_statistics.get_variant_statistics(log)
-        """PM4Py library function"""
+        
+        # Number of Variants
         self.no_variants = len(variants_count)
-        """Number of Variants"""
 
+        # PM4Py library function
         activities_count = pm4py.get_attribute_values(log, "concept:name")
-        """PM4Py library function"""
-        self.no_activities = len(activities_count)
-        """Number of Activities"""
 
+        # Number of Activities
+        self.no_activities = len(activities_count)
+
+        # PM4Py library function
         all_case_durations = case_statistics.get_all_casedurations(
             self.log, parameters={
                 case_statistics.Parameters.TIMESTAMP_KEY: "time:timestamp"})
-        """PM4Py library function"""
+        
+        # Total Case Duration
         self.total_case_duration = (sum(all_case_durations))
-        """Total Case Duration"""
 
+        # Average Case Duration
         if self.no_cases <= 0:
             avg_case_duration = 0
         else:
             avg_case_duration = (sum(all_case_durations)) / self.no_cases
         self.average_case_duration = avg_case_duration
-        """Average Case Duration"""
 
+        # PM4Py library function
         median_case_duration = (
             case_statistics.get_median_caseduration(
                 self.log, parameters={
                     case_statistics.Parameters.TIMESTAMP_KEY: "time:timestamp"}))
-        """PM4Py library function"""
+        
+        # Median Case Duration
         self.median_case_duration = median_case_duration
-        """Median Case Duration"""
