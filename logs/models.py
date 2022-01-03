@@ -485,7 +485,7 @@ class LogObjectHandler(models.Model):
         elif self.filter.type == "timestamp_filter_intersecting":
             return {
                 "Timestamp Filter (intersecting)": "Between " +
-                self.filter.timestamp1 +
+                str(self.filter.timestamp1) +
                 " and " +
                 str(self.filter.timestamp2)}
         # if Filter on Attrbiutes is applied on the log
