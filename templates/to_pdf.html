@@ -4,29 +4,35 @@
     {% load static %}
     <style type="text/css">
         table {
-        table-layout: auto;
-        width: 100%;
+            table-layout: auto;
+            width: 100%;
         }
         img {
-        max-width: 100%;
-        max-height: 100%;
-        object-fit: contain;
-        display: block;
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            display: block;
         }
         body {
-        font-family: Arial, sans-serif;
-        font-size: 11px;
+            font-family: Arial, sans-serif;
+            font-size: 11px;
+        }
+        #name, #attribute, #similarity_index_value {
+            padding-bottom:11px
+        }
+        #similarity_index {
+            padding-top:11px
         }
         span {
-        font-weight: bold;
+            font-weight: bold;
         }
         .positive {
-        color: red;
+            color: red;
         }
         .negative {
-        color: green;
+            color: green;
         }
-       h1,h3 {
+        h1,h3 {
             color:#00529F;
         }
     </style>
@@ -44,12 +50,11 @@
         </tr>
         <tr>
         {% for name in names %}
-            <td>
+            <td id="name">
                {{name}}
             </td>
         {% endfor %}
         </tr>
-        <tr></tr>
         <tr>
             {% for filter in isFrequency %}
             <td>    
@@ -66,7 +71,7 @@
         </tr>
         <tr>
             {% for filter in filters %}
-            <td>
+            <td id="attribute">
                 {% for key, value in filter.items %}
                 Filter Type: {{key}} <br> 
                 Attribute: {{value}}
@@ -74,7 +79,6 @@
             </td>
             {% endfor %}
         </tr>
-        <tr></tr>
         <tr>
             {% for filter in isFrequency %}
             <td>  
@@ -89,22 +93,20 @@
             </td>
         {% endfor %}
         </tr>
-        <tr></tr>
         <tr>
             {% for filter in isFrequency %}
-            <td>  
+            <td id="similarity_index">  
             <h3 class="mt-4">Similarity Index:</h3> 
             </td>
             {% endfor %}
         </tr>
         <tr>
             {% for index in similarity %}
-            <td>
+            <td id="similarity_index_value">
                 Similarity Index: {{index}}
             </td>
             {% endfor %}
         </tr>
-        <tr></tr>
         <tr>
             {% for filter in isFrequency %}
             <td>  
