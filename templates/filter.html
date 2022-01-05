@@ -36,8 +36,10 @@
 </select>
 </div>
 <div id="{{id}}-case-number" style="display: none;">
-    <input type="number" id="{{id}}-number1" min="0" value="0">
-    <input type="number" id="{{id}}-number2" min="0" value="0">
+    <input type="number" id="{{id}}-number1" min="0" value="0" oninput="this.value = 
+    !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : 0">
+    <input type="number" id="{{id}}-number2" min="0" value="0" oninput="this.value = 
+    !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : 0">
 </div>
 <div id="{{id}}-timestamp" style="display: none;">
 <select id="{{id}}-timestamp-select1">
