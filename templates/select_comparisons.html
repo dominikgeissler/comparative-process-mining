@@ -5,7 +5,8 @@
     <h3 class="mt-4" style="color:#00529F;">Choose Number of Comparisons:</h3>
     <p>Please select a number of comparisons between 2 and 8.</p>
     <div class="form-group">
-        <input type="number" class="form-control" id="nr_of_comparisons" value=2 min=2 max=8 name='nr_of_comparisons'>
+        <input type="number" class="form-control" id="nr_of_comparisons" value=2 min=2 max=8 name='nr_of_comparisons'
+               oninput="this.value = !!this.value && Math.abs(this.value) >= 2 && Math.abs(this.value) <= 8 ? Math.abs(this.value) : 2">
         </select>
     </div>
     <button class="btn btn-primary" type="submit">Continue</button>
