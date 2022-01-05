@@ -336,7 +336,7 @@ class LogObjectHandler(models.Model):
                                 attributes_filter.Parameters.POSITIVE: self.filter.operator == "="})
             # since the filtered log is only set if a filter was applied,
             # and thus not None, otherwise the filter is ignored
-            if filtered_log:
+            if filtered_log is not None:
                 log = filtered_log
         if only_extract_filtered_log:
             return log
