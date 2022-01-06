@@ -116,11 +116,14 @@ window.onload = setUpPage("{{id}}");
 // attribute: a string description of an attribute selected by the user
 function changeAttributeVisualization(id, attribute) {
     var attr_divs = []
-    // get all attributes from the log
-    var attributes = {{ log|get_attributes | safe }}
-    // create the attributes divs
-    attributes.forEach(x => attr_divs.push(["-attribute-filter-",x].join("")))
-    changeVisualization(id, !attribute ? [id + attr_divs[0]] : [id+"-attribute-filter-"+attribute], attr_divs)
+    var _divs = $(`div[id^="${id}-attribute-filter-"]`).filter(
+    function(){
+        return this.id.match(/\.*/);
+    })
+    for(var i = 0; i< _divs.length; ++i) {
+        attr_divs.push(_divs[i].id)
+    }
+    changeVisualization(id, !attribute ? [attr_divs[0]] : [id+"-attribute-filter-"+attribute], attr_divs)
 }
 
 
@@ -167,10 +170,11 @@ function changeVisualization(id, arr, div_arr=null) {
 
     // set all divs in div_arr not in arr to not visible 
     div_arr.forEach(el => {
-        if(arr.includes(id+el)) {
-            return;
+        if(!el.includes(id)) el = id+el
+        if(arr.includes(el)) {
+            return
         }
-        document.getElementById(id+el).style.display = "none"
+        document.getElementById(el).style.display = 'none'
     })    
 }
 
