@@ -7,7 +7,6 @@ from json import dumps
 register = template.Library()
 formatstring = "%Y-%m-%d %H:%M:%S"
 
-
 @register.filter
 def convert_timestamp(timestamp):
     """converts the timestamp to a format django can handle"""
@@ -23,7 +22,6 @@ def convert_timestamp(timestamp):
 def get_attributes(log):
     """returns the attributes of a log"""
     return dumps(list(log.get_properties().keys()))
-
 
 @register.filter
 def get_operations(attribute_list):
