@@ -116,10 +116,17 @@ window.onload = setUpPage("{{id}}");
 // attribute: a string description of an attribute selected by the user
 function changeAttributeVisualization(id, attribute) {
     var attr_divs = []
+    // get all divs that match the pattern
+    // ˍˍˍˍˍˍˍˍˍˍˍˍˍˍˍˍˍˍˍˍˍˍˍˍˍˍˍˍˍˍˍˍˍˍˍˍˍˍˍˍˍˍˍˍˍˍˍ
+    // pattern: {id}-attribute-filter-{attribute_name}
+    // ˉˉˉˉˉˉˉˉˉˉˉˉˉˉˉˉˉˉˉˉˉˉˉˉˉˉˉˉˉˉˉˉˉˉˉˉˉˉˉˉˉˉˉˉˉˉˉ
+    // since the only divs with the prefix '{id}-attribute-filter-'
+    // are the divs we want, match everything with this prefix
     var _divs = $(`div[id^="${id}-attribute-filter-"]`).filter(
     function(){
         return this.id.match(/\.*/);
     })
+    // add all div ids to attr_divs to toggle visibility
     for(var i = 0; i< _divs.length; ++i) {
         attr_divs.push(_divs[i].id)
     }
@@ -170,10 +177,11 @@ function changeVisualization(id, arr, div_arr=null) {
 
     // set all divs in div_arr not in arr to not visible 
     div_arr.forEach(el => {
+        // unify id tags
         if(!el.includes(id)) el = id+el
-        if(arr.includes(el)) {
-            return
-        }
+        // ignore elements included in arr
+        if(arr.includes(el)) return
+        // set all other divs to 'invisible'
         document.getElementById(el).style.display = 'none'
     })    
 }
