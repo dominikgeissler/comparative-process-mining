@@ -245,7 +245,7 @@ class LogObjectHandler(models.Model):
                 [entry_reference['count'] for entry_reference in dict_variants_reference])
 
             # Return of the Similarity Index rounded to two decimal places
-            return str("%.2f" % round(sum_count_similar/max(sum_count_log, sum_count_reference) * 100, 2)) + "%"
+            return str("%.2f" % round(sum_count_similar/(max(sum_count_log, sum_count_reference) if max(sum_count_log, sum_count_reference) > 0 else 1) * 100, 2)) + "%"
         # If log = reference log
         return "100%"
 
