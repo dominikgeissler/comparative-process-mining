@@ -325,7 +325,9 @@ class LogObjectHandler(models.Model):
                     # operator is either '=' or '≠'
                     # check if the attribute value is a number
                     try:
-                        value = float(self.filter.attribute_value)
+                        value_float = float(self.filter.attribute_value)
+                        value_int = int(value_float)
+                        value = value_int if value_int == value_float else value_float 
                     except BaseException or ValueError:
                         value = self.filter.attribute_value
                     filtered_log = attributes_filter.apply(
