@@ -228,7 +228,8 @@ class LogObjectHandler(models.Model):
             dict_variants_reference = case_statistics.get_variant_statistics(
                 reference.generate_dfg(only_extract_filtered_log=True))
 
-            # Total number of counts if both dictionaries have the similar variants
+            # Total number of counts if both dictionaries have the similar
+            # variants
             sum_count_similar = 0
             # Iterate through the variants of the reference log dictionary
             for entry_reference in dict_variants_reference:
@@ -236,19 +237,24 @@ class LogObjectHandler(models.Model):
                 for entry_log in dict_variants_log:
                     # Compare whether both dictionaries have the same variants
                     if entry_log['variant'] == entry_reference['variant']:
-                        # Add the minimum number of identical variants (the intersection) to sum_count_similar
+                        # Add the minimum number of identical variants (the
+                        # intersection) to sum_count_similar
                         sum_count_similar += min(entry_log['count'],
                                                  entry_reference['count'])
 
             # Add the number of count values for each variant of the log
             sum_count_log = sum([entry_log['count']
                                 for entry_log in dict_variants_log])
-            # Add the number of count values for each variant of the reference log
+            # Add the number of count values for each variant of the reference
+            # log
             sum_count_reference = sum(
                 [entry_reference['count'] for entry_reference in dict_variants_reference])
 
             # Return of the Similarity Index rounded to two decimal places
-            return str("%.2f" % round(sum_count_similar/(max(sum_count_log, sum_count_reference) if max(sum_count_log, sum_count_reference) > 0 else 1) * 100, 2)) + "%"
+            return str("%.2f" % round(sum_count_similar / (max(sum_count_log,
+                                                               sum_count_reference) if max(sum_count_log,
+                                                                                           sum_count_reference) > 0 else 1) * 100,
+                                      2)) + "%"
         # If log = reference log
         return "100%"
 
@@ -325,14 +331,14 @@ class LogObjectHandler(models.Model):
                             attributes_filter.Parameters.ATTRIBUTE_KEY:
                             self.filter.attribute})
                 else:
-                    # operator is either '=' or '≠'    
+                    # operator is either '=' or '≠'
                     filtered_log = attributes_filter.apply(
                         log,
                         [self.filter.attribute_value],
                         parameters={
                             attributes_filter.Parameters.ATTRIBUTE_KEY: self.filter.attribute,
                             attributes_filter.Parameters.POSITIVE: self.filter.operator == "="
-                        })                        
+                        })
             # since the filtered log is only set if a filter was applied,
             # and thus not None, otherwise the filter is ignored
             if filtered_log is not None:
@@ -448,7 +454,7 @@ class LogObjectHandler(models.Model):
             return {"No filter selected": "No attribute(s) selected"}
         # if Case Performance Filter is applied on the log
         # returns key "Case Performance"
-        # returns value concerning applied lower and upper limit 
+        # returns value concerning applied lower and upper limit
         elif self.filter.type == "case_performance":
             return {"Case Performance": "Between " +
                     str(self.filter.case_performance1) +
@@ -456,8 +462,9 @@ class LogObjectHandler(models.Model):
                     str(self.filter.case_performance2)}
         # if Between Filter is applied on the log
         # returns key "Between Filter"
-        # returns value in terms of applied start and end activity 
-        # the characters ' are used to highlight the two selected activities within the returned String
+        # returns value in terms of applied start and end activity
+        # the characters ' are used to highlight the two selected activities
+        # within the returned String
         elif self.filter.type == "between_filter":
             return {"Between Filter": "Between '" +
                     str(self.filter.case1) +
@@ -492,10 +499,11 @@ class LogObjectHandler(models.Model):
                 str(self.filter.timestamp2)}
         # if Filter on Attrbiutes is applied on the log
         # returns key "Filter on attributes"
-        # returns value in terms of applied attribute filter type, operator and numeric attribute value
+        # returns value in terms of applied attribute filter type, operator and
+        # numeric attribute value
         elif self.filter.type == "filter_on_attributes":
-            return {"Filter on attributes": self.filter.attribute + " " +
-                    self.filter.operator + " " + str(self.filter.attribute_value)}
+            return {"Filter on attributes": self.filter.attribute + " " + \
+                self.filter.operator + " " + str(self.filter.attribute_value)}
 
 
 class Metrics():
@@ -525,7 +533,7 @@ class LogMetrics():
 
         # PM4Py library function
         variants_count = case_statistics.get_variant_statistics(log)
-        
+
         # Number of Variants
         self.no_variants = len(variants_count)
 
@@ -539,7 +547,7 @@ class LogMetrics():
         all_case_durations = case_statistics.get_all_casedurations(
             self.log, parameters={
                 case_statistics.Parameters.TIMESTAMP_KEY: "time:timestamp"})
-        
+
         # Total Case Duration
         self.total_case_duration = (sum(all_case_durations))
 
@@ -555,6 +563,6 @@ class LogMetrics():
             case_statistics.get_median_caseduration(
                 self.log, parameters={
                     case_statistics.Parameters.TIMESTAMP_KEY: "time:timestamp"}))
-        
+
         # Median Case Duration
         self.median_case_duration = median_case_duration
