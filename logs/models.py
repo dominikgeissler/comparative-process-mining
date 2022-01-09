@@ -323,20 +323,13 @@ class LogObjectHandler(models.Model):
                             self.filter.attribute})
                 else:
                     # operator is either '=' or '≠'
-                    # check if the attribute value is a number
-                    try:
-                        if "." in str(self.filter.attribute_value):
-                            value = float(self.filter.attribute_value)
-                        else:
-                            value = int(self.filter.attribute_value) 
-                    except BaseException or ValueError:
-                        value = self.filter.attribute_value
                     filtered_log = attributes_filter.apply(
-                            log,
-                            [value],
-                            parameters={
-                                attributes_filter.Parameters.ATTRIBUTE_KEY: self.filter.attribute,
-                                attributes_filter.Parameters.POSITIVE: self.filter.operator == "="})
+                        log,
+                        [self.filter.attribute_value],
+                        parameters={
+                            attributes_filter.Parameters.ATTRIBUTE_KEY: self.filter.attribute,
+                            attributes_filter.Parameters.POSITIVE: self.filter.operator == "="})
+
             # since the filtered log is only set if a filter was applied,
             # and thus not None, otherwise the filter is ignored
             if filtered_log is not None:

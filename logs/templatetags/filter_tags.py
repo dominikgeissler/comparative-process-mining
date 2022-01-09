@@ -30,5 +30,5 @@ def get_operations(attribute_list):
         if not isinstance(attribute, Number):
             # for strings only equal and not equal are supported
             return ['=', '≠']
-    # for numbers we also add greater / smaller than
-    return ['<=', '>=', '=', '≠']
+    # for numbers geq and leq
+    return ['<=', '>=']
