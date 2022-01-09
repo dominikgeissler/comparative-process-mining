@@ -199,8 +199,8 @@ class LogObjectHandler(models.Model):
         results = {}
 
         for columName, columValue in log_df.iteritems():
-            # ignore timestamp and metadata or columName.startswith('case:')
-            if columName == "time:timestamp":
+            # ignore timestamp and metadata
+            if columName == "time:timestamp" or columName.startswith('case:'):
                 continue
             values_w_o_na = columValue.dropna()
             results[columName] = sorted(list(set(values_w_o_na)))
@@ -326,21 +326,13 @@ class LogObjectHandler(models.Model):
                             self.filter.attribute})
                 else:
                     # operator is either '=' or '≠'    
-                    if 'case:' in self.filter.attribute:
-                        parameters = {
-                            attributes_filter.Parameters.CASE_ID_KEY: self.filter.attribute,
-                            attributes_filter.Parameters.ATTRIBUTE_KEY: self.filter.attribute[5:],
-                            attributes_filter.Parameters.POSITIVE: self.filter.operator == "="
-                        }                    
-                    else:
-                        parameters={
-                            attributes_filter.Parameters.ATTRIBUTE_KEY: self.filter.attribute,
-                            attributes_filter.Parameters.POSITIVE: self.filter.operator == "="
-                        }
                     filtered_log = attributes_filter.apply(
                         log,
                         [self.filter.attribute_value],
-                        parameters=parameters)                        
+                        parameters={
+                            attributes_filter.Parameters.ATTRIBUTE_KEY: self.filter.attribute,
+                            attributes_filter.Parameters.POSITIVE: self.filter.operator == "="
+                        })                        
             # since the filtered log is only set if a filter was applied,
             # and thus not None, otherwise the filter is ignored
             if filtered_log is not None:
@@ -428,8 +420,8 @@ class LogObjectHandler(models.Model):
 
     def reset_filter(self):
         if self.filter:
-            Filter.objects.get(pk=self.filter_id).delete()
-            self.filter = Filter.objects.create()
+            self.set_filter(list(vars(self.filter).keys()), 
+            [None if el != "is_frequency" else True for el in list(vars(self.filter).keys())])
 
     def set_filter(self, attr, value):
         """set filter of log (or create and then
