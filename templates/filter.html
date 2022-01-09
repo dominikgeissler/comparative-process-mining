@@ -62,19 +62,11 @@
 {% for attribute, value_list in log.get_properties.items %}
     {% if value_list %}
     <div id="{{id}}-attribute-filter-{{attribute}}" style="display: none;">
-        {% if attribute == "time:timestamp" %}  
-        <select id="{{id}}-attribute-filter-{{attribute}}-select1">
-            {% for value in value_list %}
-            <option value="{{value|convert_timestamp}}">{{value|convert_timestamp}}</option>
-            {% endfor %}
-        </select>
-        {% else %}
         <select id="{{id}}-attribute-filter-{{attribute}}-select1">
         {% for value in value_list %}
         <option value="{{value}}">{{value}}</option>
         {% endfor %}
         </select>
-        {% endif %}
         <select id="{{id}}-attribute-filter-{{attribute}}-select2">
             {% for operator in value_list|get_operations %}
             <option value="{{operator | safe}}">{{operator}}</option>          

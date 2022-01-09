@@ -199,6 +199,9 @@ class LogObjectHandler(models.Model):
         results = {}
 
         for columName, columValue in log_df.iteritems():
+            # ignore timestamp
+            if columName == "time:timestamp":
+                continue
             values_w_o_na = columValue.dropna()
             results[columName] = sorted(list(set(values_w_o_na)))
         return results
