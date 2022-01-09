@@ -199,7 +199,7 @@ class LogObjectHandler(models.Model):
         results = {}
 
         for columName, columValue in log_df.iteritems():
-            # ignore timestamp
+            # ignore timestamp and metadata or columName.startswith('case:')
             if columName == "time:timestamp":
                 continue
             values_w_o_na = columValue.dropna()
@@ -325,14 +325,22 @@ class LogObjectHandler(models.Model):
                             attributes_filter.Parameters.ATTRIBUTE_KEY:
                             self.filter.attribute})
                 else:
-                    # operator is either '=' or '≠'
+                    # operator is either '=' or '≠'    
+                    if 'case:' in self.filter.attribute:
+                        parameters = {
+                            attributes_filter.Parameters.CASE_ID_KEY: self.filter.attribute,
+                            attributes_filter.Parameters.ATTRIBUTE_KEY: self.filter.attribute[5:],
+                            attributes_filter.Parameters.POSITIVE: self.filter.operator == "="
+                        }                    
+                    else:
+                        parameters={
+                            attributes_filter.Parameters.ATTRIBUTE_KEY: self.filter.attribute,
+                            attributes_filter.Parameters.POSITIVE: self.filter.operator == "="
+                        }
                     filtered_log = attributes_filter.apply(
                         log,
                         [self.filter.attribute_value],
-                        parameters={
-                            attributes_filter.Parameters.ATTRIBUTE_KEY: self.filter.attribute,
-                            attributes_filter.Parameters.POSITIVE: self.filter.operator == "="})
-
+                        parameters=parameters)                        
             # since the filtered log is only set if a filter was applied,
             # and thus not None, otherwise the filter is ignored
             if filtered_log is not None:
