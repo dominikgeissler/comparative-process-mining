@@ -420,9 +420,11 @@ class LogObjectHandler(models.Model):
 
     def reset_filter(self):
         if self.filter:
-            self.set_filter(list(vars(self.filter).keys()), 
-            [None if el != "is_frequency" else True for el in list(vars(self.filter).keys())])
-
+            self.set_filter(
+                [field.name for field in self.filter._meta.fields if field.default != models.fields.NOT_PROVIDED],
+                [field.default for field in self.filter._meta.fields if field.default != models.fields.NOT_PROVIDED]
+            )
+            
     def set_filter(self, attr, value):
         """set filter of log (or create and then
         set if, if it doesnt exist)"""
@@ -431,6 +433,8 @@ class LogObjectHandler(models.Model):
             # create filter
             self.filter = Filter.objects.create()
         # set the attribute(s) of the filter and save it
+        print(attr)
+        print(value)
         self.filter.set_attribute(attr, value)
         self.filter.save()
 
