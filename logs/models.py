@@ -220,42 +220,42 @@ class LogObjectHandler(models.Model):
         if reference and reference.generate_dfg(
                 only_extract_filtered_log=True) != self.generate_dfg(
                 only_extract_filtered_log=True):
-            # Dictionary ('variant': 'count')of the log to be analyzed
+            # dictionary ('variant': 'count') of the log to be analyzed
             # 'count': number of occurrences per variant
             dict_variants_log = case_statistics.get_variant_statistics(
                 self.generate_dfg(only_extract_filtered_log=True))
-            # Dictionary of the reference log
+            # dictionary of the reference log
             dict_variants_reference = case_statistics.get_variant_statistics(
                 reference.generate_dfg(only_extract_filtered_log=True))
 
-            # Total number of counts if both dictionaries have the similar
-            # variants
+            # total number of counts if both dictionaries have similar variants
             sum_count_similar = 0
-            # Iterate through the variants of the reference log dictionary
+            # iterate through the variants of the reference log dictionary
             for entry_reference in dict_variants_reference:
-                # Iterate through the variants of the log dictionary
+                # iterate through the variants of the log dictionary
                 for entry_log in dict_variants_log:
-                    # Compare whether both dictionaries have the same variants
+                    # compare whether both dictionaries have the same variants
                     if entry_log['variant'] == entry_reference['variant']:
-                        # Add the minimum number of identical variants (the
+                        # add the minimum number of identical variants (the
                         # intersection) to sum_count_similar
                         sum_count_similar += min(entry_log['count'],
                                                  entry_reference['count'])
 
-            # Add the number of count values for each variant of the log
+            # add the number of count values for each variant of the log
             sum_count_log = sum([entry_log['count']
                                 for entry_log in dict_variants_log])
-            # Add the number of count values for each variant of the reference
+            # add the number of count values for each variant of the reference
             # log
             sum_count_reference = sum(
                 [entry_reference['count'] for entry_reference in dict_variants_reference])
 
-            # Return of the Similarity Index rounded to two decimal places
+            # return of the Similarity Index rounded to two decimal places
+            # plus, divisor = 1, if both DFGs are empty
             return str("%.2f" % round(sum_count_similar / (max(sum_count_log,
                                                                sum_count_reference) if max(sum_count_log,
                                                                                            sum_count_reference) > 0 else 1) * 100,
                                       2)) + "%"
-        # If log = reference log
+        # if log = reference log
         return "100%"
 
     def pm4py_log(self):
