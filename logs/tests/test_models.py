@@ -37,5 +37,3 @@ class ModelsLogObjectHandlerTests(TestCase):
         self.assertIsNone(handler.filter)
         handler.set_filter(" ", "")
         self.assertIsNotNone(handler.filter)
-
-    # ...
