@@ -1,6 +1,5 @@
 # git
 **/.git
-.github
 .gitignore
 
 # python
@@ -15,7 +14,6 @@ env
 doc
 **/tests
 .vscode
-cpm.yaml
 Dockerfile
 README.md
 .dockerignore
